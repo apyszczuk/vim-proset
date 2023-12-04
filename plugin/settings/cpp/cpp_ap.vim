@@ -3,91 +3,22 @@ if exists("g:loaded_proset_settings_cpp_cpp_ap")
 endif
 let g:loaded_proset_settings_cpp_cpp_ap = 1
 
-function! s:get_project_name(project_file)
-    let l:ret_val = "UNKNOWN"
-    if !filereadable(a:project_file)
-        return l:ret_val
-    endif
-
-    let l:do_the_job = '0'
-    for l:item in readfile(a:project_file)
-        if l:item =~ "set (PROJECT_NAME"
-            let l:ret_val = ""
-            for l:char in split(l:item, '\zs')
-                if l:char == '"' && l:do_the_job == '0'
-                    let l:do_the_job = '1'
-                    continue
-                elseif l:char == '"' && l:do_the_job == '1'
-                    let l:do_the_job = '0'
-                    break
-                endif
-
-                if l:do_the_job == '1'
-                    let l:ret_val .= l:char
-                endif
-            endfor
-            break
-        endif
-    endfor
-    return l:ret_val
-endfunction
-
 function! s:generate_tags_file(additional_ctags_directories, build_directory, temporary_ctags_file)
-    let l:cmd = "ctags -R " .
-                \ "--exclude=" . a:build_directory . " " .
-                \ "--c++-kinds=+p " .
-                \ "--fields=+iaS " .
-                \ "--extras=+q " .
-                \ "--language-force=C++ " .
-                \ "--tag-relative=yes " .
-                \ "-f " . a:temporary_ctags_file . " " .
-                \ ". " .
-                \ substitute(a:additional_ctags_directories, ";", " ", "g")
+    let l:cmd = proset#utils#ctags#get_ctags_command(
+                \ a:additional_ctags_directories,
+                \ a:build_directory,
+                \ a:temporary_ctags_file)
     silent execute '!' . l:cmd
 endfunction
 
-function! s:generate_tags_filenames(temporary_ctags_file, external_ctags_files)
-    let l:ret   = a:temporary_ctags_file
-    let l:files = substitute(a:external_ctags_files, ";", ",", "g")
-    if !empty(l:files)
-        let l:ret .= "," . l:files
-    endif
-    return l:ret
-endfunction
-
 function! s:generate_cscope_file(additional_cscope_directories, temporary_cscope_file)
-    if has("cscope")
-        let l:ext = ""
-        for l:item in split(a:additional_cscope_directories, ";")
-            let l:ext .= " -s " . l:item
-        endfor
-
-        let l:cmd = "cscope -Rb " .
-                    \ "-f " . a:temporary_cscope_file .
-                    \ l:ext
-        silent execute "!" . l:cmd
-    endif
-endfunction
-
-function! s:add_cscope_files(temporary_cscope_file, external_cscope_files)
-    if has("cscope")
-        :cs kill -1
-
-        let l:files = [a:temporary_cscope_file] + split(a:external_cscope_files, ";")
-        for l:fn in l:files
-            silent execute "cs add " . l:fn
-        endfor
-    endif
+    silent execute "!" . proset#utils#cscope#get_cscope_command(
+                \ a:additional_cscope_directories,
+                \ a:temporary_cscope_file)
 endfunction
 
 function! s:set_makeprg(build_directory, jobs_number)
-    let l:cmd = "cmake\\ " .
-                \ "-B" . a:build_directory . "\\ " .
-                \ ".\\ " .
-                \ "&&\\ " .
-                \ "cmake\\ --build\\ " . a:build_directory . "\\ " .
-                \ "--\\ " .
-                \ "-j" . a:jobs_number
+    let l:cmd = proset#utils#cmake#get_build_command(a:build_directory, a:jobs_number)
     silent execute "set makeprg=" . l:cmd
 endfunction
 
@@ -136,7 +67,7 @@ function! s:set_mappings(additional_ctags_directories,
                 \ '"' . a:additional_cscope_directories . '", ' .
                 \ '"' . a:temporary_cscope_file . '"' .
                 \ ') ' .
-                \ '\| :call <SID>add_cscope_files(' .
+                \ '\| :call proset#utils#cscope#add_cscope_files(' .
                 \ '"' . a:temporary_cscope_file . '", ' .
                 \ '"' . a:external_cscope_files . '"' .
                 \ ') ' .
@@ -283,7 +214,7 @@ function! s:cpp_ap.construct(config)
     let l:ret.properties["additional_search_directories"]   = a:config.get("additional_search_directories", "")
 
     let l:ret.properties["cmakelists_file"]                 = "CMakeLists.txt"
-    let l:ret.properties["project_name"]                    = s:get_project_name(l:ret.properties["cmakelists_file"])
+    let l:ret.properties["project_name"]                    = proset#utils#cmake#get_project_name(l:ret.properties["cmakelists_file"])
     let l:ret.properties["is_project"]                      = filereadable(l:ret.properties["cmakelists_file"]) &&
                                                             \ isdirectory(l:ret.properties["source_directory"]) &&
                                                             \ isdirectory(l:ret.properties["settings_directory"])
@@ -340,10 +271,10 @@ function! s:cpp_ap.enable() abort
                         \ l:temporary_cscope_file,
                         \ l:external_cscope_files)
 
-    let &tags = s:generate_tags_filenames(l:temporary_ctags_file, l:external_ctags_files)
+    let &tags = proset#utils#ctags#get_tags_filenames(l:temporary_ctags_file, l:external_ctags_files)
     call s:generate_tags_file(l:additional_ctags_directories, l:build_directory, l:temporary_ctags_file)
     call s:generate_cscope_file(l:additional_cscope_directories, l:temporary_cscope_file)
-    call s:add_cscope_files(l:temporary_cscope_file, l:external_cscope_files)
+    call proset#utils#cscope#add_cscope_files(l:temporary_cscope_file, l:external_cscope_files)
     let &path .= substitute(l:additional_search_directories, ";", ",", "g")
 endfunction
 
