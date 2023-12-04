@@ -1,0 +1,611 @@
+*proset.txt*  Project Settings Loader
+
+Author:     Artur Pyszczuk <apyszczuk@gmail.com>
+License:    Same terms as Vim itself (see |license|)
+Website:    https://github.com/apyszczuk/vim-proset
+
+==============================================================================
+TABLE OF CONTENTS
+
+ 1) INTRODUCTION                                                      |proset|
+ 2) SETTINGS                                                 |proset-settings|
+ 3) SETTINGS API                                         |proset-settings-api|
+ 4) PLUGIN VARIABLES                                        |proset-variables|
+ 5) CONFIGURATION                                       |proset-configuration|
+ 6) EVENTS                                                     |proset-events|
+ 7) SETTINGS DICTIONARY                           |proset-settings-dictionary|
+ 8) PUBLIC API                                                    |proset-api|
+ 9) SUPPORTED SETTINGS DICTIONARIES   |proset-supported-settings-dictionaries|
+10) CONTRIBUTE                                             |proset-contribute|
+11) ABOUT                                                       |proset-about|
+
+==============================================================================
+INTRODUCTION                                                          *proset*
+
+Anytime you want to have different settings for different projects using Vim,
+you probably have a problem. You can edit your vimrc before opening a project,
+write some file type plugins, create file type autocommands, or use local
+setup (see |'exrc'|). File type plugins and autocommands are completely ok,
+but they react to specific file types (that might not be related to any
+project). Project can have different file types and setting options depending
+on file type is of course possible, but hard to be switchable if other
+projects want to have different options values. Local setup is possible, but
+advised against. Changing vimrc from project to project is rather last
+solution you would take. Proset plugin aims to solve this problem.
+
+The idea of Proset plugin is to have a configuration file that is stored in a
+configurable location (most likely in a root directory of your project, just
+like IDEs do) having parameter that informs plugin what project settings
+should be loaded. By project settings I mean everything that is needed when
+you develop your project, it can be, but not restricted to:
+    * configuration of Vim itself,
+    * mappings for builing project,
+    * mappings for running project,
+    * mappings in general,
+    * enable or disable plugins,
+    * configuration of plugins,
+    * ... and much more.
+
+Basically everything you would normally put in your vimrc but local to the
+project.
+
+==============================================================================
+SETTINGS                                                     *proset-settings*
+
+Proset Settings is something that stores all your project specific
+configuration. It is implemented as a dictionary with specific interface (see
+|Dictionary-function|, |numbered-function|). Object of such dictionary can be
+registered in the plugin, either by plugin itself, or by you if your Settings
+Dictionary is not supported by the plugin. 
+
+Settings Dictionary and Settings Object are basically what is in object
+oriented languages known as class and instance of that class (object) and
+therefore from now on I will refer rather to Settings Object than to Settings
+Dictionaries because object can be registered in the plugin and type can not.
+Additionally, what is worth to notice is the fact that from one Settings
+Dictionary (type) you can create multiple objects which can be registered as
+long as they have different name.
+
+Each Settings Object has to have a name (unique among other registered
+Settings Objects) and it is not about object name in the code, but the string
+coming from its function. This name is used for register Settings Object in
+the plugin or when decision has to be made which Settings Object to choose
+based on the string from configuration file.
+
+Supported Settings Dictionaries can be found under plugin/settings/ directory,
+where you can find directories with programming languages names. Each Settings
+Dictionary definition (except Default) is placed in appropriate directory with
+filename of the given pattern:
+
+language_xd_42.vim
+
+Where xd_42 is some string that is up to the author of that definition.
+
+For example:
+plugin/settings/cpp/cpp_ap.vim
+
+                                                     *proset-settings-default*
+
+There is a special Settings Dictionary called Default (defined in
+autoload/proset/settings/default.vim file) that has two reasons to exist:
+    * default settings (no settings at all) - in case when plugin is enabled,
+      but no configuration file is found, so probably most of the time you
+      start Vim,
+    * interface definition - all Settings Dictionaries have to have the same
+      interface as Default one has.
+
+==============================================================================
+SETTINGS API                                             *proset-settings-api*
+
+Note: 
+When documentation says that something returns FALSE it means that it returns
+0 and if something returns TRUE then it returns other |Number| than 0, most
+likely 1.
+
+To create new Settings Dictionary you need to follow interface that is defined
+in |proset-settings-default| Settings Dictionary, and it looks like this:
+
+                                                *proset-settings-is_project()*
+s:settings.is_project()
+
+Returns TRUE if it is a project and FALSE otherwise. Each Settings Object can
+have different requirements, but lets say that if project directory (root
+path) has src directory it is a project (TRUE) and if it does not have, it is
+not a project (FALSE). Settings Object can return TRUE unconditionally as
+well.
+
+Important thing to know is that enable() and disable() are called only if
+is_project() returns TRUE.
+
+FALSE on Default Settings Object.
+
+                                          *proset-settings-get_project_name()*
+s:settings.get_project_name()
+
+Returns project name as string. The value is probably taken from somewhere
+else (after some parsing, that is my guess), rather than returned as string
+literal from this function.
+
+Empty string on Default Settings Object.
+
+                                            *proset-settings-get_properties()*
+s:settings.get_properties()
+
+Returns properties of Settings Object as dictionary. Strongly depends on
+actual Settings Object, so rather refer to it. Can not tell here what is
+inside.
+
+Empty dictionary on Default Settings Object.
+
+                                         *proset-settings-get_settings_name()*
+s:settings.get_settings_name()
+
+Returns settings name as string. This value is used to register Settings
+Object in the plugin (find if such name already exists) and to choose Settings
+Object to be loaded. This name has to be unique among other Settings Objects.
+
+Empty string on Default Settings Object.
+
+                                                    *proset-settings-enable()*
+s:settings.enable()
+
+This function is where all settings are defined. In this function you do all
+your mappings, settings, other plugins configuration, basically whatever you
+want to do what is different from project to project (common settings probably
+are placed in vimrc). You can even create some temporary directories, and
+remove them later.
+
+This function is called when Vim fires VimEnter event and when is_project()
+is TRUE.
+
+This function does nothing on Default Settings Object.
+
+                                                   *proset-settings-disable()*
+s:settings.disable()
+
+This function is like a cleanup function. If you did something in enable() and
+want to restore to original state, then this is the right place to do it.
+
+This function is called when Vim fires VimLeave event and when is_project()
+is TRUE.
+
+This function does nothing on Default Settings Object.
+
+
+Summary:
+As you see, Default Settings Dictionary defines |numbered-function| what is in
+other languages known as methods or member functions.  For creating other
+Settings Dictionaries you need to follow this scheme. To see how to register
+Settings Object in the plugin, see |proset-settings-dictionary|.
+
+                                                  *proset-settings-exceptions*
+Exceptions
+
+Settings Object can throw an exception and to make Proset plugin catch it, it
+has to be of known "type". Of course it is not a type you may know from object
+oriented programming languages, but it imitates it in some sense. So, you need
+to throw a string in form of:
+
+ proset:settings:x:y:z
+
+where:
+    proset:settings: - always the same string (required to be lowercase)
+    x                - language of Settings Object
+    y                - Settings Object name
+    z                - reason of exception
+
+ function! Foo()
+    throw "proset:settings:cpp:cpp-ap:XD_DIR no such parameter in cfg"
+ endfunction
+
+==============================================================================
+PLUGIN VARIABLES                                            *proset-variables*
+
+                                                          *g:proset_directory*
+g:proset_directory
+
+This variables stores path (string) to the directory with project settings,
+most of the time directory will be placed in a root directory of your project.
+Default value is ".vim-proset".
+
+To change default value, put this in your vimrc:
+
+ let g:proset_directory = ".proset"
+
+                                                               *g:proset_file*
+g:proset_file
+
+This variables stores filename (string) of the file with project settings that
+is inside |g:proset_directory|. This file has to have at least one required
+parameter (|proset-configuration-file|). Default value is "settings".
+
+To change default value, put this in your vimrc:
+
+ let g:proset_file = "cfg"
+
+==============================================================================
+CONFIGURATION                                           *proset-configuration*
+
+The only one configuration file that is read and required by the plugin is
+|g:proset_directory|/|g:proset_file|.
+
+Key and value are separated by colon. Key is on the left side of a colon, and
+the value is on the right, both of them are trimmed (whitespace characters
+removed from far right and far left). So, simplest configuration file looks
+like this:
+
+                                                   *proset-configuration-file*
+proset_settings: cpp-ap
+
+This is the only one required configuration parameter. All other parameters
+that are there are Settings Object specific, but the configuration file does
+not have to have more parameters, you can read them on your own using your own
+parser, from multiple configuration files, etc, it is up to you if you choose
+plugin's parser or not.
+
+Since configuration parser is so simple, there is no possible way to store
+value with newlines. Instead you can use semicolon to split entries that could
+possible be in new lines.
+
+Comments are possible and marked with hash (#) and can't be mixed with entries
+
+# this is a comment
+x : 10
+
+y : 1 #XD
+
+'1 #XD' is the value of y.
+
+                                                  *proset-configuration-get()*
+Lets say config is an object created by configuration parser. To get value
+from it, you just do:
+
+ let l:x_val = config.get("x", "10")
+
+and if key x was in the configuration file then x_val has its value, otherwise
+it has value of 10, which is default value passed as second argument to get()
+method.
+
+Use |ProsetGetConfiguration()| function to get configuration object.
+
+==============================================================================
+EVENTS                                                         *proset-events*
+
+Proset plugin offers autocommand Events for register Settings Objects and to
+inform you that Settings Object was chosen.
+
+                                                 *ProsetRegisterSettingsEvent*
+ProsetRegisterSettingsEvent
+
+If you want to register Settings Object, then you have to use this event, and
+do this in an autocommand, like this:
+
+ autocmd User ProsetRegisterSettingsEvent 
+         \ call ProsetRegisterSettings(ConstructSettings())
+
+This event is fired before choosing Settings Object. Real example is presented
+later in the documentation (|proset-settings-dictionary|).
+
+                                         *ProsetRegisterInternalSettingsEvent*
+ProsetRegisterInternalSettingsEvent
+
+This event is used to register plugin supported Settings Objects. It is
+exactly like |ProsetRegisterSettingsEvent|, except it is invoked before it.
+This should not be used by Settings Objects outside of the Proset plugin.
+
+                                                   *ProsetSettingsChosenEvent*
+ProsetSettingsChosenEvent
+
+From now on, public API will operate on the chosen Settings Object. Before
+that event Default Settings Object is used. This basically does not matter if
+you use public API after Vim fires VimEnter. So, use this autocommand event if
+you want to use public functions before VimEnter.    
+
+ function! Foo()
+     let l:p = ProsetGetProperties()
+ endfunction
+
+ autocmd User ProsetSettingsChosenEvent call Foo()
+
+==============================================================================
+SETTINGS DICTIONARY                               *proset-settings-dictionary*
+
+Here, examples of Settings Dictionaries are provided (how to create it) with
+explanation. 
+
+Keep in mind that implementations you will see here are just examples, you can
+store data in different form, as you like, as long as you implement the
+interface.
+
+There is no special difference between Settings Dictionary supported by the
+plugin and the one written by you, except a place where it is stored and event
+used to register it. Plugin supported Settings Dictionaries are placed under
+plugin/settings directory and use ProsetRegisterInternalSettingsEvent and
+yours rather should be stored in a separate plugin |package| (vim-proset-ext,
+or the like) and have to use ProsetRegisterSettingsEvent.
+
+1) Create own plugin package
+
+To create vim package you have to create appropriate directory tree and then
+create vim script file there.
+
+ $ mkdir -p ~/.vim/pack/vim-proset-ext/start/vim-proset-ext/plugin
+ $ touch ~/.vim/pack/vim-proset-ext/start/vim-proset-ext/plugin/xd.vim
+
+2) Create Settings Dictionary definition (common part)
+
+Put the following code in xd.vim file. "Constructor" of Settings Dictionary
+can be implemented in several different ways and that is why it is presented
+in the following subsections along with other parts of the Settings Dictionary
+that differ.
+
+So firstly functions common for all versions are presented. When you see
+self.properties['some_key'] then you should know that the key was somehow
+initialized during construction of the Settings Object.
+
+
+ if exists ("g:loaded_proset_ext_xd")
+     finish
+ endif
+ let g:loaded_proset_ext_xd = 1
+
+This is a common practice not to include vim script file more than once.
+
+
+ let s:obj = {'properties': {}}
+
+This is the definition of the Settings Object that stores functions and data,
+yet not initialized. It has key properties, but the name can be changed (if
+so, you just need to update usages). Name obj can also be changed to the one
+you like more, since it is script-local it does not really matter which one
+you choose. The key properties contains all properties of the Settings Object.
+
+
+ function! s:obj.is_project()
+     return self.properties['is_project']
+ endfunction
+
+This function informs plugin whether we are in a project or not. Condition of
+that is basically up to you. You need to remember that enable() and disable()
+will be invoked only if return value from this function is TRUE.
+
+
+ function! s:obj.get_project_name()
+     return self.properties['project_name']
+ endfunction
+
+This function returns project name (string). How do you do it, it is up to
+you. You can take value from configuration file, parse it from other file, you
+can even return a string literal, but this rather should be avoided (since
+project name would always be the same for all projects).
+
+
+ function! s:obj.get_properties()
+     return self.properties
+ endfunction
+
+This function returns properties (dictionary), all the properties you want, it
+can be everything from configuration file, or more, or less, depends on you.
+
+
+ function! s:obj.get_settings_name()
+     return "xd"
+ endfunction
+
+This function returns Settings Object name (string), which is used internally
+by the plugin to register Settings Object and to choose appropriate one to
+load.
+
+
+ function! s:obj.enable()
+     call mkdir("tmpdir")
+     nnoremap m0 :echo "Hello World"<CR>
+ endfunction
+
+Here you do everything you want, all your settings need to be here either
+directly on indirectly using other functions. If you have any side effects
+that need to be reverted, do it in disable().
+
+
+ function! s:obj.disable()
+     call delete ("tmpdir", "rf")
+     nunmap m0
+ endfunction
+
+Here you cleanup all the side effects of enable(). 
+
+2.1) Construct Settings Object using configuration parser
+
+ function! s:obj.construct(config)
+     let l:ret = deepcopy(self)
+
+     let l:ret.properties['project_name'] = a:config.get("project_name", "")
+     let l:ret.properties['is_project']   = a:config.get("is_project", "0")
+
+     return l:ret
+ endfunction
+
+This is the "constructor" of Settings Dictionary, used to create Settings
+Object.  The object config is a configuration dictionary that stores all
+key-value pairs from configuration file. 
+
+In |proset-configuration-file|, plugin's configuration parser was introduced.
+Using this parser saves your time of parsing options on your own. You just
+take configuration dictionary object that is already filled with values from
+configuration file and you can get appropriate values.
+
+So, if you decide to use this variant, than modify your configuration file and
+you can get value using get() function. In the case of absence of a parameter,
+default value (second argument of get()) is used.
+
+
+ autocmd User ProsetRegisterSettingsEvent
+         \ call ProsetRegisterSettings(
+         \ s:obj.construct(ProsetGetConfiguration()))
+
+If you wonder why this is done in an autocommand, rather than just simple call
+to ProsetRegisterSettings() the reason is that if you do this without an
+autocommand and this code is sourced before Proset plugin then you get an
+error that Proset* functions are not known (plugin has not been sourced yet).
+
+So you need to inform Vim that you want to do this action but on user
+autocommand that is invoked from the Proset plugin after configuration is
+parsed.
+
+2.2) Construct Settings Object using own parser
+
+ function! s:obj.construct_from_files()
+     let l:ret = deepcopy(self)
+
+     let l:fpn = g:proset_directory . "/project_name"
+     if filereadable (l:fpn)
+         let l:ret.properties['project_name'] = readfile(l:fpn)[0]
+     else
+         let l:ret.properties['project_name'] = "no_file"
+     endif
+
+     let l:fip = g:proset_directory . "/is_project"
+     if filereadable (l:fip)
+         let l:ret.properties['is_project'] = readfile(l:fip)[0]
+     else
+         let l:ret.properties['is_project'] = 0
+     endif
+
+     return l:ret
+ endfunction
+
+ autocmd User ProsetRegisterSettingsEvent
+         \ call ProsetRegisterSettings(
+         \ s:obj.construct_from_files())
+
+Here is_project is read from the file |g:proset_directory|/is_project, and
+project_name is taken from |g:proset_directory|/project_name.  This is not
+complete example, to make it much better you would probably check if file is
+empty before accessing its first element, or trim taken value, or in case of
+reading a bool check for valid range of the value.
+
+2.3) Construct Settings Object using fixed values
+
+ function! s:obj.construct_fixed()
+     let l:ret = deepcopy(self)
+
+     let l:ret.properties['is_project']   = "1"
+     let l:ret.properties['project_name'] = "XD2-pro"
+
+     return l:ret
+ endfunction
+
+ autocmd User ProsetRegisterSettingsEvent
+         \ call ProsetRegisterSettings(
+         \ s:obj.construct_fixed())
+
+Here is_project and project_name are filled with string literals. Most likely
+you would not use this case, or at least for is_project. Some properties (not
+presented in this example) could be written directly in Settings Dictionary
+members and be common for all Settings Objects, it is fine.
+
+2.4) Construct Settings Object using more parameters in constructor
+
+ function! s:obj.construct_params(settings_type, project_name)
+     let l:ret = deepcopy(self)
+
+     let l:ret.properties['is_project']    = 1
+     let l:ret.properties['project_name']  = a:project_name
+     let l:ret.properties['settings_type'] = a:settings_type
+
+     return l:ret
+ endfunction
+
+ function! s:obj.get_settings_name()
+     return self.properties['settings_type']
+ endfunction
+
+ autocmd User ProsetRegisterSettingsEvent
+         \ call ProsetRegisterSettings(
+         \ s:obj.construct_params("xd1", "pro_xd1"))
+
+ autocmd User ProsetRegisterSettingsEvent
+         \ call ProsetRegisterSettings(
+         \ s:obj.construct_params("xd2", "pro_xd2"))
+
+ autocmd User ProsetRegisterSettingsEvent
+         \ call ProsetRegisterSettings(
+         \ s:obj.construct_params("xd3", "pro_xd3"))
+
+Here construct_params() has two parameters, one of them is settings_type which
+is saved in properties dictionary and referred to it in get_settings_name().
+This is an example of how to have one Settings Dictionary and create multiple
+Settings Objects that can be registered. If settings_type would be the same
+for all Settings Objects (like in previous examples), then only one Settings
+Object would be registered, the first one that calls ProsetRegisterSettings().
+
+==============================================================================
+PUBLIC API                                                        *proset-api*
+
+To interact with Proset plugin (besides plugin variables) you have to use
+public API described below.
+
+                                                    *ProsetRegisterSettings()*
+ProsetRegisterSettings(settings)
+
+This function is used to register Settings Object passed as function argument.
+If user wants to register its own Settings Object then it should be called
+from an autocommand, rather than just a function call from own plugin package.
+Why? Own plugin package can be sourced before this plugin, so the function is
+unknown there.  Using packadd to enable this plugin at the beginning of vimrc
+is possible, but forcing user to do so is rather unacceptable.
+
+Example:
+ autocmd User ProsetRegisterSettingsEvent
+         \ call ProsetRegisterSettings(settings)
+
+How to create settings see |proset-settings-dictionary|.
+
+                                                    *ProsetGetConfiguration()*
+ProsetGetConfiguration()
+
+This function is used to get configuration data (|proset-configuration-file|)
+in the form of a dictionary.
+
+                                                           *ProsetIsProject()*
+ProsetIsProject()
+
+This function is used to get information whether we are in the project.  Each
+Settings Object defines its own rules for that. Returns TRUE if it is a
+project, FALSE otherwise.
+
+                                                      *ProsetGetProjectName()*
+ProsetGetProjectName()
+
+This function is used to get project name. Each Settings Object prepares
+string with name based on its own rules.
+    
+                                                       *ProsetGetProperties()*
+ProsetGetProperties()
+
+This function is used to get project properties in the form of a dictionary.
+Each Settings Object prepares it in its own way.
+
+                                                     *ProsetGetSettingsName()*
+ProsetGetSettingsName()
+
+This function is used to get Settings Object name. This value has to be unique
+among other registered Settings Objects.  This name is compared with
+proset_settings configuration parameter (see |proset-configuration-file|) when
+Settings Objects has to be chosen, in other words if value from configuration
+file is the same as string from this function, then this Settings Object is
+chosen (loaded).
+
+==============================================================================
+SUPPORTED SETTINGS DICTIONARIES       *proset-supported-settings-dictionaries*
+
+probably new document, since this one can be very very long otherwise.
+
+==============================================================================
+CONTRIBUTE                                                 *proset-contribute*
+
+
+==============================================================================
+ABOUT                                                           *proset-about*
+
+ vim:tw=78:et:ft=help:norl:

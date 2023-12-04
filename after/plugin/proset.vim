@@ -1,8 +1,9 @@
 " Proset - Project Settings Loader
 "
-" Maintainer:   Artur Pyszczuk <apyszczuk@gmail.com>
-" Version:      wip
-" License:      This file is placed in the public domain.
+" Author:     Artur Pyszczuk <apyszczuk@gmail.com>
+" License:    Same terms as Vim itself
+" Version:    wip
+" Website:    https://github.com/apyszczuk/vim-proset
 
 if exists("g:loaded_proset")
     finish
