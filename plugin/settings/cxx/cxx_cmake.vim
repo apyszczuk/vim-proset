@@ -22,58 +22,63 @@ function! s:set_makeprg(build_directory, jobs_number)
     silent execute "set makeprg=" . l:cmd
 endfunction
 
-function! s:set_commands(build_directory, project_name)
-    execute "command! -nargs=0 ProsetBuild " . ":wa \| :AsyncRun -program=make"
-    execute "command! -nargs=* ProsetRun "   . "term " . a:build_directory . "/" . a:project_name . " <args>"
-    execute "command! -nargs=0 ProsetClean " . "call delete(\"" . a:build_directory . "\", \"rf\")"
-endfunction
+function! s:set_commands(build_directory,
+            \ project_name,
+            \ additional_ctags_directories,
+            \ temporary_ctags_file,
+            \ additional_cscope_directories,
+            \ temporary_cscope_file,
+            \ external_cscope_files)
+    execute "command! -nargs=0 CXXCMakeBuild " . ":wa \| :AsyncRun -program=make"
+    execute "command! -nargs=* CXXCMakeRun "   . "term " . a:build_directory . "/" . a:project_name . " <args>"
+    execute "command! -nargs=0 CXXCMakeClean " . "call delete(\"" . a:build_directory . "\", \"rf\")"
 
-function! s:set_cscope_mapping(command)
-    execute 'nnoremap <silent> me' . a:command . ' :cs find ' . a:command . ' <C-R>=expand("<cword>")<CR><CR>'
-endfunction
-
-function! s:set_cscope_mappings()
-    call s:set_cscope_mapping("a")
-    call s:set_cscope_mapping("c")
-    call s:set_cscope_mapping("d")
-    call s:set_cscope_mapping("e")
-    call s:set_cscope_mapping("f")
-    call s:set_cscope_mapping("g")
-    call s:set_cscope_mapping("i")
-    call s:set_cscope_mapping("s")
-    call s:set_cscope_mapping("t")
-endfunction
-
-function! s:set_mappings(additional_ctags_directories,
-                        \ build_directory,
-                        \ temporary_ctags_file,
-                        \ additional_cscope_directories,
-                        \ temporary_cscope_file,
-                        \ external_cscope_files)
-    " TODO to be changed to my alternative-file
-    " nnoremap <silent> ma :A<CR>
-
-    call s:set_cscope_mappings()
-    nnoremap <silent> mk :ProsetBuild<CR>
-    nnoremap <silent> mK :ProsetClean<CR> :ProsetBuild<CR>
-    nnoremap <silent> mr :ProsetRun<CR>
-    nnoremap          mR :ProsetRun 
-    let l:mu_cmd = 'nnoremap <silent> mu :call <SID>generate_tags_file(' .
+    let l:update_symbols_cmd = ':call <SID>generate_tags_file(' .
                 \ '"' . a:additional_ctags_directories . '", ' .
                 \ '"' . a:build_directory . '", ' .
                 \ '"' . a:temporary_ctags_file . '"' .
                 \ ') ' .
-                \ '\| :call <SID>generate_cscope_file(' .
+                \ "\| :call <SID>generate_cscope_file(" .
                 \ '"' . a:additional_cscope_directories . '", ' .
                 \ '"' . a:temporary_cscope_file . '"' .
                 \ ') ' .
-                \ '\| :call proset#utils#cscope#add_cscope_files(' .
+                \ "\| :call proset#utils#cscope#add_cscope_files(" .
                 \ '"' . a:temporary_cscope_file . '", ' .
                 \ '"' . a:external_cscope_files . '"' .
                 \ ') ' .
-                \ '\| :redraw!<CR>'
-    execute '' . l:mu_cmd
+                \ "\| :redraw!"
+    execute "command! -nargs=0 CXXCMakeUpdateCtagsCscopeSymbols " . l:update_symbols_cmd
+endfunction
 
+function! s:set_cscope_mapping(cmd, seq)
+    execute "nnoremap <silent> " . a:seq . " :cs find " . a:cmd . ' <C-R>=expand("<cword>")<CR><CR>'
+endfunction
+
+function! s:set_nnoremap_silent_mapping(cmd, seq)
+    execute "nnoremap <silent> " . a:seq . " " . a:cmd
+endfunction
+
+function! s:set_nnoremap_mapping(cmd, seq)
+    execute "nnoremap " . a:seq . " " . a:cmd
+endfunction
+
+function! s:set_switch_source_header_current_window_mapping(seq)
+endfunction
+
+function! s:set_switch_source_header_vertical_split_mapping(seq)
+endfunction
+
+function! s:set_switch_source_header_horizontal_split_mapping(seq)
+endfunction
+
+function! s:set_mappings(mappings)
+    for key in keys(a:mappings)
+        let l:dict = a:mappings[key]
+        let l:seq  = l:dict["seq"]
+        if (!empty(l:seq))
+            call l:dict["fun"](l:seq)
+        endif
+    endfor
 endfunction
 
 function! s:prepare_header_guard_string(project_name, path, filename_header)
@@ -227,6 +232,97 @@ function! s:cxx_cmake.construct(config)
                                                                                        \ l:ret.properties["header_extension"],
                                                                                        \ l:ret.properties["source_extension"])
 
+    let l:ret.properties["mappings"] =
+    \ {
+    \   "switch_source_header.current_window":
+    \   {
+    \       "seq": a:config.get("mappings.switch_source_header.current_window", ""),
+    \       "fun": function("s:set_switch_source_header_current_window_mapping")
+    \   },
+    \   "switch_source_header.vertical_split":
+    \   {
+    \       "seq": a:config.get("mappings.switch_source_header.vertical_split", ""),
+    \       "fun": function("s:set_switch_source_header_vertical_split_mapping")
+    \   },
+    \   "switch_source_header.horizontal_split":
+    \   {
+    \       "seq": a:config.get("mappings.switch_source_header.horizontal_split", ""),
+    \       "fun": function("s:set_switch_source_header_horizontal_split_mapping")
+    \   },
+    \
+    \   "cscope.a_find_assignments_to_this_symbol":
+    \   {
+    \       "seq": a:config.get("mappings.cscope.a_find_assignments_to_this_symbol", ""),
+    \       "fun": function("s:set_cscope_mapping", ["a"])
+    \   },
+    \   "cscope.c_find_functions_calling_this_function":
+    \   {
+    \       "seq": a:config.get("mappings.cscope.c_find_functions_calling_this_function", ""),
+    \       "fun": function("s:set_cscope_mapping", ["c"])
+    \   },
+    \   "cscope.d_find_functions_called_by_this_function":
+    \   {
+    \       "seq": a:config.get("mappings.cscope.d_find_functions_called_by_this_function", ""),
+    \       "fun": function("s:set_cscope_mapping", ["d"])
+    \   },
+    \   "cscope.e_find_this_egrep_pattern":
+    \   {
+    \       "seq": a:config.get("mappings.cscope.e_find_this_egrep_pattern", ""),
+    \       "fun": function("s:set_cscope_mapping", ["e"])
+    \   },
+    \   "cscope.f_find_this_file":
+    \   {
+    \       "seq": a:config.get("mappings.cscope.f_find_this_file", ""),
+    \       "fun": function("s:set_cscope_mapping", ["f"])
+    \   },
+    \   "cscope.g_find_this_definition":
+    \   {
+    \       "seq": a:config.get("mappings.cscope.g_find_this_definition", ""),
+    \       "fun": function("s:set_cscope_mapping", ["g"])
+    \   },
+    \   "cscope.i_find_files_including_this_file":
+    \   {
+    \       "seq": a:config.get("mappings.cscope.i_find_files_including_this_file", ""),
+    \       "fun": function("s:set_cscope_mapping", ["i"])
+    \   },
+    \   "cscope.s_find_this_c_symbol":
+    \   {
+    \       "seq": a:config.get("mappings.cscope.s_find_this_c_symbol", ""),
+    \       "fun": function("s:set_cscope_mapping", ["s"])
+    \   },
+    \   "cscope.t_find_this_text_string":
+    \   {
+    \       "seq": a:config.get("mappings.cscope.t_find_this_text_string", ""),
+    \       "fun": function("s:set_cscope_mapping", ["t"])
+    \   },
+    \
+    \   "build":
+    \   {
+    \       "seq": a:config.get("mappings.build", ""),
+    \       "fun": function("s:set_nnoremap_silent_mapping", [":CXXCMakeBuild<CR>"])
+    \   },
+    \   "clean_and_build":
+    \   {
+    \       "seq": a:config.get("mappings.clean_and_build", ""),
+    \       "fun": function("s:set_nnoremap_silent_mapping", [":CXXCMakeClean<CR> :CXXCMakeBuild<CR>"])
+    \   },
+    \   "run":
+    \   {
+    \       "seq": a:config.get("mappings.run", ""),
+    \       "fun": function("s:set_nnoremap_silent_mapping", [":CXXCMakeRun<CR>"])
+    \   },
+    \   "run_args":
+    \   {
+    \       "seq": a:config.get("mappings.run_args", ""),
+    \       "fun": function("s:set_nnoremap_mapping", [":CXXCMakeRun "])
+    \   },
+    \   "update_cscope_ctags":
+    \   {
+    \       "seq": a:config.get("mappings.update_ctags_cscope_symbols", ""),
+    \       "fun": function("s:set_nnoremap_silent_mapping", [":CXXCMakeUpdateCtagsCscopeSymbols<CR>"])
+    \   },
+    \ }
+
     return l:ret
 endfunction
 
@@ -258,18 +354,20 @@ function! s:cxx_cmake.enable() abort
     let l:additional_cscope_directories = self.properties["additional_cscope_directories"]
     let l:external_cscope_files         = self.properties["external_cscope_files"]
     let l:additional_search_directories = self.properties["additional_search_directories"]
+    let l:mappings                      = self.properties["mappings"]
 
     call delete(l:temporary_directory, "rf")
     call mkdir(l:temporary_directory)
 
     call s:set_makeprg(l:build_directory, l:jobs_number)
-    call s:set_commands(l:build_directory, l:project_name)
-    call s:set_mappings(l:additional_ctags_directories,
-                        \ l:build_directory,
-                        \ l:temporary_ctags_file,
-                        \ l:additional_cscope_directories,
-                        \ l:temporary_cscope_file,
-                        \ l:external_cscope_files)
+    call s:set_commands(l:build_directory,
+                \ l:project_name,
+                \ l:additional_ctags_directories,
+                \ l:temporary_ctags_file,
+                \ l:additional_cscope_directories,
+                \ l:temporary_cscope_file,
+                \ l:external_cscope_files)
+    call s:set_mappings(l:mappings)
 
     let &tags = proset#utils#ctags#get_tags_filenames(l:temporary_ctags_file, l:external_ctags_files)
     call s:generate_tags_file(l:additional_ctags_directories, l:build_directory, l:temporary_ctags_file)
