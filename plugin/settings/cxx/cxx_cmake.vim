@@ -1,7 +1,7 @@
-if exists("g:loaded_proset_settings_cpp_cpp_ap")
+if exists("g:loaded_proset_settings_cxx_cxx_cmake")
     finish
 endif
-let g:loaded_proset_settings_cpp_cpp_ap = 1
+let g:loaded_proset_settings_cxx_cxx_cmake = 1
 
 function! s:generate_tags_file(additional_ctags_directories, build_directory, temporary_ctags_file)
     let l:cmd = proset#utils#ctags#get_ctags_command(
@@ -183,17 +183,17 @@ function! s:nerdtree_menu_properties(project_name, header_extension, source_exte
 endfunction
 
 
-let s:cpp_ap = {'properties': {}}
+let s:cxx_cmake = {'properties': {}}
 
 function! s:get_string_non_empty(config, key, default_value)
     let l:ret = a:config.get(a:key, a:default_value)
     if empty(l:ret)
-        throw "proset:settings:cpp:" . s:cpp_ap.get_settings_name() . ":" . a:key . " is empty"
+        throw "proset:settings:cxx:" . s:cxx_cmake.get_settings_name() . ":" . a:key . " is empty"
     endif
     return l:ret
 endfunction
 
-function! s:cpp_ap.construct(config)
+function! s:cxx_cmake.construct(config)
     let l:ret = deepcopy(self)
 
     let l:ret.properties["settings_directory"]              = g:proset_directory
@@ -230,23 +230,23 @@ function! s:cpp_ap.construct(config)
     return l:ret
 endfunction
 
-function! s:cpp_ap.is_project()
+function! s:cxx_cmake.is_project()
     return self.properties["is_project"]
 endfunction
 
-function! s:cpp_ap.get_project_name()
+function! s:cxx_cmake.get_project_name()
     return self.properties["project_name"]
 endfunction
 
-function! s:cpp_ap.get_properties()
+function! s:cxx_cmake.get_properties()
     return self.properties
 endfunction
 
-function! s:cpp_ap.get_settings_name()
-    return "cpp-ap"
+function! s:cxx_cmake.get_settings_name()
+    return "cxx-cmake"
 endfunction
 
-function! s:cpp_ap.enable() abort
+function! s:cxx_cmake.enable() abort
     let l:temporary_directory           = self.properties["temporary_directory"]
     let l:build_directory               = self.properties["build_directory"]
     let l:jobs_number                   = self.properties["jobs_number"]
@@ -280,10 +280,10 @@ endfunction
 
 " todo: revert enable() if settings object can be switched without closing
 " vim
-function! s:cpp_ap.disable()
+function! s:cxx_cmake.disable()
     call delete(self.properties["temporary_directory"], "rf")
 endfunction
 
 autocmd User ProsetRegisterInternalSettingsEvent
         \ call ProsetRegisterSettings(
-        \ s:cpp_ap.construct(ProsetGetConfiguration()))
+        \ s:cxx_cmake.construct(ProsetGetConfiguration()))
