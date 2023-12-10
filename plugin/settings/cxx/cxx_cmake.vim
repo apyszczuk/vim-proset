@@ -3,6 +3,8 @@ if exists("g:loaded_proset_settings_cxx_cxx_cmake")
 endif
 let g:loaded_proset_settings_cxx_cxx_cmake = 1
 
+let s:cxx_cmake = {'properties': {}}
+
 function! s:generate_tags_file(additional_ctags_directories, build_directory, temporary_ctags_file)
     let l:cmd = proset#utils#ctags#get_ctags_command(
                 \ a:additional_ctags_directories,
@@ -22,13 +24,150 @@ function! s:set_makeprg(build_directory, jobs_number)
     silent execute "set makeprg=" . l:cmd
 endfunction
 
+function! s:create_file(create_function,
+            \ project_name,
+            \ extension,
+            \ other_extension,
+            \ path)
+    if a:path[len(a:path)-1] == "/"
+        echoerr "(" . s:cxx_cmake.get_settings_name() . "): Need file name, not directory name."
+        return ""
+    endif
+
+    if mkdir(fnamemodify(a:path, ":h"), "p") == 0
+        return ""
+    endif
+
+    let l:path = fnamemodify(a:path, ":r") . "." . a:extension
+
+    let Fun = function(a:create_function)
+    return Fun(a:project_name, l:path, a:other_extension)
+endfunction
+
+function! s:prepare_header_guard_string(project_name, path)
+    let l:path = substitute(a:path, "/", "_", "g")
+    let l:path = substitute(l:path, "-", "_", "g")
+    let l:path = substitute(l:path, '\.', "_", "g")
+
+    return toupper(a:project_name . "_" . l:path)
+endfunction
+
+function! s:create_header_file(project_name, path, source_extension)
+    let l:guard_string = s:prepare_header_guard_string(a:project_name, a:path)
+
+    let l:file_content  = "#ifndef " . l:guard_string . "\n"
+    let l:file_content .= "#define " . l:guard_string . "\n\n\n"
+    let l:file_content .= "#endif // " . l:guard_string
+
+    if writefile(split(l:file_content, "\n"), a:path) == -1
+        return ""
+    endif
+    return a:path
+endfunction
+
+function! s:create_source_file(project_name, path, header_extension)
+    let l:header_path = fnamemodify(a:path, ":t:r") . "." . a:header_extension
+    let l:file_content = "#include \"" . l:header_path . "\"\n"
+    if writefile(split(l:file_content, "\n"), a:path) == -1
+        return ""
+    endif
+    return a:path
+endfunction
+
+function! s:create_file_command(create_function,
+            \ user_command,
+            \ open_mode,
+            \ project_name,
+            \ extension,
+            \ other_extension,
+            \ path)
+    let l:path = s:create_file(a:create_function,
+                \ a:project_name,
+                \ a:extension,
+                \ a:other_extension,
+                \ a:path)
+    if empty(l:path)
+        return
+    endif
+
+    if !empty(a:open_mode)
+        execute a:open_mode . " " . l:path
+    endif
+
+    if exists('#User#' . a:user_command)
+        execute 'doautocmd User ' . a:user_command
+    endif
+endfunction
+
+function! s:create_header_command(open_mode,
+            \ project_name,
+            \ header_extension,
+            \ source_extension,
+            \ path)
+    return s:create_file_command("s:create_header_file",
+                \ "CXXCMakeHeaderCreatedEvent",
+                \ a:open_mode,
+                \ a:project_name,
+                \ a:header_extension,
+                \ a:source_extension,
+                \ a:path)
+endfunction
+
+function! s:create_source_command(open_mode,
+            \ project_name,
+            \ header_extension,
+            \ source_extension,
+            \ path)
+    return s:create_file_command("s:create_source_file",
+                \ "CXXCMakeSourceCreatedEvent",
+                \ a:open_mode,
+                \ a:project_name,
+                \ a:source_extension,
+                \ a:header_extension,
+                \ a:path)
+endfunction
+
+function! s:create_header_source_command(open_mode,
+            \ project_name,
+            \ header_extension,
+            \ source_extension,
+            \ path)
+    call s:create_header_command(a:open_mode,
+                \ a:project_name,
+                \ a:header_extension,
+                \ a:source_extension,
+                \ a:path)
+    call s:create_source_command(a:open_mode,
+                \ a:project_name,
+                \ a:header_extension,
+                \ a:source_extension,
+                \ a:path)
+endfunction
+
+function! s:register_create_file_command(command_name,
+            \ create_function,
+            \ open_mode,
+            \ project_name,
+            \ header_extension,
+            \ source_extension)
+    execute 'command! -complete=file -nargs=1 ' . a:command_name . ' '
+                \ . 'call ' . a:create_function . '('
+                \ . '"' . a:open_mode . '", '
+                \ . '"' . a:project_name . '", '
+                \ . '"' . a:header_extension . '", '
+                \ . '"' . a:source_extension . '", '
+                \ . '"<args>")'
+endfunction
+
 function! s:set_commands(build_directory,
             \ project_name,
             \ additional_ctags_directories,
             \ temporary_ctags_file,
             \ additional_cscope_directories,
             \ temporary_cscope_file,
-            \ external_cscope_files)
+            \ external_cscope_files,
+            \ header_extension,
+            \ source_extension)
     execute "command! -nargs=0 CXXCMakeBuild " . ":wa \| :AsyncRun -program=make"
     execute "command! -nargs=* CXXCMakeRun "   . "term " . a:build_directory . "/" . a:project_name . " <args>"
     execute "command! -nargs=0 CXXCMakeClean " . "call delete(\"" . a:build_directory . "\", \"rf\")"
@@ -48,6 +187,75 @@ function! s:set_commands(build_directory,
                 \ ') ' .
                 \ "\| :redraw!"
     execute "command! -nargs=0 CXXCMakeUpdateCtagsCscopeSymbols " . l:update_symbols_cmd
+
+    call s:register_create_file_command("CXXCMakeCreateHeader",
+                \ "<SID>create_header_command",
+                \ "",
+                \ a:project_name,
+                \ a:header_extension,
+                \ a:source_extension)
+    call s:register_create_file_command("CXXCMakeCreateHeaderEdit",
+                \ "<SID>create_header_command",
+                \ ":e",
+                \ a:project_name,
+                \ a:header_extension,
+                \ a:source_extension)
+    call s:register_create_file_command("CXXCMakeCreateHeaderEditSplit",
+                \ "<SID>create_header_command",
+                \ ":spl",
+                \ a:project_name,
+                \ a:header_extension,
+                \ a:source_extension)
+    call s:register_create_file_command("CXXCMakeCreateHeaderEditVSplit",
+                \ "<SID>create_header_command",
+                \ ":vspl",
+                \ a:project_name,
+                \ a:header_extension,
+                \ a:source_extension)
+
+    call s:register_create_file_command("CXXCMakeCreateSource",
+                \ "<SID>create_source_command",
+                \ "",
+                \ a:project_name,
+                \ a:header_extension,
+                \ a:source_extension)
+    call s:register_create_file_command("CXXCMakeCreateSourceEdit",
+                \ "<SID>create_source_command",
+                \ ":e",
+                \ a:project_name,
+                \ a:header_extension,
+                \ a:source_extension)
+    call s:register_create_file_command("CXXCMakeCreateSourceEditSplit",
+                \ "<SID>create_source_command",
+                \ ":spl",
+                \ a:project_name,
+                \ a:header_extension,
+                \ a:source_extension)
+    call s:register_create_file_command("CXXCMakeCreateSourceEditVSplit",
+                \ "<SID>create_source_command",
+                \ ":vspl",
+                \ a:project_name,
+                \ a:header_extension,
+                \ a:source_extension)
+
+    call s:register_create_file_command("CXXCMakeCreateHeaderSource",
+                \ "<SID>create_header_source_command",
+                \ "",
+                \ a:project_name,
+                \ a:header_extension,
+                \ a:source_extension)
+    call s:register_create_file_command("CXXCMakeCreateHeaderSourceEditSplit",
+                \ "<SID>create_header_source_command",
+                \ ":spl",
+                \ a:project_name,
+                \ a:header_extension,
+                \ a:source_extension)
+    call s:register_create_file_command("CXXCMakeCreateHeaderSourceEditVSplit",
+                \ "<SID>create_header_source_command",
+                \ ":vspl",
+                \ a:project_name,
+                \ a:header_extension,
+                \ a:source_extension)
 endfunction
 
 function! s:set_cscope_mapping(cmd, seq)
@@ -81,43 +289,12 @@ function! s:set_mappings(mappings)
     endfor
 endfunction
 
-function! s:prepare_header_guard_string(project_name, path, filename_header)
-    let l:path  = a:path
-    let l:sz    = len(l:path)-1
-    if strpart(l:path, l:sz, 1) == "/"
-        let l:path = strpart(l:path, 0, l:sz)
-    endif
-
-    let l:path              = substitute(l:path, "/", "_", "g")
-    let l:filename_header   = substitute(a:filename_header, '\.', "_", "")
-    return toupper(a:project_name . "_" . l:path . "_" . l:filename_header)
+function! s:create_module(project_name, path, extensions)
+    call s:create_header_file(a:project_name, a:path . a:extensions[0], "")
+    call s:create_source_file(a:project_name, a:path . a:extensions[1], a:extensions[0])
 endfunction
 
-function! s:create_header(project_name, path, filename_header, notused)
-    let l:guard_string = s:prepare_header_guard_string(a:project_name, a:path, a:filename_header)
-
-    let l:file_content  = "#ifndef " . l:guard_string . "\n"
-    let l:file_content .= "#define " . l:guard_string . "\n\n\n"
-    let l:file_content .= "#endif // " . l:guard_string
-
-    call writefile(split(l:file_content, "\n"), a:path . "/" . a:filename_header)
-endfunction
-
-function! s:create_source(project_name, path, filename_source, extensions)
-    let l:filename_header = substitute(a:filename_source,
-                                        \ "." . a:extensions[1],
-                                        \ "." . a:extensions[0],
-                                        \ "g")
-    let l:file_content = "#include \"" . l:filename_header . "\"\n"
-    call writefile(split(l:file_content, "\n"), a:path . "/" . a:filename_source)
-endfunction
-
-function! s:create_module(project_name, path, module_name, extensions)
-    call s:create_header(a:project_name, a:path, a:module_name . a:extensions[0], "")
-    call s:create_source(a:project_name, a:path, a:module_name . a:extensions[1], a:extensions)
-endfunction
-
-function! s:nerdtree_menu_item(item_description, item_function, project_name, extension, extensions)
+function! s:nerdtree_menu_item(item_description, item_function, project_name, extension, other_extension)
     let l:selected_dir  = g:NERDTreeDirNode.GetSelected().path.str() . '/'
     let l:project_path  = getcwd() . '/'
     let l:item          = input("Enter C++ " . a:item_description . " filename (no extension): ",
@@ -131,17 +308,19 @@ function! s:nerdtree_menu_item(item_description, item_function, project_name, ex
     endif
 
     let Act = function(a:item_function)
-    call Act(a:project_name, l:path, l:item . "." . a:extension, a:extensions)
+    let l:path .= l:item . "." . a:extension
+
+    call Act(a:project_name, l:path, a:other_extension)
     call b:NERDTree.root.refresh()
     call NERDTreeRender()
 endfun
 
 function! s:nerdtree_menu_item_header_file(project_name, header_extension)
-    call s:nerdtree_menu_item("Header", "s:create_header", a:project_name, a:header_extension, "")
+    call s:nerdtree_menu_item("Header", "s:create_header_file", a:project_name, a:header_extension, "")
 endfunction
 
 function! s:nerdtree_menu_item_source_file(project_name, header_extension, source_extension)
-    call s:nerdtree_menu_item("Source", "s:create_source", a:project_name, a:source_extension, [a:header_extension, a:source_extension])
+    call s:nerdtree_menu_item("Source", "s:create_source_file", a:project_name, a:source_extension, a:header_extension)
 endfunction
 
 function! s:nerdtree_menu_item_module(project_name, header_extension, source_extension)
@@ -188,7 +367,6 @@ function! s:nerdtree_menu_properties(project_name, header_extension, source_exte
 endfunction
 
 
-let s:cxx_cmake = {'properties': {}}
 
 function! s:get_string_non_empty(config, key, default_value)
     let l:ret = a:config.get(a:key, a:default_value)
@@ -321,6 +499,61 @@ function! s:cxx_cmake.construct(config)
     \       "seq": a:config.get("mappings.update_ctags_cscope_symbols", ""),
     \       "fun": function("s:set_nnoremap_silent_mapping", [":CXXCMakeUpdateCtagsCscopeSymbols<CR>"])
     \   },
+    \   "create_header":
+    \   {
+    \       "seq": a:config.get("mappings.create_header", ""),
+    \       "fun": function("s:set_nnoremap_mapping", [":CXXCMakeCreateHeader "])
+    \   },
+    \   "create_header_edit":
+    \   {
+    \       "seq": a:config.get("mappings.create_header_edit", ""),
+    \       "fun": function("s:set_nnoremap_mapping", [":CXXCMakeCreateHeaderEdit "])
+    \   },
+    \   "create_header_edit_split":
+    \   {
+    \       "seq": a:config.get("mappings.create_header_edit_split", ""),
+    \       "fun": function("s:set_nnoremap_mapping", [":CXXCMakeCreateHeaderEditSplit "])
+    \   },
+    \   "create_header_edit_vsplit":
+    \   {
+    \       "seq": a:config.get("mappings.create_header_edit_vsplit", ""),
+    \       "fun": function("s:set_nnoremap_mapping", [":CXXCMakeCreateHeaderEditVSplit "])
+    \   },
+    \   "create_source":
+    \   {
+    \       "seq": a:config.get("mappings.create_source", ""),
+    \       "fun": function("s:set_nnoremap_mapping", [":CXXCMakeCreateSource "])
+    \   },
+    \   "create_source_edit":
+    \   {
+    \       "seq": a:config.get("mappings.create_source_edit", ""),
+    \       "fun": function("s:set_nnoremap_mapping", [":CXXCMakeCreateSourceEdit "])
+    \   },
+    \   "create_source_edit_split":
+    \   {
+    \       "seq": a:config.get("mappings.create_source_edit_split", ""),
+    \       "fun": function("s:set_nnoremap_mapping", [":CXXCMakeCreateSourceEditSplit "])
+    \   },
+    \   "create_source_edit_vsplit":
+    \   {
+    \       "seq": a:config.get("mappings.create_source_edit_vsplit", ""),
+    \       "fun": function("s:set_nnoremap_mapping", [":CXXCMakeCreateSourceEditVSplit "])
+    \   },
+    \   "create_header_source":
+    \   {
+    \       "seq": a:config.get("mappings.create_header_source", ""),
+    \       "fun": function("s:set_nnoremap_mapping", [":CXXCMakeCreateHeaderSource "])
+    \   },
+    \   "create_header_source_edit_split":
+    \   {
+    \       "seq": a:config.get("mappings.create_header_source_edit_split", ""),
+    \       "fun": function("s:set_nnoremap_mapping", [":CXXCMakeCreateHeaderSourceEditSplit "])
+    \   },
+    \   "create_header_source_edit_vsplit":
+    \   {
+    \       "seq": a:config.get("mappings.create_header_source_edit_vsplit", ""),
+    \       "fun": function("s:set_nnoremap_mapping", [":CXXCMakeCreateHeaderSourceEditVSplit "])
+    \   },
     \ }
 
     return l:ret
@@ -355,6 +588,8 @@ function! s:cxx_cmake.enable() abort
     let l:external_cscope_files         = self.properties["external_cscope_files"]
     let l:additional_search_directories = self.properties["additional_search_directories"]
     let l:mappings                      = self.properties["mappings"]
+    let l:header_extension              = self.properties["header_extension"]
+    let l:source_extension              = self.properties["source_extension"]
 
     call delete(l:temporary_directory, "rf")
     call mkdir(l:temporary_directory)
@@ -366,7 +601,9 @@ function! s:cxx_cmake.enable() abort
                 \ l:temporary_ctags_file,
                 \ l:additional_cscope_directories,
                 \ l:temporary_cscope_file,
-                \ l:external_cscope_files)
+                \ l:external_cscope_files,
+                \ l:header_extension,
+                \ l:source_extension)
     call s:set_mappings(l:mappings)
 
     let &tags = proset#utils#ctags#get_tags_filenames(l:temporary_ctags_file, l:external_ctags_files)
