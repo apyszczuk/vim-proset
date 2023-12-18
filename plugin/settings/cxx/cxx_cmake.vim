@@ -622,3 +622,7 @@ endfunction
 autocmd User ProsetRegisterInternalSettingsEvent
         \ call ProsetRegisterSettings(
         \ s:cxx_cmake.construct(ProsetGetConfiguration()))
+
+function! CXXCMakeConstructor(config)
+    return s:cxx_cmake.construct(a:config)
+endfunction
