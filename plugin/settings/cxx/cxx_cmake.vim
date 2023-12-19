@@ -289,85 +289,6 @@ function! s:set_mappings(mappings)
     endfor
 endfunction
 
-function! s:create_module(project_name, path, extensions)
-    call s:create_header_file(a:project_name, a:path . a:extensions[0], "")
-    call s:create_source_file(a:project_name, a:path . a:extensions[1], a:extensions[0])
-endfunction
-
-function! s:nerdtree_menu_item(item_description, item_function, project_name, extension, other_extension)
-    let l:selected_dir  = g:NERDTreeDirNode.GetSelected().path.str() . '/'
-    let l:project_path  = getcwd() . '/'
-    let l:item          = input("Enter C++ " . a:item_description . " filename (no extension): ",
-                                \ "",
-                                \ "file")
-    let l:path = substitute(l:selected_dir, l:project_path, "", "")
-
-    if l:item ==# ''
-        call nerdtree#echo(a:item_description . " has to have name. Aborting...")
-        return
-    endif
-
-    let Act = function(a:item_function)
-    let l:path .= l:item . "." . a:extension
-
-    call Act(a:project_name, l:path, a:other_extension)
-    call b:NERDTree.root.refresh()
-    call NERDTreeRender()
-endfun
-
-function! s:nerdtree_menu_item_header_file(project_name, header_extension)
-    call s:nerdtree_menu_item("Header", "s:create_header_file", a:project_name, a:header_extension, "")
-endfunction
-
-function! s:nerdtree_menu_item_source_file(project_name, header_extension, source_extension)
-    call s:nerdtree_menu_item("Source", "s:create_source_file", a:project_name, a:source_extension, a:header_extension)
-endfunction
-
-function! s:nerdtree_menu_item_module(project_name, header_extension, source_extension)
-    call s:nerdtree_menu_item("Module", "s:create_module", a:project_name, "", [a:header_extension, a:source_extension])
-endfunction
-
-function! s:nerdtree_menu_properties(project_name, header_extension, source_extension)
-    function! s:nerdtree_menu_item_header_file_closure() closure
-        call s:nerdtree_menu_item_header_file(a:project_name, a:header_extension)
-    endfunction
-
-    function! s:nerdtree_menu_item_source_file_closure() closure
-        call s:nerdtree_menu_item_source_file(a:project_name, a:header_extension, a:source_extension)
-    endfunction
-
-    function! s:nerdtree_menu_item_module_closure() closure
-        call s:nerdtree_menu_item_module(a:project_name, a:header_extension, a:source_extension)
-    endfunction
-
-    return {
-        \ 'header': {'text': '(1) Create C++ files', 'shortcut': '1'},
-        \ 'items':
-        \ [
-        \ {
-        \   'text': 'Create a C++ (h)eader file',
-        \   'shortcut': 'h',
-        \   'callback': function('<SID>nerdtree_menu_item_header_file_closure'),
-        \   'parent': ''
-        \ },
-        \ {
-        \   'text': 'Create a C++ (s)ource file',
-        \   'shortcut': 's',
-        \   'callback': function('<SID>nerdtree_menu_item_source_file_closure'),
-        \   'parent': ''
-        \ },
-        \ {
-        \   'text': 'Create a C++ (m)odule',
-        \   'shortcut': 'm',
-        \   'callback': function('<SID>nerdtree_menu_item_module_closure'),
-        \   'parent': ''
-        \ }
-        \ ]
-  \ }
-endfunction
-
-
-
 function! s:get_string_non_empty(config, key, default_value)
     let l:ret = a:config.get(a:key, a:default_value)
     if empty(l:ret)
@@ -405,10 +326,6 @@ function! s:cxx_cmake.construct(config)
 
     let l:ret.properties["header_extension"]                = s:get_string_non_empty(a:config, "header_extension", "hpp")
     let l:ret.properties["source_extension"]                = s:get_string_non_empty(a:config, "source_extension", "cpp")
-
-    let l:ret.properties['nerdtree_menu_properties']        = s:nerdtree_menu_properties(l:ret.properties["project_name"],
-                                                                                       \ l:ret.properties["header_extension"],
-                                                                                       \ l:ret.properties["source_extension"])
 
     let l:ret.properties["mappings"] =
     \ {
