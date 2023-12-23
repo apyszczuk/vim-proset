@@ -187,6 +187,9 @@ function! s:set_commands(build_directory,
                 \ ') ' .
                 \ "\| :redraw!"
     execute "command! -nargs=0 CXXCMakeUpdateCtagsCscopeSymbols " . l:update_symbols_cmd
+    execute "command! -nargs=0 CXXCMakeAlternateFileCurrentWindow :call proset#utils#alternate_file#current_window()"
+    execute "command! -nargs=0 CXXCMakeAlternateFileSplitWindow   :call proset#utils#alternate_file#split_window()"
+    execute "command! -nargs=0 CXXCMakeAlternateFileVSplitWindow  :call proset#utils#alternate_file#vsplit_window()"
 
     call s:register_create_file_command("CXXCMakeCreateHeader",
                 \ "<SID>create_header_command",
@@ -270,15 +273,6 @@ function! s:set_nnoremap_mapping(cmd, seq)
     execute "nnoremap " . a:seq . " " . a:cmd
 endfunction
 
-function! s:set_switch_source_header_current_window_mapping(seq)
-endfunction
-
-function! s:set_switch_source_header_vertical_split_mapping(seq)
-endfunction
-
-function! s:set_switch_source_header_horizontal_split_mapping(seq)
-endfunction
-
 function! s:set_mappings(mappings)
     for key in keys(a:mappings)
         let l:dict = a:mappings[key]
@@ -327,22 +321,26 @@ function! s:cxx_cmake.construct(config)
     let l:ret.properties["header_extension"]                = s:get_string_non_empty(a:config, "header_extension", "hpp")
     let l:ret.properties["source_extension"]                = s:get_string_non_empty(a:config, "source_extension", "cpp")
 
+    call proset#utils#alternate_file#add_extensions_pair(
+                \ l:ret.properties["header_extension"],
+                \ l:ret.properties["source_extension"])
+
     let l:ret.properties["mappings"] =
     \ {
-    \   "switch_source_header.current_window":
+    \   "alternate_file.current_window":
     \   {
-    \       "seq": a:config.get("mappings.switch_source_header.current_window", ""),
-    \       "fun": function("s:set_switch_source_header_current_window_mapping")
+    \       "seq": a:config.get("mappings.alternate_file.current_window", ""),
+    \       "fun": function("s:set_nnoremap_silent_mapping", [":CXXCMakeAlternateFileCurrentWindow<CR>"])
     \   },
-    \   "switch_source_header.vertical_split":
+    \   "alternate_file.split_window":
     \   {
-    \       "seq": a:config.get("mappings.switch_source_header.vertical_split", ""),
-    \       "fun": function("s:set_switch_source_header_vertical_split_mapping")
+    \       "seq": a:config.get("mappings.alternate_file.split_window", ""),
+    \       "fun": function("s:set_nnoremap_silent_mapping", [":CXXCMakeAlternateFileSplitWindow<CR>"])
     \   },
-    \   "switch_source_header.horizontal_split":
+    \   "alternate_file.vsplit_window":
     \   {
-    \       "seq": a:config.get("mappings.switch_source_header.horizontal_split", ""),
-    \       "fun": function("s:set_switch_source_header_horizontal_split_mapping")
+    \       "seq": a:config.get("mappings.alternate_file.vsplit_window", ""),
+    \       "fun": function("s:set_nnoremap_silent_mapping", [":CXXCMakeAlternateFileVSplitWindow<CR>"])
     \   },
     \
     \   "cscope.a_find_assignments_to_this_symbol":
