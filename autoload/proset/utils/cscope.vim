@@ -17,10 +17,14 @@ function! proset#utils#cscope#get_cscope_command(
     return l:cmd
 endfunction
 
+function! proset#utils#cscope#remove_all_connections()
+    :cs kill -1
+endfunction
+
 function! proset#utils#cscope#add_cscope_files(
             \ temporary_cscope_file,
             \ external_cscope_files)
-    :cs kill -1
+    call proset#utils#cscope#remove_all_connections()
     let l:files = [a:temporary_cscope_file] + split(a:external_cscope_files, ";")
     for l:fn in l:files
         silent execute "cs add " . l:fn

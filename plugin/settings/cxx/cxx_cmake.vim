@@ -159,7 +159,7 @@ function! s:register_create_file_command(command_name,
                 \ . '"<args>")'
 endfunction
 
-function! s:set_commands(build_directory,
+function! s:add_commands(build_directory,
             \ project_name,
             \ additional_ctags_directories,
             \ temporary_ctags_file,
@@ -273,12 +273,27 @@ function! s:set_nnoremap_mapping(cmd, seq)
     execute "nnoremap " . a:seq . " " . a:cmd
 endfunction
 
-function! s:set_mappings(mappings)
+function! s:add_mappings(mappings)
     for key in keys(a:mappings)
         let l:dict = a:mappings[key]
         let l:seq  = l:dict["seq"]
         if (!empty(l:seq))
             call l:dict["fun"](l:seq)
+        endif
+    endfor
+endfunction
+
+function! s:remove_commands()
+    for l:cmd in getcompletion("CXXCMake", "command")
+        execute "delcommand " . l:cmd
+    endfor
+endfunction
+
+function! s:remove_mappings(mappings)
+    for l:key in keys(a:mappings)
+        let l:seq  = a:mappings[l:key]["seq"]
+        if !empty(l:seq)
+            execute "unmap " . l:seq
         endif
     endfor
 endfunction
@@ -506,11 +521,17 @@ function! s:cxx_cmake.enable() abort
     let l:header_extension              = self.properties["header_extension"]
     let l:source_extension              = self.properties["source_extension"]
 
+    let s:options_initial_values = {
+        \ "makeprg":    &makeprg,
+        \ "tags":       &tags,
+        \ "path":       &path,
+    \ }
+
     call delete(l:temporary_directory, "rf")
     call mkdir(l:temporary_directory)
 
     call s:set_makeprg(l:build_directory, l:jobs_number)
-    call s:set_commands(l:build_directory,
+    call s:add_commands(l:build_directory,
                 \ l:project_name,
                 \ l:additional_ctags_directories,
                 \ l:temporary_ctags_file,
@@ -519,7 +540,7 @@ function! s:cxx_cmake.enable() abort
                 \ l:external_cscope_files,
                 \ l:header_extension,
                 \ l:source_extension)
-    call s:set_mappings(l:mappings)
+    call s:add_mappings(l:mappings)
 
     let &tags = proset#utils#ctags#get_tags_filenames(l:temporary_ctags_file, l:external_ctags_files)
     call s:generate_tags_file(l:additional_ctags_directories, l:build_directory, l:temporary_ctags_file)
@@ -528,9 +549,15 @@ function! s:cxx_cmake.enable() abort
     let &path .= substitute(l:additional_search_directories, ";", ",", "g")
 endfunction
 
-" todo: revert enable() if settings object can be switched without closing
-" vim
 function! s:cxx_cmake.disable()
+    let &path       = s:options_initial_values["path"]
+    let &tags       = s:options_initial_values["tags"]
+    let &makeprg    = s:options_initial_values["makeprg"]
+
+    call proset#utils#cscope#remove_all_connections()
+    call s:remove_mappings(self.properties["mappings"])
+    call s:remove_commands()
+
     call delete(self.properties["temporary_directory"], "rf")
 endfunction
 
