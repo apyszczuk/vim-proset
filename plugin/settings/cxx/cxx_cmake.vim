@@ -168,7 +168,7 @@ function! s:add_commands(build_directory,
             \ external_cscope_files,
             \ header_extension,
             \ source_extension)
-    execute "command! -nargs=0 CXXCMakeBuild " . ":wa \| :AsyncRun -program=make"
+    execute "command! -nargs=0 CXXCMakeBuild " . ":AsyncRun -program=make"
     execute "command! -nargs=* CXXCMakeRun "   . "term " . a:build_directory . "/" . a:project_name . " <args>"
     execute "command! -nargs=0 CXXCMakeClean " . "call delete(\"" . a:build_directory . "\", \"rf\")"
 
