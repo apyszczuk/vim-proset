@@ -12,7 +12,6 @@ function! proset#utils#ctags#get_ctags_command(
                 \ "--c++-kinds=+p " .
                 \ "--fields=+iaS " .
                 \ "--extras=+q " .
-                \ "--language-force=C++ " .
                 \ "--tag-relative=yes " .
                 \ "-f " . a:temporary_ctags_file . " " .
                 \ ". " .
