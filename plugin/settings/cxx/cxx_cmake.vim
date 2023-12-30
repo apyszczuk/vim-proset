@@ -159,6 +159,28 @@ function! s:register_create_file_command(command_name,
                 \ . '"<args>")'
 endfunction
 
+function! s:post_build_task()
+    let l:st = g:asyncrun_code == 0
+    echo (l:st ? "Success" : "Failure") . ": " . &makeprg
+
+    " for warnings and errors
+    for l:item in getqflist()
+        if l:item["valid"] == 1
+            return
+        endif
+    endfor
+
+    " even though above can handle compilation errors,
+    " it can not catch undefined reference for example
+    if l:st
+        :ccl
+    endif
+endfunction
+
+function! s:cxx_cmake_build_fn()
+    :update | :AsyncRun -program=make -post=call\ <SID>post_build_task()
+endfunction
+
 function! s:add_commands(build_directory,
             \ project_name,
             \ additional_ctags_directories,
@@ -168,7 +190,7 @@ function! s:add_commands(build_directory,
             \ external_cscope_files,
             \ header_extension,
             \ source_extension)
-    execute "command! -nargs=0 CXXCMakeBuild " . ":AsyncRun -program=make"
+    execute "command! -nargs=0 CXXCMakeBuild :call s:cxx_cmake_build_fn()"
     execute "command! -nargs=* CXXCMakeRun "   . "term " . a:build_directory . "/" . a:project_name . " <args>"
     execute "command! -nargs=0 CXXCMakeClean " . "call delete(\"" . a:build_directory . "\", \"rf\")"
 
