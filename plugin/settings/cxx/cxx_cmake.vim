@@ -132,12 +132,13 @@ function! s:create_header_source_command(open_mode,
             \ header_extension,
             \ source_extension,
             \ path)
-    call s:create_header_command(a:open_mode,
+    let l:open_modes = split(a:open_mode, ";", 1)
+    call s:create_header_command(l:open_modes[0],
                 \ a:project_name,
                 \ a:header_extension,
                 \ a:source_extension,
                 \ a:path)
-    call s:create_source_command(a:open_mode,
+    call s:create_source_command(l:open_modes[1],
                 \ a:project_name,
                 \ a:header_extension,
                 \ a:source_extension,
@@ -265,19 +266,31 @@ function! s:add_commands(build_directory,
 
     call s:register_create_file_command("CXXCMakeCreateHeaderSource",
                 \ "<SID>create_header_source_command",
-                \ "",
+                \ ";",
                 \ a:project_name,
                 \ a:header_extension,
                 \ a:source_extension)
     call s:register_create_file_command("CXXCMakeCreateHeaderSourceEditSplit",
                 \ "<SID>create_header_source_command",
-                \ ":spl",
+                \ ":spl;:spl",
+                \ a:project_name,
+                \ a:header_extension,
+                \ a:source_extension)
+    call s:register_create_file_command("CXXCMakeCreateHeaderSourceEditCurrentSplit",
+                \ "<SID>create_header_source_command",
+                \ ":e;:spl",
                 \ a:project_name,
                 \ a:header_extension,
                 \ a:source_extension)
     call s:register_create_file_command("CXXCMakeCreateHeaderSourceEditVSplit",
                 \ "<SID>create_header_source_command",
-                \ ":vspl",
+                \ ":vspl;:vspl",
+                \ a:project_name,
+                \ a:header_extension,
+                \ a:source_extension)
+    call s:register_create_file_command("CXXCMakeCreateHeaderSourceEditCurrentVSplit",
+                \ "<SID>create_header_source_command",
+                \ ":e;:vspl",
                 \ a:project_name,
                 \ a:header_extension,
                 \ a:source_extension)
@@ -501,10 +514,20 @@ function! s:cxx_cmake.construct(config)
     \       "seq": a:config.get("mappings.create_header_source_edit_split", ""),
     \       "fun": function("s:set_nnoremap_mapping", [":CXXCMakeCreateHeaderSourceEditSplit "])
     \   },
+    \   "create_header_source_edit_current_split":
+    \   {
+    \       "seq": a:config.get("mappings.create_header_source_edit_current_split", ""),
+    \       "fun": function("s:set_nnoremap_mapping", [":CXXCMakeCreateHeaderSourceEditCurrentSplit "])
+    \   },
     \   "create_header_source_edit_vsplit":
     \   {
     \       "seq": a:config.get("mappings.create_header_source_edit_vsplit", ""),
     \       "fun": function("s:set_nnoremap_mapping", [":CXXCMakeCreateHeaderSourceEditVSplit "])
+    \   },
+    \   "create_header_source_edit_current_vsplit":
+    \   {
+    \       "seq": a:config.get("mappings.create_header_source_edit_current_vsplit", ""),
+    \       "fun": function("s:set_nnoremap_mapping", [":CXXCMakeCreateHeaderSourceEditCurrentVSplit "])
     \   },
     \ }
 
