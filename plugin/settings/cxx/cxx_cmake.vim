@@ -344,38 +344,53 @@ endfunction
 function! s:cxx_cmake.construct(config)
     let l:ret = deepcopy(self)
 
-    let l:ret.properties["settings_directory"]              = g:proset_directory
-    let l:ret.properties["temporary_directory"]             = s:get_string_non_empty(a:config, "temporary_directory", ".project_tmp")
+    let l:ret.properties.settings =
+    \ {
+    \   "temporary_directory":
+    \   s:get_string_non_empty(a:config, "settings.temporary_directory", ".project_tmp"),
+    \   "build_directory":
+    \   s:get_string_non_empty(a:config, "settings.build_directory", "build"),
+    \   "source_directory":
+    \   s:get_string_non_empty(a:config, "settings.source_directory", "src"),
+    \   "jobs_number":
+    \   a:config.get("settings.jobs_number", "1"),
+    \   "additional_ctags_directories":
+    \   a:config.get("settings.additional_ctags_directories", ""),
+    \   "external_ctags_files":
+    \   a:config.get("settings.external_ctags_files", ""),
+    \   "additional_cscope_directories":
+    \   a:config.get("settings.additional_cscope_directories", ""),
+    \   "external_cscope_files":
+    \   a:config.get("settings.external_cscope_files", ""),
+    \   "additional_search_directories":
+    \   a:config.get("settings.additional_search_directories", ""),
+    \   "header_extension":
+    \   s:get_string_non_empty(a:config, "settings.header_extension", "hpp"),
+    \   "source_extension":
+    \   s:get_string_non_empty(a:config, "settings.source_extension", "cpp"),
+    \ }
 
-    let l:ret.properties["build_directory"]                 = s:get_string_non_empty(a:config, "build_directory", "build")
-    let l:ret.properties["source_directory"]                = s:get_string_non_empty(a:config, "source_directory", "src")
-    let l:ret.properties["jobs_number"]                     = a:config.get("jobs_number", "1")
+    let l:cmakelists_file = "CMakeLists.txt"
 
-    let l:ret.properties["temporary_ctags_file"]            = l:ret.properties["temporary_directory"] . "/tags"
-    let l:ret.properties["additional_ctags_directories"]    = a:config.get("additional_ctags_directories", "")
-    let l:ret.properties["external_ctags_files"]            = a:config.get("external_ctags_files", "")
-
-    let l:ret.properties["temporary_cscope_file"]           = l:ret.properties["temporary_directory"] . "/cscope"
-    let l:ret.properties["additional_cscope_directories"]   = a:config.get("additional_cscope_directories", "")
-    let l:ret.properties["external_cscope_files"]           = a:config.get("external_cscope_files", "")
-
-    let l:ret.properties["additional_search_directories"]   = a:config.get("additional_search_directories", "")
-
-    let l:ret.properties["cmakelists_file"]                 = "CMakeLists.txt"
-    let l:ret.properties["project_name"]                    = proset#utils#cmake#get_project_name(l:ret.properties["cmakelists_file"])
-    let l:ret.properties["is_project"]                      = filereadable(l:ret.properties["cmakelists_file"]) &&
-                                                            \ isdirectory(l:ret.properties["source_directory"]) &&
-                                                            \ isdirectory(l:ret.properties["settings_directory"])
-
-
-    let l:ret.properties["header_extension"]                = s:get_string_non_empty(a:config, "header_extension", "hpp")
-    let l:ret.properties["source_extension"]                = s:get_string_non_empty(a:config, "source_extension", "cpp")
+    let l:ret.properties.plugin =
+    \ {
+    \   "temporary_ctags_file":
+    \   l:ret.properties.settings.temporary_directory . "/tags",
+    \   "temporary_cscope_file":
+    \   l:ret.properties.settings.temporary_directory . "/cscope",
+    \   "project_name":
+    \   proset#utils#cmake#get_project_name(l:cmakelists_file),
+    \   "is_project":
+    \   filereadable(l:cmakelists_file) &&
+    \   isdirectory(l:ret.properties.settings.source_directory) &&
+    \   isdirectory(g:proset_directory),
+    \ }
 
     call proset#utils#alternate_file#add_extensions_pair(
-                \ l:ret.properties["header_extension"],
-                \ l:ret.properties["source_extension"])
+        \ l:ret.properties.settings.header_extension,
+        \ l:ret.properties.settings.source_extension)
 
-    let l:ret.properties["mappings"] =
+    let l:ret.properties.mappings =
     \ {
     \   "alternate_file.current_window":
     \   {
@@ -535,11 +550,11 @@ function! s:cxx_cmake.construct(config)
 endfunction
 
 function! s:cxx_cmake.is_project()
-    return self.properties["is_project"]
+    return self.properties.plugin.is_project
 endfunction
 
 function! s:cxx_cmake.get_project_name()
-    return self.properties["project_name"]
+    return self.properties.plugin.project_name
 endfunction
 
 function! s:cxx_cmake.get_properties()
@@ -551,20 +566,8 @@ function! s:cxx_cmake.get_settings_name()
 endfunction
 
 function! s:cxx_cmake.enable() abort
-    let l:temporary_directory           = self.properties["temporary_directory"]
-    let l:build_directory               = self.properties["build_directory"]
-    let l:jobs_number                   = self.properties["jobs_number"]
-    let l:project_name                  = self.properties["project_name"]
-    let l:temporary_ctags_file          = self.properties["temporary_ctags_file"]
-    let l:additional_ctags_directories  = self.properties["additional_ctags_directories"]
-    let l:external_ctags_files          = self.properties["external_ctags_files"]
-    let l:temporary_cscope_file         = self.properties["temporary_cscope_file"]
-    let l:additional_cscope_directories = self.properties["additional_cscope_directories"]
-    let l:external_cscope_files         = self.properties["external_cscope_files"]
-    let l:additional_search_directories = self.properties["additional_search_directories"]
-    let l:mappings                      = self.properties["mappings"]
-    let l:header_extension              = self.properties["header_extension"]
-    let l:source_extension              = self.properties["source_extension"]
+    let l:s = self.properties.settings
+    let l:p = self.properties.plugin
 
     let s:options_initial_values = {
         \ "makeprg":    &makeprg,
@@ -572,38 +575,38 @@ function! s:cxx_cmake.enable() abort
         \ "path":       &path,
     \ }
 
-    call delete(l:temporary_directory, "rf")
-    call mkdir(l:temporary_directory)
+    call delete(l:s.temporary_directory, "rf")
+    call mkdir(l:s.temporary_directory)
 
-    call s:set_makeprg(l:build_directory, l:jobs_number)
-    call s:add_commands(l:build_directory,
-                \ l:project_name,
-                \ l:additional_ctags_directories,
-                \ l:temporary_ctags_file,
-                \ l:additional_cscope_directories,
-                \ l:temporary_cscope_file,
-                \ l:external_cscope_files,
-                \ l:header_extension,
-                \ l:source_extension)
-    call s:add_mappings(l:mappings)
+    call s:set_makeprg(l:s.build_directory, l:s.jobs_number)
+    call s:add_commands(l:s.build_directory,
+                \ l:p.project_name,
+                \ l:s.additional_ctags_directories,
+                \ l:p.temporary_ctags_file,
+                \ l:s.additional_cscope_directories,
+                \ l:p.temporary_cscope_file,
+                \ l:s.external_cscope_files,
+                \ l:s.header_extension,
+                \ l:s.source_extension)
+    call s:add_mappings(self.properties.mappings)
 
-    let &tags = proset#utils#ctags#get_tags_filenames(l:temporary_ctags_file, l:external_ctags_files)
-    call s:generate_tags_file(l:additional_ctags_directories, l:build_directory, l:temporary_ctags_file)
-    call s:generate_cscope_file(l:additional_cscope_directories, l:temporary_cscope_file)
-    call proset#utils#cscope#add_cscope_files(l:temporary_cscope_file, l:external_cscope_files)
-    let &path .= substitute(l:additional_search_directories, ";", ",", "g")
+    let &tags = proset#utils#ctags#get_tags_filenames(l:p.temporary_ctags_file, l:s.external_ctags_files)
+    call s:generate_tags_file(l:s.additional_ctags_directories, l:s.build_directory, l:p.temporary_ctags_file)
+    call s:generate_cscope_file(l:s.additional_cscope_directories, l:p.temporary_cscope_file)
+    call proset#utils#cscope#add_cscope_files(l:p.temporary_cscope_file, l:s.external_cscope_files)
+    let &path .= substitute(l:s.additional_search_directories, ";", ",", "g")
 endfunction
 
 function! s:cxx_cmake.disable()
-    let &path       = s:options_initial_values["path"]
-    let &tags       = s:options_initial_values["tags"]
-    let &makeprg    = s:options_initial_values["makeprg"]
+    let &path       = s:options_initial_values.path
+    let &tags       = s:options_initial_values.tags
+    let &makeprg    = s:options_initial_values.makeprg
 
     call proset#utils#cscope#remove_all_connections()
-    call s:remove_mappings(self.properties["mappings"])
+    call s:remove_mappings(self.properties.mappings)
     call s:remove_commands()
 
-    call delete(self.properties["temporary_directory"], "rf")
+    call delete(self.properties.settings.temporary_directory, "rf")
 endfunction
 
 autocmd User ProsetRegisterInternalSettingsEvent
