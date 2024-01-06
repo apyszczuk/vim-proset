@@ -347,7 +347,7 @@ function! s:cxx_cmake.construct(config)
     let l:ret.properties.settings =
     \ {
     \   "temporary_directory":
-    \   s:get_string_non_empty(a:config, "settings.temporary_directory", ".project_tmp"),
+    \   s:get_string_non_empty(a:config, "settings.temporary_directory", ".vim-proset_tmp"),
     \   "build_directory":
     \   s:get_string_non_empty(a:config, "settings.build_directory", "build"),
     \   "source_directory":
