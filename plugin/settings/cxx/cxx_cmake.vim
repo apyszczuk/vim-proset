@@ -194,6 +194,10 @@ function! s:add_commands(build_directory,
     execute "command! -nargs=0 CXXCMakeBuild :call s:cxx_cmake_build_fn()"
     execute "command! -nargs=* CXXCMakeRun "   . "term " . a:build_directory . "/" . a:project_name . " <args>"
     execute "command! -nargs=0 CXXCMakeClean " . "call delete(\"" . a:build_directory . "\", \"rf\")"
+    command -nargs=0 CXXCMakeCleanAndBuild {
+        :CXXCMakeClean
+        :CXXCMakeBuild
+    }
 
     let l:update_symbols_cmd = ':call <SID>generate_tags_file(' .
                 \ '"' . a:additional_ctags_directories . '", ' .
@@ -467,7 +471,7 @@ function! s:cxx_cmake.construct(config)
     \   "clean_and_build":
     \   {
     \       "seq": a:config.get("mappings.clean_and_build", ""),
-    \       "fun": function("s:set_nnoremap_silent_mapping", [":CXXCMakeClean<CR> :CXXCMakeBuild<CR>"])
+    \       "fun": function("s:set_nnoremap_silent_mapping", [":CXXCMakeCleanAndBuild<CR>"])
     \   },
     \   "run":
     \   {
