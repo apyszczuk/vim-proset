@@ -459,6 +459,11 @@ function! s:cxx_cmake.construct(config)
     \       "seq": a:config.get("mappings.build", ""),
     \       "fun": function("s:set_nnoremap_silent_mapping", [":CXXCMakeBuild<CR>"])
     \   },
+    \   "clean":
+    \   {
+    \       "seq": a:config.get("mappings.clean", ""),
+    \       "fun": function("s:set_nnoremap_silent_mapping", [":CXXCMakeClean<CR>"])
+    \   },
     \   "clean_and_build":
     \   {
     \       "seq": a:config.get("mappings.clean_and_build", ""),
