@@ -1,3 +1,9 @@
+" cxx-cmake - CXX CMake Settings Dictionary
+"
+" Author:     Artur Pyszczuk <apyszczuk@gmail.com>
+" License:    Same terms as Vim itself
+" Website:    https://github.com/apyszczuk/vim-proset
+
 if exists("g:loaded_proset_settings_cxx_cxx_cmake")
     finish
 endif
