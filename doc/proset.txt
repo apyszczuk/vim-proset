@@ -1,4 +1,12 @@
+*proset*
 *proset.txt*  Project Settings Loader
+
+              ██████╗ ██████╗  ██████╗ ███████╗███████╗████████╗
+              ██╔══██╗██╔══██╗██╔═══██╗██╔════╝██╔════╝╚══██╔══╝
+              ██████╔╝██████╔╝██║   ██║███████╗█████╗     ██║
+              ██╔═══╝ ██╔══██╗██║   ██║╚════██║██╔══╝     ██║
+              ██║     ██║  ██║╚██████╔╝███████║███████╗   ██║
+              ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝   ╚═╝
 
 Author:     Artur Pyszczuk <apyszczuk@gmail.com>
 License:    Same terms as Vim itself (see |license|)
@@ -7,7 +15,7 @@ Website:    https://github.com/apyszczuk/vim-proset
 ==============================================================================
 TABLE OF CONTENTS
 
- 1) INTRODUCTION                                                      |proset|
+ 1) INTRODUCTION                                         |proset-introduction|
  2) SETTINGS                                                 |proset-settings|
  3) SETTINGS API                                         |proset-settings-api|
  4) PLUGIN VARIABLES                                        |proset-variables|
@@ -17,10 +25,10 @@ TABLE OF CONTENTS
  8) PUBLIC API                                                    |proset-api|
  9) SUPPORTED SETTINGS DICTIONARIES   |proset-supported-settings-dictionaries|
 10) CONTRIBUTE                                             |proset-contribute|
-11) ABOUT                                                       |proset-about|
+
 
 ==============================================================================
-INTRODUCTION                                                          *proset*
+INTRODUCTION                                             *proset-introduction*
 
 Anytime you want to have different settings for different projects using Vim,
 you probably have a problem. You can edit your vimrc before opening a project,
@@ -38,16 +46,18 @@ configurable location (most likely in a root directory of your project, just
 like IDEs do) having parameter that informs plugin what project settings
 should be loaded. By project settings I mean everything that is needed when
 you develop your project, it can be, but not restricted to:
-    * configuration of Vim itself,
-    * mappings for builing project,
-    * mappings for running project,
-    * mappings in general,
-    * enable or disable plugins,
-    * configuration of plugins,
-    * ... and much more.
+
+    - configuration of Vim itself,
+    - mappings for builing project,
+    - mappings for running project,
+    - mappings in general,
+    - enable or disable plugins,
+    - configuration of plugins,
+    - ... and much more.
 
 Basically everything you would normally put in your vimrc but local to the
 project.
+
 
 ==============================================================================
 SETTINGS                                                     *proset-settings*
@@ -56,7 +66,7 @@ Proset Settings is something that stores all your project specific
 configuration. It is implemented as a dictionary with specific interface (see
 |Dictionary-function|, |numbered-function|). Object of such dictionary can be
 registered in the plugin, either by plugin itself, or by you if your Settings
-Dictionary is not supported by the plugin. 
+Dictionary is not supported by the plugin.
 
 Settings Dictionary and Settings Object are basically what is in object
 oriented languages known as class and instance of that class (object) and
@@ -88,16 +98,18 @@ plugin/settings/cpp/cpp_ap.vim
 
 There is a special Settings Dictionary called Default (defined in
 autoload/proset/settings/default.vim file) that has two reasons to exist:
-    * default settings (no settings at all) - in case when plugin is enabled,
+
+    - default settings (no settings at all) - in case when plugin is enabled,
       but no configuration file is found, so probably most of the time you
       start Vim,
-    * interface definition - all Settings Dictionaries have to have the same
+    - interface definition - all Settings Dictionaries have to have the same
       interface as Default one has.
+
 
 ==============================================================================
 SETTINGS API                                             *proset-settings-api*
 
-Note: 
+Note:
 When documentation says that something returns FALSE it means that it returns
 0 and if something returns TRUE then it returns other |Number| than 0, most
 likely 1.
@@ -198,6 +210,7 @@ where:
     throw "proset:settings:cpp:cpp-ap:XD_DIR no such parameter in cfg"
  endfunction
 
+
 ==============================================================================
 PLUGIN VARIABLES                                            *proset-variables*
 
@@ -222,6 +235,7 @@ parameter (|proset-configuration-file|). Default value is "settings".
 To change default value, put this in your vimrc:
 
  let g:proset_file = "cfg"
+
 
 ==============================================================================
 CONFIGURATION                                           *proset-configuration*
@@ -268,6 +282,7 @@ method.
 
 Use |ProsetGetConfiguration()| function to get configuration object.
 
+
 ==============================================================================
 EVENTS                                                         *proset-events*
 
@@ -280,7 +295,7 @@ ProsetRegisterSettingsEvent
 If you want to register Settings Object, then you have to use this event, and
 do this in an autocommand, like this:
 
- autocmd User ProsetRegisterSettingsEvent 
+ autocmd User ProsetRegisterSettingsEvent
          \ call ProsetRegisterSettings(ConstructSettings())
 
 This event is fired before choosing Settings Object. Real example is presented
@@ -299,7 +314,7 @@ ProsetSettingsChosenEvent
 From now on, public API will operate on the chosen Settings Object. Before
 that event Default Settings Object is used. This basically does not matter if
 you use public API after Vim fires VimEnter. So, use this autocommand event if
-you want to use public functions before VimEnter.    
+you want to use public functions before VimEnter.
 
  function! Foo()
      let l:p = ProsetGetProperties()
@@ -307,11 +322,12 @@ you want to use public functions before VimEnter.
 
  autocmd User ProsetSettingsChosenEvent call Foo()
 
+
 ==============================================================================
 SETTINGS DICTIONARY                               *proset-settings-dictionary*
 
 Here, examples of Settings Dictionaries are provided (how to create it) with
-explanation. 
+explanation.
 
 Keep in mind that implementations you will see here are just examples, you can
 store data in different form, as you like, as long as you implement the
@@ -412,7 +428,7 @@ that need to be reverted, do it in disable().
      nunmap m0
  endfunction
 
-Here you cleanup all the side effects of enable(). 
+Here you cleanup all the side effects of enable().
 
 2.1) Construct Settings Object using configuration parser
 
@@ -427,7 +443,7 @@ Here you cleanup all the side effects of enable().
 
 This is the "constructor" of Settings Dictionary, used to create Settings
 Object.  The object config is a configuration dictionary that stores all
-key-value pairs from configuration file. 
+key-value pairs from configuration file.
 
 In |proset-configuration-file|, plugin's configuration parser was introduced.
 Using this parser saves your time of parsing options on your own. You just
@@ -539,6 +555,7 @@ Settings Objects that can be registered. If settings_type would be the same
 for all Settings Objects (like in previous examples), then only one Settings
 Object would be registered, the first one that calls ProsetRegisterSettings().
 
+
 ==============================================================================
 PUBLIC API                                                        *proset-api*
 
@@ -579,7 +596,7 @@ ProsetGetProjectName()
 
 This function is used to get project name. Each Settings Object prepares
 string with name based on its own rules.
-    
+
                                                        *ProsetGetProperties()*
 ProsetGetProperties()
 
@@ -596,16 +613,32 @@ Settings Objects has to be chosen, in other words if value from configuration
 file is the same as string from this function, then this Settings Object is
 chosen (loaded).
 
+
 ==============================================================================
 SUPPORTED SETTINGS DICTIONARIES       *proset-supported-settings-dictionaries*
 
-probably new document, since this one can be very very long otherwise.
+List of supported Settings Dictionaries:
+
+    - |cxx-cmake| - for C/C++ development using CMake as a build system,
+
 
 ==============================================================================
 CONTRIBUTE                                                 *proset-contribute*
 
+If you see a bug, or something that can be improved, or have an idea of a new
+Settings Dictionary or even better you have already written one and want it to
+be supported by Proset plugin directly, just let me know via GitHub or email.
+
 
 ==============================================================================
-ABOUT                                                           *proset-about*
+
+           ████████╗██╗  ██╗███████╗    ███████╗███╗   ██╗██████╗
+           ╚══██╔══╝██║  ██║██╔════╝    ██╔════╝████╗  ██║██╔══██╗
+              ██║   ███████║█████╗      █████╗  ██╔██╗ ██║██║  ██║
+              ██║   ██╔══██║██╔══╝      ██╔══╝  ██║╚██╗██║██║  ██║
+              ██║   ██║  ██║███████╗    ███████╗██║ ╚████║██████╔╝
+              ╚═╝   ╚═╝  ╚═╝╚══════╝    ╚══════╝╚═╝  ╚═══╝╚═════╝
+
+==============================================================================
 
  vim:tw=78:et:ft=help:norl:
