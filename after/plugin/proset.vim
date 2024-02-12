@@ -2,7 +2,6 @@
 "
 " Author:     Artur Pyszczuk <apyszczuk@gmail.com>
 " License:    Same terms as Vim itself
-" Version:    wip
 " Website:    https://github.com/apyszczuk/vim-proset
 
 if exists("g:loaded_proset")
