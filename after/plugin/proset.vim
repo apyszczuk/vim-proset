@@ -80,7 +80,8 @@ augroup Proset
     autocmd!
 
     try
-        let s:configuration = proset#lib#configuration#parse_file(s:proset_filepath, ":")
+        let s:configuration
+            \ = proset#lib#configuration#parse_file(s:proset_filepath, ":")
         const settings_name = s:configuration.get("proset_settings", "")
         if empty(settings_name)
             finish
