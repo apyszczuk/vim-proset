@@ -157,8 +157,8 @@ Disables cxx-cmake settings (reverts enable()) which include:
 - removing commands,
 - deleting temporary directory.
 
-                                                       *CXXCMakeConstructor()*
-CXXCMakeConstructor(config)
+                                                         *CXXCMakeConstruct()*
+CXXCMakeConstruct(config)
 
 Constructor of cxx-cmake Settings Dictionary. Used only when you want to
 extend cxx-cmake by writing your own Settings Dictionary and have cxx-cmake
@@ -1168,7 +1168,7 @@ So let's get started to get it done automatically.
     " (2)
     function! s:cxx_cmake_xd.construct(config)
         let l:ret = deepcopy(self)
-        let l:ret.parent = CXXCMakeConstructor(a:config)
+        let l:ret.parent = CXXCMakeConstruct(a:config)
         return l:ret
     endfunction
 
@@ -1210,8 +1210,8 @@ So let's get started to get it done automatically.
 Why does it look this way is explained in |proset-settings-dictionary| in more
 details, but I have marked some places which now needs to be explained:
 
-(1) - we are going to use CXXCMakeConstructor(), we have to have its
-      definition already sourced,
+(1) - we are going to use CXXCMakeConstruct(), we have to have its definition
+      already sourced,
 
 (2) - definition of a construct() "member function" which uses public
       cxx-cmake function to create an object (parent),
