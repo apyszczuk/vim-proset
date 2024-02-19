@@ -84,15 +84,17 @@ based on the string from configuration file.
 
 Supported Settings Dictionaries can be found under plugin/settings/ directory,
 where you can find directories with programming languages names. Each Settings
-Dictionary definition (except Default) is placed in appropriate directory with
-filename of the given pattern:
+Dictionary definition (except Default) is placed there in an appropriate
+directory with filename of the given pattern:
 
-language_xd_42.vim
+language-xd_42.vim
 
-Where xd_42 is some string that is up to the author of that definition.
+Where xd_42 is some string that should rather be meaningful.
 
 For example:
-plugin/settings/cpp/cpp_ap.vim
+plugin/settings/cxx/cxx-cmake.vim
+
+See also |proset-supported-settings-dictionaries|.
 
                                                      *proset-settings-default*
 
@@ -207,7 +209,7 @@ where:
     z                - reason of exception
 
  function! Foo()
-    throw "proset:settings:cpp:cpp-ap:XD_DIR no such parameter in cfg"
+    throw "proset:settings:cxx:cxx-cmake:XD_DIR no such parameter in cfg"
  endfunction
 
 
@@ -249,7 +251,7 @@ removed from far right and far left). So, simplest configuration file looks
 like this:
 
                                                    *proset-configuration-file*
-proset_settings: cpp-ap
+proset_settings: cxx-cmake
 
 This is the only one required configuration parameter. All other parameters
 that are there are Settings Object specific, but the configuration file does
