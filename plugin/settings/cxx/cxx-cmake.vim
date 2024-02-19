@@ -438,6 +438,8 @@ function! s:cxx_cmake.construct(config)
     \ }
 
     let l:cmakelists_file = "CMakeLists.txt"
+    let l:project_name
+        \ = proset#utils#cmake#get_project_name(l:cmakelists_file)
 
     let l:ret.properties.plugin =
     \ {
@@ -446,11 +448,12 @@ function! s:cxx_cmake.construct(config)
     \   "temporary_cscope_file":
     \   l:ret.properties.settings.temporary_directory . "/cscope",
     \   "project_name":
-    \   proset#utils#cmake#get_project_name(l:cmakelists_file),
+    \   l:project_name,
     \   "is_project":
     \   filereadable(l:cmakelists_file) &&
     \   isdirectory(l:ret.properties.settings.source_directory) &&
-    \   isdirectory(g:proset_directory),
+    \   isdirectory(g:proset_directory) &&
+    \   !empty(l:project_name)
     \ }
 
     call proset#utils#alternate_file#add_extensions_pair(

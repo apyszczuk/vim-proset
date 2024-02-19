@@ -4,14 +4,14 @@ endif
 let g:autoloaded_proset_utils_cmake = 1
 
 function! proset#utils#cmake#get_project_name(project_file)
-    let l:ret_val = "UNKNOWN"
+    let l:ret_val = ""
     if !filereadable(a:project_file)
         return l:ret_val
     endif
 
     let l:do_the_job = '0'
     for l:item in readfile(a:project_file)
-        if l:item =~ "set (PROJECT_NAME"
+        if l:item =~# 'set\s*(PROJECT_NAME'
             let l:ret_val = ""
             for l:char in split(l:item, '\zs')
                 if l:char == '"' && l:do_the_job == '0'

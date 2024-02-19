@@ -103,7 +103,8 @@ Returns TRUE if:
 
     - CMakeLists.txt file is present in current directory, and
     - |cxx-cmake-settings.source_directory| is present, and
-    - |g:proset_directory| is present.
+    - |g:proset_directory| is present, and
+    - PROJECT_NAME variable is defined in CMakeLists.txt and is not empty.
 
 otherwise returns FALSE.
 
@@ -114,8 +115,7 @@ Returns value of CMakeLists.txt variable PROJECT_NAME:
 
 set(PROJECT_NAME "foo1")
 
-If there is no such variable defined "UNKNOWN" is returned.
-(TODO: maybe some other string should be returned)
+If there is no such variable defined, empty string is returned.
 
                                                   *cxx-cmake.get_properties()*
 s:cxx_cmake.get_properties()
@@ -1161,7 +1161,7 @@ So let's get started to get it done automatically.
     let g:loaded_proset_settings_cxx_cxx_cmake_xd = 1
 
     " (1)
-    runtime plugin/settings/cxx/cxx_cmake.vim
+    runtime plugin/settings/cxx/cxx-cmake.vim
 
     let s:cxx_cmake_xd = {'properties': {}}
 
