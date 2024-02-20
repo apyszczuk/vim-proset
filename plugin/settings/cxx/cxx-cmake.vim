@@ -174,19 +174,24 @@ function! s:register_create_file_command(command_name,
 endfunction
 
 function! s:post_build_task()
-    let l:st = g:asyncrun_code == 0
-    echo (l:st ? "Success" : "Failure") . ": " . &makeprg
+    let l:msg = "Success: "
+    let l:st  = 0
 
-    " for warnings and errors
-    for l:item in getqflist()
-        if l:item["valid"] == 1
-            return
-        endif
-    endfor
+    if g:asyncrun_code != 0
+        let l:msg = "Failure: "
+        let l:st  = 1
+    else
+        let l:list = getqflist()
+        for item in l:list
+            if item["valid"] == 1
+                let l:st = 1
+                break
+            endif
+        endfor
+    endif
 
-    " even though above can handle compilation errors,
-    " it can not catch undefined reference for example
-    if l:st
+    echo l:msg . &makeprg
+    if l:st == 0
         :ccl
     endif
 endfunction
