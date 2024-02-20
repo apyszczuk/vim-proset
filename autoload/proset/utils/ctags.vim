@@ -3,17 +3,16 @@ if exists("g:autoloaded_proset_utils_ctags")
 endif
 let g:autoloaded_proset_utils_ctags = 1
 
-function! proset#utils#ctags#get_ctags_command(additional_ctags_directories,
-        \ build_directory,
+function! proset#utils#ctags#get_ctags_command(source_directory,
+        \ additional_ctags_directories,
         \ temporary_ctags_file)
     let l:cmd = "ctags -R " .
-                \ "--exclude=" . a:build_directory . " " .
                 \ "--c++-kinds=+p " .
                 \ "--fields=+iaS " .
                 \ "--extras=+q " .
                 \ "--tag-relative=yes " .
                 \ "-f " . a:temporary_ctags_file . " " .
-                \ ". " .
+                \ a:source_directory . " " .
                 \ substitute(a:additional_ctags_directories, ";", " ", "g")
     return l:cmd
 endfunction

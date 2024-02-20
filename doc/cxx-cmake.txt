@@ -491,29 +491,31 @@ bother you every single time you start Vim / load cxx-cmake Settings Object.
 1) Ctags
 
 In |cxx-cmake.enable()| first step is to set Vim option |'tags'| to have
-values (paths) coming from:
+appropriate values (paths):
 
     - *cxx-cmake-temporary_ctags_file* - path to the file where tags are
       stored after they are generated or regenerated. Name of the file is
       hardcoded in the cxx-cmake and it is 
       |cxx-cmake-settings.temporary_directory|/tags.
 
-      (TODO: ctags should generate tags from source directory cfg param;)
-      (TODO: do I need --exclude if ctags will be generated from src?)
-      (TODO: what if build dir is ., will tags be generated at all?)
-
     - |cxx-cmake-settings.external_ctags_files| - list of paths to the files
       (separated by semicolons) where tags of external sources are already
       generated (not by cxx-cmake).
 
 Second step is to generate tags (written to |cxx-cmake-temporary_ctags_file|)
-from project sources and |cxx-cmake-settings.additional_ctags_directories|,
-which is a list of paths (separated by semicolons) to the directories where
-some other source code lays. Source code you want to generate tags from every
-time you start Vim / load cxx-cmake Settings Object, or update them manually.
-If those directories do not change too often, consider generation of tags once
-and add path to generated file in |cxx-cmake-settings.external_ctags_files|
-(for performance reason).
+from:
+
+    - |cxx-cmake-settings.source_directory| - directory with source code of
+      your project,
+    - |cxx-cmake-settings.additional_ctags_directories| - list of paths
+      (separated by semicolons) to the directories where some other source
+      code lays.
+
+For both of them, tags will be generated every time you start Vim / load
+cxx-cmake Settings Object, or update them manually.  If you have files that do
+not change too often and want to be able to navigate to symbols defined there,
+consider generation of tags once and add path to generated file in
+|cxx-cmake-settings.external_ctags_files| (for performance reason).
 
 Usage in short: |CTRL-]| jumps to the tag, |CTRL-T| goes back.
 See |tags| to get more information about tags.
@@ -665,12 +667,11 @@ settings.jobs_number:
                              *cxx-cmake-settings.additional_ctags_directories*
 settings.additional_ctags_directories
 
-(todo: on root path? not on src?)
-To generate tags file using ctags application one have to specify source
-code directory. Using cxx-cmake this is done automatically on project root
-path directory parsing all the sources there and using additional directories
-specified in this parameter.  To specify more than one additional source
-directory, separate them with ";".
+To generate tags file using ctags application one have to specify source code
+directory. Using cxx-cmake this is done automatically on
+|cxx-cmake-settings.source_directory| parsing all the sources there and using
+additional directories specified in this parameter.  To specify more than one
+additional source directory, separate them with ";".
 
 If missing:
 settings.additional_ctags_directories:

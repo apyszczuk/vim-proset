@@ -11,12 +11,12 @@ let g:loaded_proset_settings_cxx_cxx_cmake = 1
 
 let s:cxx_cmake = {'properties': {}}
 
-function! s:generate_tags_file(additional_ctags_directories,
-        \ build_directory,
+function! s:generate_tags_file(source_directory,
+        \ additional_ctags_directories,
         \ temporary_ctags_file)
     let l:cmd = proset#utils#ctags#get_ctags_command(
+                \ a:source_directory,
                 \ a:additional_ctags_directories,
-                \ a:build_directory,
                 \ a:temporary_ctags_file)
     silent execute '!' . l:cmd
 endfunction
@@ -200,15 +200,15 @@ function! s:cxx_cmake_build_fn()
     :update | :AsyncRun -program=make -post=call\ <SID>post_build_task()
 endfunction
 
-function! s:register_update_symbols_command(additional_ctags_directories,
-        \ build_directory,
+function! s:register_update_symbols_command(source_directory,
+        \ additional_ctags_directories,
         \ temporary_ctags_file,
         \ additional_cscope_directories,
         \ temporary_cscope_file,
         \ external_cscope_files)
     let l:cmd = ':call <SID>generate_tags_file(' .
+                \ '"' . a:source_directory . '", ' .
                 \ '"' . a:additional_ctags_directories . '", ' .
-                \ '"' . a:build_directory . '", ' .
                 \ '"' . a:temporary_ctags_file . '"' .
                 \ ') ' .
                 \ "\| :call <SID>generate_cscope_file(" .
@@ -224,7 +224,8 @@ function! s:register_update_symbols_command(additional_ctags_directories,
     execute "command! -nargs=0 CXXCMakeUpdateCtagsCscopeSymbols " . l:cmd
 endfunction
 
-function! s:add_commands(build_directory,
+function! s:add_commands(source_directory,
+        \ build_directory,
         \ project_name,
         \ additional_ctags_directories,
         \ temporary_ctags_file,
@@ -246,8 +247,8 @@ function! s:add_commands(build_directory,
         :CXXCMakeBuild
     }
 
-    call s:register_update_symbols_command(a:additional_ctags_directories,
-        \ a:build_directory,
+    call s:register_update_symbols_command(a:source_directory,
+        \ a:additional_ctags_directories,
         \ a:temporary_ctags_file,
         \ a:additional_cscope_directories,
         \ a:temporary_cscope_file,
@@ -799,7 +800,8 @@ function! s:cxx_cmake.enable() abort
     call mkdir(l:s.temporary_directory)
 
     call s:set_makeprg(l:s.build_directory, l:s.jobs_number)
-    call s:add_commands(l:s.build_directory,
+    call s:add_commands(l:s.source_directory,
+                \ l:s.build_directory,
                 \ l:p.project_name,
                 \ l:s.additional_ctags_directories,
                 \ l:p.temporary_ctags_file,
@@ -812,8 +814,8 @@ function! s:cxx_cmake.enable() abort
 
     let &tags = proset#utils#ctags#get_tags_filenames(l:p.temporary_ctags_file,
                 \ l:s.external_ctags_files)
-    call s:generate_tags_file(l:s.additional_ctags_directories,
-                \ l:s.build_directory,
+    call s:generate_tags_file(l:s.source_directory,
+                \ l:s.additional_ctags_directories,
                 \ l:p.temporary_ctags_file)
     call s:generate_cscope_file(l:s.additional_cscope_directories,
                 \ l:p.temporary_cscope_file)
