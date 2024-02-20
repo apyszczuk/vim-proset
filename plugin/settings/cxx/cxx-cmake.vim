@@ -393,11 +393,10 @@ function! s:remove_mappings(mappings)
     endfor
 endfunction
 
-function! s:get_string_non_empty(config, key, default_value)
+function! s:get_not_empty(config, key, default_value)
     let l:ret = a:config.get(a:key, a:default_value)
     if empty(l:ret)
-        throw "proset:settings:cxx:" . s:cxx_cmake.get_settings_name() . ":"
-            \ . a:key . " is empty"
+        let l:ret = a:default_value
     endif
     return l:ret
 endfunction
@@ -408,33 +407,47 @@ function! s:cxx_cmake.construct(config)
     let l:ret.properties.settings =
     \ {
     \   "temporary_directory":
-    \   s:get_string_non_empty(a:config,
+    \   s:get_not_empty(a:config,
     \       "settings.temporary_directory",
     \       ".vim-proset_tmp"),
+    \
     \   "build_directory":
-    \   s:get_string_non_empty(a:config,
+    \   s:get_not_empty(a:config,
     \       "settings.build_directory",
     \       "build"),
+    \
     \   "source_directory":
-    \   s:get_string_non_empty(a:config,
+    \   s:get_not_empty(a:config,
     \       "settings.source_directory",
     \       "src"),
+    \
     \   "jobs_number":
     \   a:config.get("settings.jobs_number", "1"),
+    \
     \   "additional_ctags_directories":
     \   a:config.get("settings.additional_ctags_directories", ""),
+    \
     \   "external_ctags_files":
     \   a:config.get("settings.external_ctags_files", ""),
+    \
     \   "additional_cscope_directories":
     \   a:config.get("settings.additional_cscope_directories", ""),
+    \
     \   "external_cscope_files":
     \   a:config.get("settings.external_cscope_files", ""),
+    \
     \   "additional_search_directories":
     \   a:config.get("settings.additional_search_directories", ""),
+    \
     \   "header_extension":
-    \   s:get_string_non_empty(a:config, "settings.header_extension", "hpp"),
+    \   s:get_not_empty(a:config,
+    \       "settings.header_extension",
+    \       "hpp"),
+    \
     \   "source_extension":
-    \   s:get_string_non_empty(a:config, "settings.source_extension", "cpp"),
+    \   s:get_not_empty(a:config,
+    \       "settings.source_extension",
+    \       "cpp"),
     \ }
 
     let l:cmakelists_file = "CMakeLists.txt"
@@ -445,10 +458,13 @@ function! s:cxx_cmake.construct(config)
     \ {
     \   "temporary_ctags_file":
     \   l:ret.properties.settings.temporary_directory . "/tags",
+    \
     \   "temporary_cscope_file":
     \   l:ret.properties.settings.temporary_directory . "/cscope",
+    \
     \   "project_name":
     \   l:project_name,
+    \
     \   "is_project":
     \   filereadable(l:cmakelists_file) &&
     \   isdirectory(l:ret.properties.settings.source_directory) &&

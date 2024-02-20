@@ -601,18 +601,15 @@ automatically also.
 CONFIGURATION FILE                              *cxx-cmake-configuration-file*
 
 There is only one configuration file that is required by cxx-cmake, this is
-|g:proset_directory|/|g:proset_file|. Most of the parameters are optional - in
-such case, hardcoded default value will be used. Some of them if present, can
-not be empty and if they are, exception will be thrown and cxx-cmake Settings
-Object will not work.
+|g:proset_directory|/|g:proset_file|. All parameters in it are optional - when
+missing, default (hardcoded) value will be used. Depending on the parameter
+itself, the functionality can behave in a default manner (build_directory and
+jobs_number will have default values, so you can build your project), or the
+functionality can be disabled (mappings are not available if missing). There
+are parameters that if present but empty will take default value anyway.
 
 Additionally each parameter that has a command associated with will name that
 command.
-
-TODO: which one throws, and make sure you entered good default value here in
-doc.
-TODO: maybe not throw at all? just take default value
-
 
                                                    *cxx-cmake-proset_settings*
 proset_settings
@@ -629,7 +626,7 @@ settings.temporary_directory
 
 Directory where cscope and ctags temporary (generated) files will be stored.
 
-If missing:
+If missing or empty:
 settings.temporary_directory: .vim-proset_tmp
 
 
@@ -638,7 +635,7 @@ settings.build_directory
 
 Directory for build files (CMake build files, objects *.o, etc).
 
-If missing:
+If missing or empty:
 settings.build_directory: build
 
 
@@ -647,7 +644,7 @@ settings.source_directory
 
 Source directory where all C/C++ files are placed.
 
-If missing:
+If missing or empty:
 settings.source_directory: src
 
 
@@ -748,16 +745,8 @@ Extension for header file when creating file using cxx-cmake commands. This is
 also used for alternate-file module (switching between header and source
 files).
 
-If missing:
+If missing or empty:
 settings.header_extension: hpp
-
-(now)
-If parameter is present, but the value is empty, exception is thrown and
-cxx-cmake will not work.
-
-(todo)
-If parameter is present, but the value is empty, take value as if it was
-missing.
 
 
                                          *cxx-cmake-settings.source_extension*
@@ -767,16 +756,8 @@ Extension for source file when creating file using cxx-cmake commands. This is
 also used for alternate-file module (switching between header and source
 files).
 
-If missing:
+If missing or empty:
 settings.source_extension: cpp
-
-(now)
-If parameter is present, but the value is empty, exception is thrown and
-cxx-cmake will not work.
-
-(todo)
-If parameter is present, but the value is empty, take value as if it was
-missing.
 
 
                                                           *cxx-cmake-mappings*
