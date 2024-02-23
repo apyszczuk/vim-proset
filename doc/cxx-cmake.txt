@@ -524,10 +524,10 @@ See |tags| to get more information about tags.
 2) Cscope
 
 In |cxx-cmake.enable()| first step is to generate cscope file with symbols
-(|cxx-cmake-temporary_cscope_file|) from project sources and from
-|cxx-cmake-settings.additional_cscope_directories| which is a list of paths
-(separated by semicolons) to the directories where some other source code
-lays. Source code you want to generate cscope symbols from every time you
+(|cxx-cmake-temporary_cscope_file|) from |cxx-cmake-settings.source_directory|
+and from |cxx-cmake-settings.additional_cscope_directories| which is a list of
+paths (separated by semicolons) to the directories where some other source
+code lays. Source code you want to generate cscope symbols from every time you
 start Vim / load cxx-cmake Settings Object, or update them manually.  If those
 directories do not change too often, consider generation of cscope symbols
 once and add path to the generated file in
@@ -699,10 +699,9 @@ settings.external_ctags_files: /tmp/tags-clib
 settings.additional_cscope_directories
 
 In cxx-cmake, cscope application is used to generate cscope file, by default
-it uses source code from current directory (project root path). If you want to
-parse source code from different directories also, then this parameter is for
-that.  You may specify more than one path to source directories separating
-them with ";".
+it uses |cxx-cmake-settings.source_directory|. If you want to parse source
+code from different directories as well, then this parameter is for that. You
+may specify more than one path to source directories separating them with ";".
 
 If missing:
 settings.additional_cscope_directories:

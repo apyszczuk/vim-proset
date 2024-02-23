@@ -21,9 +21,11 @@ function! s:generate_tags_file(source_directory,
     silent execute '!' . l:cmd
 endfunction
 
-function! s:generate_cscope_file(additional_cscope_directories,
+function! s:generate_cscope_file(source_directory,
+        \ additional_cscope_directories,
         \ temporary_cscope_file)
     silent execute "!" . proset#utils#cscope#get_cscope_command(
+                        \ a:source_directory,
                         \ a:additional_cscope_directories,
                         \ a:temporary_cscope_file)
 endfunction
@@ -212,6 +214,7 @@ function! s:register_update_symbols_command(source_directory,
                 \ '"' . a:temporary_ctags_file . '"' .
                 \ ') ' .
                 \ "\| :call <SID>generate_cscope_file(" .
+                \ '"' . a:source_directory . '", ' .
                 \ '"' . a:additional_cscope_directories . '", ' .
                 \ '"' . a:temporary_cscope_file . '"' .
                 \ ') ' .
@@ -817,7 +820,8 @@ function! s:cxx_cmake.enable() abort
     call s:generate_tags_file(l:s.source_directory,
                 \ l:s.additional_ctags_directories,
                 \ l:p.temporary_ctags_file)
-    call s:generate_cscope_file(l:s.additional_cscope_directories,
+    call s:generate_cscope_file(l:s.source_directory,
+                \ l:s.additional_cscope_directories,
                 \ l:p.temporary_cscope_file)
     call proset#utils#cscope#add_cscope_files(l:p.temporary_cscope_file,
                 \ l:s.external_cscope_files)

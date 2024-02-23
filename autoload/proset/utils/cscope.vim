@@ -3,14 +3,33 @@ if exists("g:autoloaded_proset_utils_cscope")
 endif
 let g:autoloaded_proset_utils_cscope = 1
 
-function! proset#utils#cscope#get_cscope_command(additional_cscope_directories,
-        \ temporary_cscope_file)
-    let l:ext = ""
-    for l:item in split(a:additional_cscope_directories, ";")
-        let l:ext .= " -s " . l:item
+function! s:get_files_string(dir)
+    let l:ret = ""
+
+    for entry in readdirex(a:dir)
+        let l:found_path = a:dir . "/" . entry.name
+
+        if entry.type == "file" &&
+        \  entry.name =~ '\v^.*\.(h|hh|hxx|hpp|c|cc|cxx|cpp|H|HH|HXX|HPP|C|CC|CXX|CPP)$'
+            let l:ret .= l:found_path . " "
+        elseif entry.type == "dir"
+            let l:ret .= s:get_files_string(l:found_path)
+        endif
     endfor
 
-    return "cscope -Rb -f " . a:temporary_cscope_file . l:ext
+    return l:ret
+endfunction
+
+function! proset#utils#cscope#get_cscope_command(source_directory,
+        \ additional_cscope_directories,
+        \ temporary_cscope_file)
+    let l:cwd = getcwd() . "/"
+    let l:files = s:get_files_string(l:cwd . a:source_directory)
+    for l:item in split(a:additional_cscope_directories, ";")
+        let l:files .= s:get_files_string(l:cwd . l:item)
+    endfor
+
+    return "cscope -Rb -f " . a:temporary_cscope_file . " " . l:files
 endfunction
 
 function! proset#utils#cscope#remove_all_connections()
