@@ -410,23 +410,55 @@ function! s:get_not_empty(config, key, default_value)
     return l:ret
 endfunction
 
+function! s:is_path_correct(path)
+    if (match(a:path, '\.') == 0) && (len(a:path) == 1)
+        return 0
+    endif
+
+    if match(a:path, '\./') == 0
+        return 0
+    endif
+
+    if match(a:path, '\') >= 0
+        return 0
+    endif
+
+    if match(a:path, '\.\.') >= 0
+        return 0
+    endif
+
+    if match(a:path, '/') == 0
+        return 0
+    endif
+
+    return 1
+endfunction
+
+function! s:get_correct_path(config, key, default_value)
+    let l:ret = simplify(s:get_not_empty(a:config, a:key, a:default_value))
+    if s:is_path_correct(l:ret) == 0 || empty(l:ret)
+        let l:ret = a:default_value
+    endif
+    return l:ret
+endfunction
+
 function! s:cxx_cmake.construct(config)
     let l:ret = deepcopy(self)
 
     let l:ret.properties.settings =
     \ {
     \   "temporary_directory":
-    \   s:get_not_empty(a:config,
+    \   s:get_correct_path(a:config,
     \       "settings.temporary_directory",
     \       ".vim-proset_tmp"),
     \
     \   "build_directory":
-    \   s:get_not_empty(a:config,
+    \   s:get_correct_path(a:config,
     \       "settings.build_directory",
     \       "build"),
     \
     \   "source_directory":
-    \   s:get_not_empty(a:config,
+    \   s:get_correct_path(a:config,
     \       "settings.source_directory",
     \       "src"),
     \

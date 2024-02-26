@@ -613,6 +613,12 @@ are parameters that if present but empty will take default value anyway.
 Additionally each parameter that has a command associated with will name that
 command.
 
+There are parameters designed to store directory path. Value of such parameter
+is checked for correctness. So, if value is empty or '.', starts with './' or
+'/', contains '..' or '\', then default (hardcoded) value is taken. This means
+that the path must be below the project root. There is information that the
+parameter is checked in the description of it.
+
                                                    *cxx-cmake-proset_settings*
 proset_settings
 
@@ -628,7 +634,7 @@ settings.temporary_directory
 
 Directory where cscope and ctags temporary (generated) files will be stored.
 
-If missing or empty:
+If missing, empty or incorrect:
 settings.temporary_directory: .vim-proset_tmp
 
 
@@ -637,7 +643,7 @@ settings.build_directory
 
 Directory for build files (CMake build files, objects *.o, etc).
 
-If missing or empty:
+If missing, empty or incorrect:
 settings.build_directory: build
 
 
@@ -646,7 +652,7 @@ settings.source_directory
 
 Source directory where all C/C++ files are placed.
 
-If missing or empty:
+If missing, empty or incorrect:
 settings.source_directory: src
 
 
