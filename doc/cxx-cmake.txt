@@ -328,7 +328,7 @@ file was created.
 
 
 Usage example:
-    :CXXCMakeCreateCreateEdit src/boo/foo/bla
+    :CXXCMakeCreateSourceEdit src/boo/foo/bla
 
 will create bla.cpp file (if cpp is source extension in configuration) in the
 src/boo/foo directory hierarchy (creating directories if needed) whose content
