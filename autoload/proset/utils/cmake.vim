@@ -3,7 +3,7 @@ if exists("g:autoloaded_proset_utils_cmake")
 endif
 let g:autoloaded_proset_utils_cmake = 1
 
-function! proset#utils#cmake#get_project_name(project_file)
+function! s:get_pattern_value(project_file, pattern)
     let l:ret_val = ""
     if !filereadable(a:project_file)
         return l:ret_val
@@ -11,7 +11,13 @@ function! proset#utils#cmake#get_project_name(project_file)
 
     let l:do_the_job = '0'
     for l:item in readfile(a:project_file)
-        if l:item =~# 'set\s*(PROJECT_NAME'
+        let l:item = trim(l:item)
+
+        if empty(l:item) || (l:item[0] == "#")
+            continue
+        endif
+
+        if l:item =~# a:pattern
             let l:ret_val = ""
             for l:char in split(l:item, '\zs')
                 if l:char == '"' && l:do_the_job == '0'
@@ -30,6 +36,39 @@ function! proset#utils#cmake#get_project_name(project_file)
         endif
     endfor
     return l:ret_val
+endfunction
+
+function! proset#utils#cmake#get_project_name(project_file)
+    return s:get_pattern_value(a:project_file, 'set\s*(PROJECT_NAME')
+endfunction
+
+function! s:get_output_directory(project_file, pattern)
+    let l:ret = s:get_pattern_value(a:project_file, a:pattern)
+    if !empty(l:ret)
+        throw l:ret
+    endif
+endfunction
+
+function! proset#utils#cmake#get_output_directory(project_file, build_directory)
+    try
+        call s:get_output_directory(a:project_file,
+                \ 'set\s*(CMAKE_RUNTIME_OUTPUT_DIRECTORY')
+        call s:get_output_directory(a:project_file,
+                \ 'set\s*(CMAKE_ARCHIVE_OUTPUT_DIRECTORY')
+        call s:get_output_directory(a:project_file,
+                \ 'set\s*(CMAKE_LIBRARY_OUTPUT_DIRECTORY')
+    catch
+        let l:val    = v:exception
+        let l:prefix = "${PROJECT_SOURCE_DIR}/"
+
+        if l:val =~# (l:prefix . '.*')
+            return strpart(l:val, len(l:prefix))
+        else
+            return a:build_directory . "/" . l:val
+        endif
+    endtry
+
+    return a:build_directory
 endfunction
 
 function! proset#utils#cmake#get_build_command(build_directory, jobs_number)

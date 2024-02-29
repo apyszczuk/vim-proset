@@ -229,6 +229,7 @@ endfunction
 
 function! s:add_commands(source_directory,
         \ build_directory,
+        \ bin_directory,
         \ project_name,
         \ additional_ctags_directories,
         \ temporary_ctags_file,
@@ -240,7 +241,7 @@ function! s:add_commands(source_directory,
     command! -nargs=0 CXXCMakeBuild :call s:cxx_cmake_build_fn()
 
     execute "command! -nargs=* CXXCMakeRun "
-        \ . "term " . a:build_directory . "/" . a:project_name . " <args>"
+        \ . "term " . a:bin_directory . "/" . a:project_name . " <args>"
 
     execute "command! -nargs=0 CXXCMakeClean "
         \ . "call delete(\"" . a:build_directory . "\", \"rf\")"
@@ -495,7 +496,7 @@ function! s:cxx_cmake.construct(config)
     let l:project_name
         \ = proset#utils#cmake#get_project_name(l:cmakelists_file)
 
-    let l:ret.properties.plugin =
+    let l:ret.properties.internal =
     \ {
     \   "temporary_ctags_file":
     \   l:ret.properties.settings.temporary_directory . "/tags",
@@ -505,6 +506,10 @@ function! s:cxx_cmake.construct(config)
     \
     \   "project_name":
     \   l:project_name,
+    \
+    \   "bin_directory":
+    \   proset#utils#cmake#get_output_directory(l:cmakelists_file,
+    \       l:ret.properties.settings["build_directory"]),
     \
     \   "is_project":
     \   filereadable(l:cmakelists_file) &&
@@ -806,11 +811,11 @@ function! s:cxx_cmake.construct(config)
 endfunction
 
 function! s:cxx_cmake.is_project()
-    return self.properties.plugin.is_project
+    return self.properties.internal.is_project
 endfunction
 
 function! s:cxx_cmake.get_project_name()
-    return self.properties.plugin.project_name
+    return self.properties.internal.project_name
 endfunction
 
 function! s:cxx_cmake.get_properties()
@@ -823,7 +828,7 @@ endfunction
 
 function! s:cxx_cmake.enable() abort
     let l:s = self.properties.settings
-    let l:p = self.properties.plugin
+    let l:p = self.properties.internal
 
     let s:options_initial_values = {
         \ "makeprg":    &makeprg,
@@ -837,6 +842,7 @@ function! s:cxx_cmake.enable() abort
     call s:set_makeprg(l:s.build_directory, l:s.jobs_number)
     call s:add_commands(l:s.source_directory,
                 \ l:s.build_directory,
+                \ l:p.bin_directory,
                 \ l:p.project_name,
                 \ l:s.additional_ctags_directories,
                 \ l:p.temporary_ctags_file,
