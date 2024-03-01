@@ -31,6 +31,7 @@ TABLE OF CONTENTS
 14) UPDATE CTAGS CSCOPE SYMBOLS        |cxx-cmake-update-ctags-cscope-symbols|
 15) CONFIGURATION FILE                          |cxx-cmake-configuration-file|
 16) DERIVATIVES (CXX-CMAKE-XD)                         |cxx-cmake-derivatives|
+17) CMAKE INPUT FILE                              |cxx-cmake-cmake-input-file|
 
 
 ==============================================================================
@@ -1220,6 +1221,44 @@ details, but I have marked some places which now needs to be explained:
 Rest is up to you what you want to have in your cxx-cmake-xd Settings
 Dictionary.  This is just an idea of what you can do. Feel free to experiment
 with it. Enjoy.
+
+
+==============================================================================
+CMAKE INPUT FILE                                  *cxx-cmake-cmake-input-file*
+
+The input file for CMake is CMakeLists.txt, which is placed in the project
+root. Without this file, |ProsetIsProject()| returns false and you can not use
+cxx-cmake, which is pretty much understandable.
+
+Although I tried not to force users to provide lot of dependencies (there is
+very few, see |cxx-cmake-dependencies|), neither force them to change their
+setup, but there is one thing that has to be done in CMakeLists.txt to make
+cxx-cmake work. CMakeLists.txt has to define PROJECT_NAME variable, i.e.:
+
+ set(PROJECT_NAME "foo192")
+
+in which project name has to be in double quote. Without this, cxx-cmake will
+not work.
+
+Second thing, but optional, is the definition of one of the following CMake
+variables:
+
+    - CMAKE_RUNTIME_OUTPUT_DIRECTORY - for application,
+    - CMAKE_ARCHIVE_OUTPUT_DIRECTORY - for static library,
+    - CMAKE_LIBRARY_OUTPUT_DIRECTORY - for shared library.
+
+It means that you can specify output directory for your project application or
+library. If you do not specify the path, then result of your build will be
+placed in |cxx-cmake-settings.build_directory|. You can change your output
+directory using these variables like this:
+
+1) Application will be in project_root/bin/
+
+ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+
+2) Static library will be in |cxx-cmake-settings.build_directory|/bin/
+
+ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "bin")
 
 
 ==============================================================================
