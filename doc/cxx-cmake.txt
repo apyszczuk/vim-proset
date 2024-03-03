@@ -58,17 +58,19 @@ command or a mapping):
     - switch between header and source files very easily,
     - create header file with include guard macro defined,
     - create source file with #include header file,
-    - create header and source files (at once),
+    - create header and source files (at once).
 
 
 ==============================================================================
 ASSUMPTIONS                                            *cxx-cmake-assumptions*
 
-- each command starts with a colon ':' which means that in normal mode you
-  type : and then name of a command (CXXCMake*),
-- each command ends with <CR> (enter/return),
-- if there is no explicit information that a command takes some arguments,
-  then it takes 0 arguments.
+Just before we start, take a look:
+
+    - each command starts with a colon ':' which means that in normal mode you
+      type : and then name of a command (CXXCMake*),
+    - each command ends with <CR> (enter/return),
+    - if there is no explicit information that a command takes some arguments,
+      then it takes 0 arguments.
 
 
 ==============================================================================
@@ -114,7 +116,7 @@ s:cxx_cmake.get_project_name()
 
 Returns value of CMakeLists.txt variable PROJECT_NAME:
 
-set(PROJECT_NAME "foo1")
+    set(PROJECT_NAME "foo1")
 
 If there is no such variable defined, empty string is returned.
 
@@ -135,28 +137,29 @@ s:cxx_cmake.enable()
 
 Enables cxx-cmake settings which include:
 
-- deleting |cxx-cmake-settings.temporary_directory| if for some reason one was
-  there,
-- creating new |cxx-cmake-settings.temporary_directory|,
-- setting |'makeprg'| option to CMake command used to build project,
-- adding commands,
-- adding mappings,
-- setting |'tags'| option with all required tags filenames,
-- generating tags file,
-- generating cscope file,
-- adding cscope (connections to) files,
-- updating |'path'| option.
+    - deleting |cxx-cmake-settings.temporary_directory| if for some reason one
+      was there,
+    - creating new |cxx-cmake-settings.temporary_directory|,
+    - setting |'makeprg'| option to CMake command used to build project,
+    - adding commands,
+    - adding mappings,
+    - setting |'tags'| option with all required tags filenames,
+    - generating tags file,
+    - generating cscope file,
+    - adding cscope (connections to) files,
+    - updating |'path'| option.
 
                                                          *cxx-cmake.disable()*
 s:cxx_cmake.disable()
 
 Disables cxx-cmake settings (reverts enable()) which include:
 
-- restoring |'path'|, |'tags'| and |'makeprg'| options to the original values,
-- removing all cscope connections,
-- removing mappings,
-- removing commands,
-- deleting temporary directory.
+    - restoring |'path'|, |'tags'| and |'makeprg'| options to the original
+      values,
+    - removing all cscope connections,
+    - removing mappings,
+    - removing commands,
+    - deleting temporary directory.
 
                                                          *CXXCMakeConstruct()*
 CXXCMakeConstruct(config)
@@ -181,8 +184,6 @@ commands.  For now it only works if both files are in the same directory.
 Future plan is to be able to store headers and sources separately (in
 different directories) and to make alternate-file module also work. Also, this
 functionality does not create alternate file if it is missing.
-
-All following commands take 0 argument.
 
                                      *cxx-cmake-alternate-file-current-window*
 1) Alternate file in a current window
@@ -390,9 +391,9 @@ create. Any missing directory in the hierarchy will be created.
 *) name for both files is the same except from extension. If you pass
 extension on the other hand, it will be removed and extensions will be used as
 they are defined in:
+
     - |cxx-cmake-settings.header_extension|,
     - |cxx-cmake-settings.source_extension|.
-
 
 Note: All of the above commands will emit CXXCMakeHeaderCreatedEvent if header
 file was created and CXXCMakeSourceCreatedEvent if source file was created.
@@ -497,7 +498,6 @@ appropriate values (paths):
       stored after they are generated or regenerated. Name of the file is
       hardcoded in the cxx-cmake and it is 
       |cxx-cmake-settings.temporary_directory|/tags.
-
     - |cxx-cmake-settings.external_ctags_files| - list of paths to the files
       (separated by semicolons) where tags of external sources are already
       generated (not by cxx-cmake).
@@ -535,6 +535,7 @@ once and add path to the generated file in
 
 Second step is to connect cscope symbols files to cscope Vim module using
 |:cs| add command. These files are:
+
     - *cxx-cmake-temporary_cscope_file* - path to the file where cscope
       symbols are stored after they are generated or regenerated. Name of the
       file is hardcoded in the cxx-cmake and it is
@@ -1195,27 +1196,24 @@ So let's get started to get it done automatically.
 
 
 Why does it look this way is explained in |proset-settings-dictionary| in more
-details, but I have marked some places which now needs to be explained:
+details, but I have marked some places which now need to be explained:
 
-(1) - we are going to use CXXCMakeConstruct(), we have to have its definition
-      already sourced,
+    (1) - we are going to use CXXCMakeConstruct(), we have to have its
+          definition already sourced,
+    (2) - definition of a construct() "member function" which uses public
+          cxx-cmake function to create an object (parent),
+    (3) - here is a code that does the job of refreshing NERDTree window.
+          cxx-cmake Settings Object produces events when file was created:
 
-(2) - definition of a construct() "member function" which uses public
-      cxx-cmake function to create an object (parent),
+              - CXXCMakeHeaderCreatedEvent - when header was created,
+              - CXXCMakeSourceCreatedEvent - when source was created.
 
-(3) - here is a code that does the job of refreshing NERDTree window.
-      cxx-cmake Settings Object produces events when file was created:
-
-      - CXXCMakeHeaderCreatedEvent - when header was created,
-      - CXXCMakeSourceCreatedEvent - when source was created,
-
-      So, we are connecting this event to the action of refreshing NERDTree.
-      Remember to revert all the side efects of enable() in disable()
-      function,
-
-(4) - you can easily put those commands in your vimrc, but then you will
-      probably have these connections always, not only when needed (the idea
-      of Proset plugin),
+          So, we are connecting this event to the action of refreshing
+          NERDTree.  Remember to revert all the side efects of enable() in
+          disable() function,
+    (4) - you can easily put those commands in your vimrc, but then you will
+          probably have these connections always, not only when needed (the
+          idea of Proset plugin),
 
 Rest is up to you what you want to have in your cxx-cmake-xd Settings
 Dictionary.  This is just an idea of what you can do. Feel free to experiment
@@ -1234,7 +1232,7 @@ very few, see |cxx-cmake-dependencies|), neither force them to change their
 setup, but there is one thing that has to be done in CMakeLists.txt to make
 cxx-cmake work. CMakeLists.txt has to define PROJECT_NAME variable, i.e.:
 
- set(PROJECT_NAME "foo192")
+    set(PROJECT_NAME "foo192")
 
 in which project name has to be in double quote. Without this, cxx-cmake will
 not work.
@@ -1254,11 +1252,11 @@ your output directory using these variables like this:
 
 1) Application will be in project_root/bin/
 
- set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
 
 2) Static library will be in |cxx-cmake-settings.build_directory|/bin/
 
- set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "bin")
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "bin")
 
 
 ==============================================================================
