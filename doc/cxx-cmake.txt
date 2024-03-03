@@ -417,11 +417,10 @@ job using |AsyncRun| plugin. Automatically output of build process is loaded
 in QuickFix window. If build is success, then QuickFix window is closed
 automatically. If warning or error is detected, QuickFix window is left open.
 
-All build files along with build result* (binary) are put into directory
-|cxx-cmake-settings.build_directory|.
-
-*) It can be changed in CMakeLists.txt of course, but to be able to run
-application from Vim, it has to be there.
+All build files are put into directory |cxx-cmake-settings.build_directory|.
+Location of build result (application, library) depends on configuration in
+CMakeLists.txt (not in configuration file of cxx-cmake!). For more information
+see |cxx-cmake-bin_directory|.
 
 
 ==============================================================================
@@ -1247,10 +1246,11 @@ variables:
     - CMAKE_ARCHIVE_OUTPUT_DIRECTORY - for static library,
     - CMAKE_LIBRARY_OUTPUT_DIRECTORY - for shared library.
 
-It means that you can specify output directory for your project application or
-library. If you do not specify the path, then result of your build will be
-placed in |cxx-cmake-settings.build_directory|. You can change your output
-directory using these variables like this:
+                                                     *cxx-cmake-bin_directory*
+It means that you can specify output (bin) directory for your project
+application or library. If you do not specify the path, then result of your
+build will be placed in |cxx-cmake-settings.build_directory|. You can change
+your output directory using these variables like this:
 
 1) Application will be in project_root/bin/
 
