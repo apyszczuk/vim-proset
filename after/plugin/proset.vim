@@ -72,49 +72,50 @@ function! s:disable()
     endif
 endfunction
 
-function! s:print_error_message(str)
-    echo "Proset Exception: " . a:str . ". Default Settings Object was chosen."
+function! s:get_error_message(what, msg)
+    return "vim-proset(" . a:what . "): " . a:msg
 endfunction
 
 augroup Proset
     autocmd!
 
+    autocmd VimEnter * call s:enable()
+    autocmd VimLeave * call s:disable()
+
     try
-        let s:configuration
-            \ = proset#lib#configuration#parse_file(s:proset_filepath, ":")
-        const settings_name = s:configuration.get("proset_settings", "")
-        if empty(settings_name)
-            finish
-        endif
+        try
+            let s:configuration
+                \ = proset#lib#configuration#parse_file(s:proset_filepath, ":")
+            const settings_name = s:configuration.get("proset_settings", "")
+            if empty(settings_name)
+                finish
+            endif
 
-        if exists('#User#ProsetRegisterInternalSettingsEvent')
-            doautocmd User ProsetRegisterInternalSettingsEvent
-        endif
+            if exists('#User#ProsetRegisterInternalSettingsEvent')
+                doautocmd User ProsetRegisterInternalSettingsEvent
+            endif
 
-        if exists('#User#ProsetRegisterSettingsEvent')
-            doautocmd User ProsetRegisterSettingsEvent
-        endif
+            if exists('#User#ProsetRegisterSettingsEvent')
+                doautocmd User ProsetRegisterSettingsEvent
+            endif
 
-        let s:settings = s:get_settings_from_name(settings_name)
+            let s:settings = s:get_settings_from_name(settings_name)
 
-        if exists('#User#ProsetSettingsChosenEvent')
-            doautocmd User ProsetSettingsChosenEvent
-        endif
-
-        autocmd VimEnter * call s:enable()
-        autocmd VimLeave * call s:disable()
-
-    catch /^proset:settings-already-registered:/
-        let lst = split(v:exception, ":")
-        call s:print_error_message(lst[2] . ": already registered")
-        finish
-    catch /^proset:settings:/
-        let lst = split(v:exception, ":")
-        call s:print_error_message(lst[3] . ": " . lst[4])
-        finish
-    catch /^proset:configuration:/
-        let lst = split(v:exception, ":")
-        call s:print_error_message(lst[2] . ": " . lst[3])
-        finish
+            if exists('#User#ProsetSettingsChosenEvent')
+                doautocmd User ProsetSettingsChosenEvent
+            endif
+        catch /^proset:settings-already-registered:/
+            let lst = split(v:exception, ":")
+            throw s:get_error_message(lst[2], "already registered")
+        catch /^proset:settings:/
+            let lst = split(v:exception, ":")
+            throw s:get_error_message(lst[3], lst[4])
+        catch /^proset:configuration:/
+            let lst = split(v:exception, ":")
+            throw s:get_error_message("cfg:" . lst[2], lst[3])
+        endtry
+    catch /^vim-proset\%(.*\):.*/
+        const msg = v:exception
+        autocmd VimEnter * echohl WarningMsg | echo msg | echohl None
     endtry
 augroup END
