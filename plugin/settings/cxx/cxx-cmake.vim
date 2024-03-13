@@ -411,33 +411,9 @@ function! s:get_not_empty(config, key, default_value)
     return l:ret
 endfunction
 
-function! s:is_path_correct(path)
-    if (match(a:path, '\.') == 0) && (len(a:path) == 1)
-        return 0
-    endif
-
-    if match(a:path, '\./') == 0
-        return 0
-    endif
-
-    if match(a:path, '\') >= 0
-        return 0
-    endif
-
-    if match(a:path, '\.\.') >= 0
-        return 0
-    endif
-
-    if match(a:path, '/') == 0
-        return 0
-    endif
-
-    return 1
-endfunction
-
 function! s:get_correct_path(config, key, default_value)
-    let l:ret = simplify(s:get_not_empty(a:config, a:key, a:default_value))
-    if s:is_path_correct(l:ret) == 0 || empty(l:ret)
+    let l:ret = s:get_not_empty(a:config, a:key, a:default_value)
+    if proset#utils#path#is_local_path(l:ret) == 0
         let l:ret = a:default_value
     endif
     return l:ret
@@ -879,8 +855,7 @@ function! s:cxx_cmake.disable()
 endfunction
 
 autocmd User ProsetRegisterInternalSettingsEvent
-        \ call ProsetRegisterSettings(
-        \ s:cxx_cmake.construct(ProsetGetConfiguration()))
+        \ call ProsetRegisterSettings("cxx-cmake", "CXXCMakeConstruct")
 
 function! CXXCMakeConstruct(config)
     return s:cxx_cmake.construct(a:config)

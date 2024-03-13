@@ -18,11 +18,14 @@ function! s:configuration_storage.get(parameter, default_value)
     return a:default_value
 endfunction
 
+function! s:get_error_message(file, reason)
+    return "proset:parse-configuration:" . a:file . ":" . a:reason
+endfunction
+
 function! proset#lib#configuration#parse_file(file, separator)
     if !filereadable(a:file)
         return s:configuration_storage.create({})
     endif
-    let l:msg = "proset:configuration:" . a:file . ":"
 
     let l:ret = {}
     for l:row in readfile(a:file)
@@ -35,12 +38,12 @@ function! proset#lib#configuration#parse_file(file, separator)
         let l:kv = split(l:row, a:separator, 1)
 
         if len(l:kv) < 2
-            throw l:msg . 'no separator'
+            throw s:get_error_message(a:file, 'has no separator')
         endif
 
         let l:key = trim(l:kv[0])
         if empty(l:key)
-            throw l:msg . 'empty key'
+            throw s:get_error_message(a:file, 'has empty key')
         endif
 
         let l:val = trim(join(l:kv[1:], a:separator))

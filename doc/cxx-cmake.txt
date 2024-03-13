@@ -164,9 +164,10 @@ Disables cxx-cmake settings (reverts enable()) which include:
                                                          *CXXCMakeConstruct()*
 CXXCMakeConstruct(config)
 
-Constructor of cxx-cmake Settings Dictionary. Used only when you want to
-extend cxx-cmake by writing your own Settings Dictionary and have cxx-cmake
-Settings Object as "member" in your type (extend of cxx-cmake).
+Constructor of cxx-cmake Settings Dictionary. It is registered in the call to
+ProsetRegisterSettings function in an autocmd. It can also be used when you
+want to extend cxx-cmake by writing your own Settings Dictionary and to have
+cxx-cmake Settings Object as "member" in your type (extend of cxx-cmake).
 
 a:config parameter is a configuration object you have to provide and you can
 get it from |ProsetGetConfiguration()|.
@@ -261,7 +262,7 @@ Include guard is a string in the form of:
 
 where:
     PN          - project name taken from |cxx-cmake.get_project_name()|, or
-                  |ProsetGetProjectName()| - it's the same,
+                  |ProsetGetProjectName()| - it is the same,
     D1, D2, D3  - D1/D2/D3 path to the file F,
     F           - filename,
     EXT         - extension of the file F taken from
@@ -290,8 +291,8 @@ looks like this:
 ==============================================================================
 CREATE SOURCE FILE                              *cxx-cmake-create-source-file*
 
-Besides header files, you will create source files also. Source file does not
-have any include guard, but very oftern it includes header file using #include
+Besides header files, you will also create source files. Source file does not
+have any include guard, but very often it includes header file using #include
 directive. To make life just a little bit more comfortable - even if it is not
 a big deal - this #include directive is inserted automatically by following
 commands.
@@ -497,7 +498,7 @@ appropriate values (paths):
     - *cxx-cmake-temporary_ctags_file* - path to the file where tags are
       stored after they are generated or regenerated. Name of the file is
       hardcoded in the cxx-cmake and it is 
-      |cxx-cmake-settings.temporary_directory|/tags.
+      |cxx-cmake-settings.temporary_directory|/tags,
     - |cxx-cmake-settings.external_ctags_files| - list of paths to the files
       (separated by semicolons) where tags of external sources are already
       generated (not by cxx-cmake).
@@ -539,7 +540,7 @@ Second step is to connect cscope symbols files to cscope Vim module using
     - *cxx-cmake-temporary_cscope_file* - path to the file where cscope
       symbols are stored after they are generated or regenerated. Name of the
       file is hardcoded in the cxx-cmake and it is
-      |cxx-cmake-settings.temporary_directory|/cscope.
+      |cxx-cmake-settings.temporary_directory|/cscope,
     - |cxx-cmake-settings.external_cscope_files| - list of paths to the files
       (separated by semicolons) where cscope symbols of external sources are
       already generated (not by cxx-cmake).
@@ -553,31 +554,31 @@ Using cscope command you have to provide name you want to search for. For
 mapping there is an assumption it uses <cword> (word under the cursor as a
 name). All of these mappings work in normal mode.
 
-command: :cs find a name     
+command: :cs find a name
 mapping: |cxx-cmake-mappings.cscope.a_find_assignments_to_this_symbol|
 
-command: :cs find c name     
+command: :cs find c name
 mapping: |cxx-cmake-mappings.cscope.c_find_functions_calling_this_function|
 
-command: :cs find d name     
+command: :cs find d name
 mapping: |cxx-cmake-mappings.cscope.d_find_functions_called_by_this_function|
 
-command: :cs find e name     
+command: :cs find e name
 mapping: |cxx-cmake-mappings.cscope.e_find_this_egrep_pattern|
 
-command: :cs find f name     
+command: :cs find f name
 mapping: |cxx-cmake-mappings.cscope.f_find_this_file|
 
-command: :cs find g name     
+command: :cs find g name
 mapping: |cxx-cmake-mappings.cscope.g_find_this_definition|
 
-command: :cs find i name     
+command: :cs find i name
 mapping: |cxx-cmake-mappings.cscope.i_find_files_including_this_file|
 
-command: :cs find s name     
+command: :cs find s name
 mapping: |cxx-cmake-mappings.cscope.s_find_this_c_symbol|
 
-command: :cs find t name     
+command: :cs find t name
 mapping: |cxx-cmake-mappings.cscope.t_find_this_text_string|
 
 See |cscope| to get more information how to use it.
@@ -617,7 +618,7 @@ command.
 There are parameters designed to store directory path. Value of such parameter
 is checked for correctness. So, if value is empty or '.', starts with './' or
 '/', contains '..' or '\', then default (hardcoded) value is taken. This means
-that the path must be below the project root. There is information that the
+that the path must be below the project root. There is an information that the
 parameter is checked in the description of it.
 
                                                    *cxx-cmake-proset_settings*
@@ -1090,7 +1091,7 @@ mappings.create_header_source_edit_current_vsplit: <Leader>chsecv
 
 
 ==============================================================================
-DERIVATIVES (CXX-CMAKE-XD)                             *cxx-cmake-derivatives*
+DERIVATIVES (CXX-CMAKE-AP)                             *cxx-cmake-derivatives*
 
 Imagine a little bit:
 
@@ -1118,7 +1119,7 @@ removed in a future and cxx-cmake will take care of asynchronous task on its
 own, but for now it stays, sorry if this makes you angry.
 
 But I have good news for you! You can extend cxx-cmake and make your own
-cxx-cmake-xd Settings Dictionary (or choose other, better name) that you will
+cxx-cmake-ap Settings Dictionary (or choose other, better name) that you will
 register in the Proset plugin and this is not as hard as you may initially
 think. I hope, you have already read |proset-settings-dictionary| because
 there are informations how to do it. Yet, I will give you complete example
@@ -1143,57 +1144,62 @@ annoying.
 
 So let's get started to get it done automatically.
 
-    if exists("g:loaded_proset_settings_cxx_cxx_cmake_xd")
+    if exists("g:loaded_proset_settings_cxx_cxx_cmake_ap")
         finish
     endif
-    let g:loaded_proset_settings_cxx_cxx_cmake_xd = 1
-
+    let g:loaded_proset_settings_cxx_cxx_cmake_ap = 1
+    
     " (1)
-    runtime plugin/settings/cxx/cxx-cmake.vim
-
-    let s:cxx_cmake_xd = {'properties': {}}
-
+    runtime plugin/settings/cxx/cxx_cmake.vim
+    
+    let s:cxx_cmake_ap = {'properties': {}}
+    
     " (2)
-    function! s:cxx_cmake_xd.construct(config)
+    function! s:cxx_cmake_ap.construct(config, settings_name)
         let l:ret = deepcopy(self)
         let l:ret.parent = CXXCMakeConstruct(a:config)
+        let l:ret.properties["settings_name"] = a:settings_name
         return l:ret
     endfunction
-
-    function! s:cxx_cmake_xd.is_project()
+    
+    function! s:cxx_cmake_ap.is_project()
         return self.parent.is_project()
     endfunction
-
-    function! s:cxx_cmake_xd.get_project_name()
+    
+    function! s:cxx_cmake_ap.get_project_name()
         return self.parent.get_project_name()
     endfunction
-
-    function! s:cxx_cmake_xd.get_properties()
+    
+    function! s:cxx_cmake_ap.get_properties()
         return self.parent.get_properties()
     endfunction
-
-    function! s:cxx_cmake_xd.get_settings_name()
-        return "cxx-cmake-xd"
+    
+    function! s:cxx_cmake_ap.get_settings_name()
+        return self.properties.settings_name
     endfunction
-
+    
     " (3)
-    function! s:cxx_cmake_xd.enable()
+    function! s:cxx_cmake_ap.enable()
         call self.parent.enable()
         " (4)
         autocmd User CXXCMakeHeaderCreatedEvent :NERDTreeRefreshRoot
         autocmd User CXXCMakeSourceCreatedEvent :NERDTreeRefreshRoot
     endfunction
-
-    function! s:cxx_cmake_xd.disable()
+    
+    function! s:cxx_cmake_ap.disable()
         autocmd! User CXXCMakeHeaderCreatedEvent
         autocmd! User CXXCMakeSourceCreatedEvent
         call self.parent.disable()
     endfunction
-
+    
+    " (5)
     autocmd User ProsetRegisterSettingsEvent
-            \ call ProsetRegisterSettings(
-            \ s:cxx_cmake_xd.construct(ProsetGetConfiguration()))
-
+        \ call ProsetRegisterSettings("cxx-cmake-ap", "CXXCMakeApConstruct")
+    
+    " (6)
+    function! CXXCMakeApConstruct(config)
+        return s:cxx_cmake_ap.construct(a:config, "cxx-cmake-ap")
+    endfunction
 
 Why does it look this way is explained in |proset-settings-dictionary| in more
 details, but I have marked some places which now need to be explained:
@@ -1214,8 +1220,17 @@ details, but I have marked some places which now need to be explained:
     (4) - you can easily put those commands in your vimrc, but then you will
           probably have these connections always, not only when needed (the
           idea of Proset plugin),
+    (5) - register settings name and assign public constructor function to it,
+    (6) - constructor function that has to take one parameter - configuration.
 
-Rest is up to you what you want to have in your cxx-cmake-xd Settings
+Note:
+In (5) and (6) settings name string is "cxx-cmake-ap" and it has to be
+identical in both places! Internal constructor (2) takes string as a second
+argument which is settings name. This means that you can create multiple
+Settings Objects from cxx-cmake-ap Settings Dictionary, just duplicate (5)
+and (6) and fill them with appropriate settings name string.
+
+Rest is up to you what you want to have in your cxx-cmake-ap Settings
 Dictionary.  This is just an idea of what you can do. Feel free to experiment
 with it. Enjoy.
 
@@ -1227,7 +1242,7 @@ The input file for CMake is CMakeLists.txt, which is placed in the project
 root. Without this file, |ProsetIsProject()| returns false and you can not use
 cxx-cmake, which is pretty much understandable.
 
-Although I tried not to force users to provide lot of dependencies (there is
+Although I tried not to force users to provide lot of dependencies (there are
 very few, see |cxx-cmake-dependencies|), neither force them to change their
 setup, but there is one thing that has to be done in CMakeLists.txt to make
 cxx-cmake work. CMakeLists.txt has to define PROJECT_NAME variable, i.e.:
