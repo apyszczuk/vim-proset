@@ -813,7 +813,7 @@ function! s:cxx_cmake.enable() abort
     \ }
 
     call delete(l:s.temporary_directory, "rf")
-    call mkdir(l:s.temporary_directory)
+    call mkdir(l:s.temporary_directory, "p")
 
     call s:set_makeprg(l:s.build_directory, l:s.jobs_number)
     call s:add_commands(l:s.source_directory,
