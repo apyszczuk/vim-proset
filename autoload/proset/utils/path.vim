@@ -32,3 +32,12 @@ function! proset#utils#path#is_local_path(path)
 
     return 1
 endfunction
+
+function! proset#utils#path#is_subpath(base, path)
+    let l:base = simplify(fnamemodify(a:base, ":p"))
+    let l:path = simplify(fnamemodify(a:path, ":p"))
+
+    return (match(l:path, l:base) == 0) &&
+        \ (len(l:path) != len(l:base)) &&
+        \ !isabsolutepath(a:path)
+endfunction

@@ -213,10 +213,18 @@ function! s:remove_commands()
     endfor
 endfunction
 
+function! s:validate_settings_file()
+    if proset#utils#path#is_subpath(getcwd(), g:proset_settings_file) == 0
+        throw "proset:init-phase:1:bad g:proset_settings_file value"
+    endif
+endfunction
+
 augroup Proset
     autocmd!
 
     try
+        call s:validate_settings_file()
+
         autocmd VimEnter * call s:enable()
         autocmd VimLeave * call s:disable()
 
@@ -245,7 +253,7 @@ augroup Proset
 
     catch /^proset:init-phase:/
         let lst = split(v:exception, ":")
-        let msg = s:get_error_message(lst[2], lst[3])
+        let msg = s:get_error_message(lst[2], join(lst[3:], ":"))
         autocmd VimEnter * call s:print_message(msg)
     endtry
 

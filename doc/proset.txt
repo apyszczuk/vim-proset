@@ -126,8 +126,16 @@ PLUGIN VARIABLES                                            *proset-variables*
                                                       *g:proset_settings_file*
 g:proset_settings_file
 
-This variable stores path to the file (string) with project settings. The file
-has to have at least one required parameter (|proset-configuration-file|).
+This variable stores path to project settings file. It has to be a relative
+subpath to current working directory. Error *proset-E1* may occur if value
+results in:
+
+    - empty value,
+    - current directory ("."),
+    - global path ("/tmp/settings", even if it leads you below your current
+      working directory),
+    - path above current working directory ("..").
+
 Default value is ".vim-proset/settings".
 
 To change default value, put this in your vimrc:
