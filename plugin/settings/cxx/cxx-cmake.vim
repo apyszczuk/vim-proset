@@ -490,7 +490,7 @@ function! s:cxx_cmake.construct(config)
     \   "is_project":
     \   filereadable(l:cmakelists_file) &&
     \   isdirectory(l:ret.properties.settings.source_directory) &&
-    \   isdirectory(g:proset_directory) &&
+    \   filereadable(g:proset_settings_file) &&
     \   !empty(l:project_name)
     \ }
 

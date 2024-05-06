@@ -9,13 +9,9 @@ if exists("g:loaded_proset")
 endif
 let g:loaded_proset = 1
 
-let g:proset_directory  = get(g:, 'proset_directory', '.vim-proset')
-let g:proset_file       = get(g:, 'proset_file', 'settings')
+let g:proset_settings_file = get(g:, 'proset_settings_file', '.vim-proset/settings')
+lockvar g:proset_settings_file
 
-lockvar g:proset_directory
-lockvar g:proset_file
-
-let s:proset_filepath   = g:proset_directory . "/" . g:proset_file
 let s:settings          = proset#settings#default#construct()
 let s:storage           = {}
 let s:configuration     = {}
@@ -60,18 +56,6 @@ function! s:disable()
     endif
 endfunction
 
-function! s:validate_proset_directory(path)
-    if proset#utils#path#is_local_path(a:path) == 0
-        throw "proset:init-phase:1:bad proset_directory value"
-    endif
-endfunction
-
-function! s:validate_proset_file(file)
-    if empty(a:file)
-        throw "proset:init-phase:2:bad proset_file value"
-    endif
-endfunction
-
 function! s:get_info_message(msg)
     return "proset: " . a:msg . "."
 endfunction
@@ -97,7 +81,7 @@ function! s:load_settings(path, init_phase)
 
     try
         try
-            let l:settings_file = a:path . "/" . s:proset_filepath
+            let l:settings_file = a:path . "/" . g:proset_settings_file
 
             if !filereadable(l:settings_file)
                 if a:init_phase == 0
@@ -233,9 +217,6 @@ augroup Proset
     autocmd!
 
     try
-        call s:validate_proset_directory(g:proset_directory)
-        call s:validate_proset_file(g:proset_file)
-
         autocmd VimEnter * call s:enable()
         autocmd VimLeave * call s:disable()
 

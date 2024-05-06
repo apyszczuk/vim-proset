@@ -123,32 +123,16 @@ is refered as current.
 ==============================================================================
 PLUGIN VARIABLES                                            *proset-variables*
 
-                                                          *g:proset_directory*
-g:proset_directory
+                                                      *g:proset_settings_file*
+g:proset_settings_file
 
-This variables stores path (string) to the directory with project settings.
-It has to be within the project, which means value is treated as relative path
-starting from current working directory (project root path). If the value
-points to the directory outside of the project or is empty, then *proset-E1*
-shows up. Default value is ".vim-proset".
+This variable stores path to the file (string) with project settings. The file
+has to have at least one required parameter (|proset-configuration-file|).
+Default value is ".vim-proset/settings".
 
 To change default value, put this in your vimrc:
 
- let g:proset_directory = ".proset"
-
-Variable can not be altered on the fly.
-
-                                                               *g:proset_file*
-g:proset_file
-
-This variables stores filename (string) of the file with project settings that
-is inside |g:proset_directory|. This file has to have at least one required
-parameter (|proset-configuration-file|). If value of the parameter is empty,
-*proset-E2* shows up. Default value is "settings".
-
-To change default value, put this in your vimrc:
-
- let g:proset_file = "cfg"
+ let g:proset_settings_file = ".ide/cfg"
 
 Variable can not be altered on the fly.
 
@@ -157,7 +141,7 @@ Variable can not be altered on the fly.
 CONFIGURATION                                           *proset-configuration*
 
 The only one configuration file that is read and required by the plugin is
-|g:proset_directory|/|g:proset_file|.
+|g:proset_settings_file|.
 
 Key and value are separated by colon. Key is on the left side of a colon, and
 the value is on the right, both of them are trimmed (whitespace characters

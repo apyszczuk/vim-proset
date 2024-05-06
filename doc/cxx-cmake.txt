@@ -104,9 +104,9 @@ s:cxx_cmake.is_project()
 
 Returns TRUE if:
 
-    - CMakeLists.txt file is present in current directory, and
-    - |cxx-cmake-settings.source_directory| is present, and
-    - |g:proset_directory| is present, and
+    - CMakeLists.txt is in the current directory and can be read, and
+    - |cxx-cmake-settings.source_directory| exists, and
+    - |g:proset_settings_file| can be read, and
     - PROJECT_NAME variable is defined in CMakeLists.txt and is not empty.
 
 otherwise returns FALSE.
@@ -605,12 +605,12 @@ automatically also.
 CONFIGURATION FILE                              *cxx-cmake-configuration-file*
 
 There is only one configuration file that is required by cxx-cmake, this is
-|g:proset_directory|/|g:proset_file|. All parameters in it are optional - when
-missing, default (hardcoded) value will be used. Depending on the parameter
-itself, the functionality can behave in a default manner (build_directory and
-jobs_number will have default values, so you can build your project), or the
-functionality can be disabled (mappings are not available if missing). There
-are parameters that if present but empty will take default value anyway.
+|g:proset_settings_file|. All parameters in it are optional - when missing,
+default (hardcoded) value will be used. Depending on the parameter itself, the
+functionality can behave in a default manner (build_directory and jobs_number
+will have default values, so you can build your project), or the functionality
+can be disabled (mappings are not available if missing). There are parameters
+that if present but empty will take default value anyway.
 
 Additionally each parameter that has a command associated with will name that
 command.
