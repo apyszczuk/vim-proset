@@ -403,17 +403,18 @@ function! s:remove_mappings(mappings)
     endfor
 endfunction
 
-function! s:get_not_empty(config, key, default_value)
-    let l:ret = a:config.get(a:key, a:default_value)
+function! s:get_not_empty(config, default_value, ...)
+    let l:ret = trim(call(function('proset#lib#dict#get'), [a:config, a:default_value] + a:000))
     if empty(l:ret)
         let l:ret = a:default_value
     endif
     return l:ret
 endfunction
 
-function! s:get_correct_path(config, key, default_value)
-    let l:ret = s:get_not_empty(a:config, a:key, a:default_value)
-    if proset#utils#path#is_local_path(l:ret) == 0
+
+function! s:get_correct_path(config, default_value, ...)
+    let l:ret = call(function('s:get_not_empty'), [a:config, a:default_value] + a:000)
+    if proset#utils#path#is_subpath(getcwd(), l:ret) == 0
         let l:ret = a:default_value
     endif
     return l:ret
@@ -424,48 +425,92 @@ function! s:cxx_cmake.construct(config)
 
     let l:ret.properties.settings =
     \ {
+    \   "jobs_number":
+    \   proset#lib#dict#get(a:config,
+    \       "1",
+    \       "settings",
+    \       "build",
+    \       "jobs"
+    \   ),
+    \
     \   "temporary_directory":
     \   s:get_correct_path(a:config,
-    \       "settings.temporary_directory",
-    \       ".vim-proset_tmp"),
-    \
+    \       ".vim-proset_tmp",
+    \       "settings",
+    \       "directory",
+    \       "temporary"
+    \   ),
     \   "build_directory":
     \   s:get_correct_path(a:config,
-    \       "settings.build_directory",
-    \       "build"),
-    \
+    \       "build",
+    \       "settings",
+    \       "directory",
+    \       "build"
+    \   ),
     \   "source_directory":
     \   s:get_correct_path(a:config,
-    \       "settings.source_directory",
-    \       "src"),
-    \
-    \   "jobs_number":
-    \   a:config.get("settings.jobs_number", "1"),
+    \       "src",
+    \       "settings",
+    \       "directory",
+    \       "source"
+    \   ),
     \
     \   "additional_ctags_directories":
-    \   a:config.get("settings.additional_ctags_directories", ""),
-    \
-    \   "external_ctags_files":
-    \   a:config.get("settings.external_ctags_files", ""),
-    \
+    \   join(
+    \   proset#lib#dict#get(a:config,
+    \       [],
+    \       "settings",
+    \       "directories",
+    \       "additional_ctags"
+    \   ), ";"),
     \   "additional_cscope_directories":
-    \   a:config.get("settings.additional_cscope_directories", ""),
+    \   join(
+    \   proset#lib#dict#get(a:config,
+    \       [],
+    \       "settings",
+    \       "directories",
+    \       "additional_cscope"
+    \   ), ";"),
+    \   "additional_search_directories":
+    \   join(
+    \   proset#lib#dict#get(a:config,
+    \       [],
+    \       "settings",
+    \       "directories",
+    \       "additional_search"
+    \   ), ";"),
     \
     \   "external_cscope_files":
-    \   a:config.get("settings.external_cscope_files", ""),
-    \
-    \   "additional_search_directories":
-    \   a:config.get("settings.additional_search_directories", ""),
+    \   join(
+    \   proset#lib#dict#get(a:config,
+    \       [],
+    \       "settings",
+    \       "files",
+    \       "external_cscope"
+    \   ), ";"),
+    \   "external_ctags_files":
+    \   join(
+    \   proset#lib#dict#get(a:config,
+    \       [],
+    \       "settings",
+    \       "files",
+    \       "external_ctags"
+    \   ), ";"),
     \
     \   "header_extension":
     \   s:get_not_empty(a:config,
-    \       "settings.header_extension",
-    \       "hpp"),
-    \
+    \       "hpp",
+    \       "settings",
+    \       "extension",
+    \       "header"
+    \   ),
     \   "source_extension":
     \   s:get_not_empty(a:config,
-    \       "settings.source_extension",
-    \       "cpp"),
+    \       "cpp",
+    \       "settings",
+    \       "extension",
+    \       "source"
+    \   ),
     \ }
 
     let l:cmakelists_file = "CMakeLists.txt"
@@ -502,284 +547,440 @@ function! s:cxx_cmake.construct(config)
     \ {
     \   "alternate_file.current_window":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.alternate_file.current_window",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_silent_mapping",
-    \               [":CXXCMakeAlternateFileCurrentWindow<CR>"])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "alternate_file",
+    \           "current_window"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_silent_mapping",
+    \           [":CXXCMakeAlternateFileCurrentWindow<CR>"]
+    \       )
     \   },
     \   "alternate_file.split_window":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.alternate_file.split_window",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_silent_mapping",
-    \               [":CXXCMakeAlternateFileSplitWindow<CR>"])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "alternate_file",
+    \           "split_window"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_silent_mapping",
+    \           [":CXXCMakeAlternateFileSplitWindow<CR>"]
+    \       )
     \   },
     \   "alternate_file.vsplit_window":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.alternate_file.vsplit_window",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_silent_mapping",
-    \               [":CXXCMakeAlternateFileVSplitWindow<CR>"])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "alternate_file",
+    \           "vsplit_window"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_silent_mapping",
+    \           [":CXXCMakeAlternateFileVSplitWindow<CR>"]
+    \       )
     \   },
     \
     \   "cscope.a_find_assignments_to_this_symbol":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.cscope.a_find_assignments_to_this_symbol",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_cscope_mapping",
-    \               ["a"])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "cscope",
+    \           "a_find_assignments_to_this_symbol"
+    \       ),
+    \       "fun":
+    \       function("s:set_cscope_mapping",
+    \           ["a"]
+    \       )
     \   },
     \   "cscope.c_find_functions_calling_this_function":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.cscope.c_find_functions_calling_this_function",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_cscope_mapping",
-    \               ["c"])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "cscope",
+    \           "c_find_functions_calling_this_function"
+    \       ),
+    \       "fun":
+    \       function("s:set_cscope_mapping",
+    \           ["c"]
+    \       )
     \   },
     \   "cscope.d_find_functions_called_by_this_function":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.cscope.d_find_functions_called_by_this_function",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_cscope_mapping",
-    \               ["d"])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "cscope",
+    \           "d_find_functions_called_by_this_function"
+    \       ),
+    \       "fun":
+    \       function("s:set_cscope_mapping",
+    \           ["d"]
+    \       )
     \   },
     \   "cscope.e_find_this_egrep_pattern":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.cscope.e_find_this_egrep_pattern",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_cscope_mapping",
-    \               ["e"])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "cscope",
+    \           "e_find_this_egrep_pattern"
+    \       ),
+    \       "fun":
+    \       function("s:set_cscope_mapping",
+    \           ["e"]
+    \       )
     \   },
     \   "cscope.f_find_this_file":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.cscope.f_find_this_file",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_cscope_mapping",
-    \               ["f"])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "cscope",
+    \           "f_find_this_file"
+    \       ),
+    \       "fun":
+    \       function("s:set_cscope_mapping",
+    \           ["f"]
+    \       )
     \   },
     \   "cscope.g_find_this_definition":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.cscope.g_find_this_definition",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_cscope_mapping",
-    \               ["g"])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "cscope",
+    \           "g_find_this_definition"
+    \       ),
+    \       "fun":
+    \       function("s:set_cscope_mapping",
+    \           ["g"]
+    \       )
     \   },
     \   "cscope.i_find_files_including_this_file":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.cscope.i_find_files_including_this_file",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_cscope_mapping",
-    \               ["i"])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "cscope",
+    \           "i_find_files_including_this_file"
+    \       ),
+    \       "fun":
+    \       function("s:set_cscope_mapping",
+    \           ["i"]
+    \       )
     \   },
     \   "cscope.s_find_this_c_symbol":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.cscope.s_find_this_c_symbol",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_cscope_mapping",
-    \               ["s"])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "cscope",
+    \           "s_find_this_c_symbol"
+    \       ),
+    \       "fun":
+    \       function("s:set_cscope_mapping",
+    \           ["s"]
+    \       )
     \   },
     \   "cscope.t_find_this_text_string":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.cscope.t_find_this_text_string",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_cscope_mapping",
-    \               ["t"])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "cscope",
+    \           "t_find_this_text_string"
+    \       ),
+    \       "fun":
+    \       function("s:set_cscope_mapping",
+    \           ["t"]
+    \       )
     \   },
     \
     \   "build":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.build",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_silent_mapping",
-    \               [":CXXCMakeBuild<CR>"])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "project",
+    \           "build"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_silent_mapping",
+    \           [":CXXCMakeBuild<CR>"]
+    \       )
     \   },
     \   "clean":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.clean",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_silent_mapping",
-    \               [":CXXCMakeClean<CR>"])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "project",
+    \           "clean"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_silent_mapping",
+    \           [":CXXCMakeClean<CR>"]
+    \       )
     \   },
     \   "clean_and_build":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.clean_and_build",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_silent_mapping",
-    \               [":CXXCMakeCleanAndBuild<CR>"])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "project",
+    \           "clean_and_build"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_silent_mapping",
+    \           [":CXXCMakeCleanAndBuild<CR>"]
+    \       )
     \   },
     \   "run":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.run",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_silent_mapping",
-    \               [":CXXCMakeRun<CR>"])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "project",
+    \           "run"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_silent_mapping",
+    \           [":CXXCMakeRun<CR>"]
+    \       )
     \   },
     \   "run_args":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.run_args",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_mapping",
-    \               [":CXXCMakeRun "])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "project",
+    \           "run_args"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_mapping",
+    \           [":CXXCMakeRun "]
+    \       )
     \   },
-    \   "update_cscope_ctags":
+    \
+    \   "update_ctags_cscope_symbols":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.update_ctags_cscope_symbols",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_silent_mapping",
-    \               [":CXXCMakeUpdateCtagsCscopeSymbols<CR>"])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "update_ctags_cscope_symbols"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_silent_mapping",
+    \           [":CXXCMakeUpdateCtagsCscopeSymbols<CR>"]
+    \       )
     \   },
+    \
     \   "create_header":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.create_header",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_mapping",
-    \               [":CXXCMakeCreateHeader "])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "create_file",
+    \           "header"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_mapping",
+    \           [":CXXCMakeCreateHeader "]
+    \       )
     \   },
     \   "create_header_edit":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.create_header_edit",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_mapping",
-    \               [":CXXCMakeCreateHeaderEdit "])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "create_file",
+    \           "header_edit"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_mapping",
+    \           [":CXXCMakeCreateHeaderEdit "]
+    \       )
     \   },
     \   "create_header_edit_split":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.create_header_edit_split",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_mapping",
-    \               [":CXXCMakeCreateHeaderEditSplit "])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "create_file",
+    \           "header_edit_split"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_mapping",
+    \           [":CXXCMakeCreateHeaderEditSplit "]
+    \       )
     \   },
     \   "create_header_edit_vsplit":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.create_header_edit_vsplit",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_mapping",
-    \               [":CXXCMakeCreateHeaderEditVSplit "])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "create_file",
+    \           "header_edit_vsplit"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_mapping",
+    \           [":CXXCMakeCreateHeaderEditVSplit "]
+    \       )
     \   },
     \   "create_source":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.create_source",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_mapping",
-    \               [":CXXCMakeCreateSource "])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "create_file",
+    \           "source"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_mapping",
+    \           [":CXXCMakeCreateSource "]
+    \       )
     \   },
     \   "create_source_edit":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.create_source_edit",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_mapping",
-    \               [":CXXCMakeCreateSourceEdit "])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "create_file",
+    \           "source_edit"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_mapping",
+    \           [":CXXCMakeCreateSourceEdit "]
+    \       )
     \   },
     \   "create_source_edit_split":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.create_source_edit_split",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_mapping",
-    \               [":CXXCMakeCreateSourceEditSplit "])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "create_file",
+    \           "source_edit_split"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_mapping",
+    \           [":CXXCMakeCreateSourceEditSplit "]
+    \       )
     \   },
     \   "create_source_edit_vsplit":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.create_source_edit_vsplit",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_mapping",
-    \               [":CXXCMakeCreateSourceEditVSplit "])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "create_file",
+    \           "source_edit_vsplit"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_mapping",
+    \           [":CXXCMakeCreateSourceEditVSplit "]
+    \       )
     \   },
     \   "create_header_source":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.create_header_source",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_mapping",
-    \               [":CXXCMakeCreateHeaderSource "])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "create_file",
+    \           "header_source"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_mapping",
+    \           [":CXXCMakeCreateHeaderSource "]
+    \       )
     \   },
     \   "create_header_source_edit_split":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.create_header_source_edit_split",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_mapping",
-    \               [":CXXCMakeCreateHeaderSourceEditSplit "])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "create_file",
+    \           "header_source_edit_split"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_mapping",
+    \           [":CXXCMakeCreateHeaderSourceEditSplit "]
+    \       )
     \   },
     \   "create_header_source_edit_current_split":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.create_header_source_edit_current_split",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_mapping",
-    \               [":CXXCMakeCreateHeaderSourceEditCurrentSplit "])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "create_file",
+    \           "header_source_edit_current_split"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_mapping",
+    \           [":CXXCMakeCreateHeaderSourceEditCurrentSplit "]
+    \       )
     \   },
     \   "create_header_source_edit_vsplit":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.create_header_source_edit_vsplit",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_mapping",
-    \               [":CXXCMakeCreateHeaderSourceEditVSplit "])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "create_file",
+    \           "header_source_edit_vsplit"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_mapping",
+    \           [":CXXCMakeCreateHeaderSourceEditVSplit "]
+    \       )
     \   },
     \   "create_header_source_edit_current_vsplit":
     \   {
-    \       "seq": a:config.get(
-    \               "mappings.create_header_source_edit_current_vsplit",
-    \               ""),
-    \       "fun": function(
-    \               "s:set_nnoremap_mapping",
-    \               [":CXXCMakeCreateHeaderSourceEditCurrentVSplit "])
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "mappings",
+    \           "create_file",
+    \           "header_source_edit_current_vsplit"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_mapping",
+    \           [":CXXCMakeCreateHeaderSourceEditCurrentVSplit "]
+    \       )
     \   },
     \ }
 

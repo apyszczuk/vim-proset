@@ -15,21 +15,21 @@ Website:    https://github.com/apyszczuk/vim-proset
 ==============================================================================
 TABLE OF CONTENTS
 
- 1) INTRODUCTION                                         |proset-introduction|
- 2) SETTINGS                                                 |proset-settings|
- 3) PLUGIN VARIABLES                                        |proset-variables|
- 4) CONFIGURATION                                       |proset-configuration|
- 5) EVENTS                                                     |proset-events|
- 6) SETTINGS API                                         |proset-settings-api|
- 7) SETTINGS DICTIONARY                           |proset-settings-dictionary|
- 8) API                                                           |proset-api|
- 9) COMMANDS                                                 |proset-commands|
-10) SUPPORTED SETTINGS DICTIONARIES   |proset-supported-settings-dictionaries|
-11) CONTRIBUTE                                             |proset-contribute|
+ 1) INTRODUCTION                                         |proset:introduction|
+ 2) SETTINGS                                                 |proset:settings|
+ 3) PLUGIN VARIABLES                                        |proset:variables|
+ 4) CONFIGURATION                                       |proset:configuration|
+ 5) EVENTS                                                     |proset:events|
+ 6) SETTINGS API                                         |proset:settings_api|
+ 7) SETTINGS DICTIONARY                           |proset:settings_dictionary|
+ 8) API                                                           |proset:api|
+ 9) COMMANDS                                                 |proset:commands|
+10) SUPPORTED SETTINGS DICTIONARIES   |proset:supported_settings_dictionaries|
+11) CONTRIBUTE                                             |proset:contribute|
 
 
 ==============================================================================
-INTRODUCTION                                             *proset-introduction*
+INTRODUCTION                                             *proset:introduction*
 
 Anytime you want to have different settings for different projects using Vim,
 you probably have a problem. You can edit your vimrc before opening a project,
@@ -68,7 +68,7 @@ function or command.
 
 
 ==============================================================================
-SETTINGS                                                     *proset-settings*
+SETTINGS                                                     *proset:settings*
 
 Proset Settings is something that stores all your project specific
 configuration. It is implemented as a dictionary with specific interface (see
@@ -97,9 +97,9 @@ appropriate directory with meaningful name roughly speaking what is it for.
 For example:
 plugin/settings/cxx/cxx-cmake.vim
 
-See also |proset-supported-settings-dictionaries|.
+See also |proset:supported_settings_dictionaries|.
 
-                                                     *proset-settings-default*
+                                                     *proset:settings:default*
 
 There is a special Settings Dictionary called Default (defined in
 autoload/proset/settings/default.vim file) that has two reasons to exist:
@@ -116,12 +116,12 @@ One more thing:
 You will use Proset plugin by its public functions or commands, however some
 of those functions does not have any logic, they use Settings Object (which
 has the logic) to do the task and possibly return value. In object oriented
-world this is known as composition. Settings Object that is currently stored
-is refered as current.
+world this is known as composition. Settings Object that Proset plugin is
+currently operating on is referred as current in the following documentation.
 
 
 ==============================================================================
-PLUGIN VARIABLES                                            *proset-variables*
+PLUGIN VARIABLES                                            *proset:variables*
 
                                                       *g:proset_settings_file*
 g:proset_settings_file
@@ -136,7 +136,7 @@ results in:
       working directory),
     - path above current working directory ("..").
 
-Default value is ".vim-proset/settings".
+Default value is ".vim-proset/settings.json".
 
 To change default value, put this in your vimrc:
 
@@ -146,54 +146,66 @@ Variable can not be altered on the fly.
 
 
 ==============================================================================
-CONFIGURATION                                           *proset-configuration*
+CONFIGURATION                                           *proset:configuration*
 
 The only one configuration file that is read and required by the plugin is
-|g:proset_settings_file|.
+|g:proset_settings_file|. This is a JSON file. To get more familiar with the
+format, please refer to RFC7159 document. Check out |json_decode()| to see how
+Vim parses JSON string. 
 
-Key and value are separated by colon. Key is on the left side of a colon, and
-the value is on the right, both of them are trimmed (whitespace characters
-removed from far right and far left). So, simplest configuration file looks
-like this:
+So, the simplest configuration file looks like this:
 
-                                                   *proset-configuration-file*
-proset_settings: cxx-cmake
+                                                   *proset:configuration:file*
+{
+    "proset_settings": "cxx-cmake"
+}
 
 This is the only one required configuration parameter. All other parameters
 that are there are Settings Object specific, but the configuration file does
 not have to have more parameters, you can read them on your own using your own
-parser, from multiple configuration files, etc, it is up to you if you choose
-plugin's parser or not.
+parser, you can even read them from multiple configuration files, etc, it is
+up to you if you choose Vim JSON parser or not.
 
-Since configuration parser is very simple, there is no possible way to store
-value with newlines. Instead you can use semicolon to split entries that could
-possibly be in new lines.
+Comments and duplicate keys are not accepted by the parser.
 
-Comments are possible and marked with hash (#) and can not be mixed with
-entries
+                                                  *proset:configuration:get()*
+Lets say config is a dictionary object created by |json_decode()|. To get
+value from it, you can normally do it just like for any other dictionary,
+meaning:
 
-# this is a comment
-x : 10
+ let l:x_val = config["foo"]["boo"]
 
-y : 1 #XD
+or even simpler
 
-'1 #XD' is the value of y.
+ let l:x_val = config.foo.boo
 
-                                                  *proset-configuration-get()*
-Lets say config is an object created by configuration parser. To get value
-from it, you just do:
+that is fine, you can do it, but if there is no such key in config dictionary,
+you will get an error. So, you have to check if config |has_key()| returns
+TRUE always before accesing it, or you may want to use a helper function that
+returns default value when such key is not defined. This function is defined
+in autoload/proset/lib/dict.vim and its signature looks like this:
 
- let l:x_val = config.get("x", "10")
+ proset#lib#dict#get(dictionary, default_value, ...)
 
-and if key x was in the configuration file then x_val has its value, otherwise
-it has value of 10, which is the default value passed as second argument to
-get() method.
+where:
+    a:dictionary    - is a dictionary, here created by JSON parser,
+    a:default_value - is a value which will be returned if dictionary does not
+                      have key you specify in '...',
+    ...             - variadic string arguments that is a "path" to the key.
 
-Use |ProsetGetConfiguration()| function to get configuration object.
+So, to use get() function, you should do:
+
+ let l:x_val = proset#lib#dict#get(config, 10, "foo", "boo")
+
+and if key 'foo.boo' was in the configuration file then x_val has its value,
+otherwise it has value of 10, which is the default value passed as second
+argument to get() function.
+
+Use |ProsetGetConfiguration()| function to get configuration dictionary.
 
 
 ==============================================================================
-EVENTS                                                         *proset-events*
+EVENTS                                                         *proset:events*
 
 Proset plugin offers autocommand events to register Settings Objects and to
 inform you that Settings Object was chosen.
@@ -208,7 +220,7 @@ do this in an autocommand, like this:
          \ call ProsetRegisterSettings("cxx-cmake", "CXXCMakeCtor")
 
 This event is fired before choosing Settings Object. Real example is presented
-later in the documentation (|proset-settings-dictionary|).
+later in the documentation (|proset:settings_dictionary|).
 
                                          *ProsetRegisterInternalSettingsEvent*
 ProsetRegisterInternalSettingsEvent
@@ -241,7 +253,7 @@ was loaded.
 
 
 ==============================================================================
-SETTINGS API                                             *proset-settings-api*
+SETTINGS API                                             *proset:settings_api*
 
 Note:
 When documentation says that something returns FALSE it means that it returns
@@ -249,12 +261,12 @@ When documentation says that something returns FALSE it means that it returns
 likely 1.
 
 To create new Settings Dictionary you need to follow interface that is defined
-in |proset-settings-default| Settings Dictionary, and it is presented below.
+in |proset:settings:default| Settings Dictionary, and it is presented below.
 
 Keep in mind that you will not use actual Settings Object directly. You will
-use it via Proset public functions (|proset-api|).
+use it via Proset public functions (|proset:api|).
 
-                                                *proset-settings-is_project()*
+                                            *proset:settings_api:is_project()*
 s:settings.is_project()
 
 Returns TRUE if it is a project and FALSE otherwise. Each Settings Object can
@@ -268,7 +280,7 @@ is_project() returns TRUE.
 
 FALSE on Default Settings Object.
 
-                                          *proset-settings-get_project_name()*
+                                      *proset:settings_api:get_project_name()*
 s:settings.get_project_name()
 
 Returns project name as string. The value is probably taken from somewhere
@@ -277,7 +289,7 @@ literal from this function.
 
 Empty string on Default Settings Object.
 
-                                            *proset-settings-get_properties()*
+                                        *proset:settings_api:get_properties()*
 s:settings.get_properties()
 
 Returns properties of Settings Object as dictionary. Strongly depends on
@@ -286,7 +298,7 @@ inside. |ProsetGetProperties()| does deep copy of it.
 
 Empty dictionary on Default Settings Object.
 
-                                         *proset-settings-get_settings_name()*
+                                     *proset:settings_api:get_settings_name()*
 s:settings.get_settings_name()
 
 Returns settings name as string. This value (not the function!) is used to
@@ -297,7 +309,7 @@ is currently loaded.
 
 Empty string on Default Settings Object.
 
-                                                    *proset-settings-enable()*
+                                                *proset:settings_api:enable()*
 s:settings.enable()
 
 This function is where all settings are defined. In this function you do all
@@ -311,7 +323,7 @@ settings manually (|ProsetLoadSettings|) and when is_project() is TRUE.
 
 This function does nothing on Default Settings Object.
 
-                                                   *proset-settings-disable()*
+                                               *proset:settings_api:disable()*
 s:settings.disable()
 
 This function is like a cleanup function. If you did something in enable(),
@@ -323,7 +335,7 @@ manually (|ProsetCloseSettings|) and when is_project() is TRUE.
 
 This function does nothing on Default Settings Object.
 
-                                                 *proset-settings-construct()*
+                                             *proset:settings_api:construct()*
 s:settings.construct(config)
 
 You are not forced to have this one, you may want to have different name,
@@ -335,13 +347,13 @@ Summary:
 As you see, Default Settings Dictionary defines |numbered-function|s what is
 in other languages known as methods or member functions.  For creating other
 Settings Dictionaries you need to follow this scheme. To see how to register
-Settings Object in the plugin, see |proset-settings-dictionary|.
+Settings Object in the plugin, see |proset:settings_dictionary|.
 
-                                                  *proset-settings-exceptions*
+                                              *proset:settings_api:exceptions*
 Exceptions
 
 Settings Object can throw an exception only from its constructor function
-(|proset-settings-dictionary-constructor|) and to make Proset plugin handle
+(|proset:settings_dictionary:constructor|) and to make Proset plugin handle
 it, it has to be of known "type". Of course it is not a type you may be
 familiar with from object oriented programming languages, but it imitates it
 in some sense. So, you need to throw a string in the form of:
@@ -364,7 +376,7 @@ constructor function - meaning the function that is registered in the plugin.
 
 
 ==============================================================================
-SETTINGS DICTIONARY                               *proset-settings-dictionary*
+SETTINGS DICTIONARY                               *proset:settings_dictionary*
 
 Here, example (with explanation) of how to create Settings Dictionary is
 provided. 
@@ -380,7 +392,7 @@ plugin/settings directory and they use ProsetRegisterInternalSettingsEvent to
 register itself. Yours rather should be stored in a separate plugin |package|
 (vim-proset-ext, or the like) and have to use ProsetRegisterSettingsEvent.
 
-                                      *proset-settings-dictionary-constructor*
+                                      *proset:settings_dictionary:constructor*
 Legacy Vim script (in which this plugin is written in) is not an object
 oriented programming language, but it imitates it in some sense. Because of
 that there is no constructor but we can use a function that creates an object
@@ -389,11 +401,11 @@ you see a name constructor, I will refer to that function.
 
 You can construct your Settings Object in several different ways I suppose,
 however, a function that is called constructor has to take one parameter,
-which is configuration dictionary (|proset-configuration|). You can have
+which is configuration dictionary (|proset:configuration|). You can have
 multiple such functions, but you need to register each of them (more on this
 later).
 
-                                          *proset-settings-dictionary-package*
+                                          *proset:settings_dictionary:package*
 Create own plugin package
 
 To create Vim package you have to create appropriate directory tree and then
@@ -402,7 +414,7 @@ create Vim script file there.
  $ mkdir -p ~/.vim/pack/vim-proset-ext/start/vim-proset-ext/plugin
  $ touch ~/.vim/pack/vim-proset-ext/start/vim-proset-ext/plugin/xd.vim
 
-                                       *proset-settings-dictionary-definition*
+                                       *proset:settings_dictionary:definition*
 Create Settings Dictionary definition
 
 Note:
@@ -481,26 +493,34 @@ that need to be reverted, do it in disable().
 
 Here you do cleanup of all the side effects of enable().
 
-                           *proset-settings-dictionary-constructor-one-object*
+                           *proset:settings_dictionary:constructor_one_object*
+Just before we start with the code, here is the sample settings.json file that
+is used as an example for both cases:
+
+{
+    "proset_settings": "xd",
+    "project_name":    "pro-xd",
+    "is_project":      "1",
+}
+
+
 Settings Dictionary Constructor - one object only
 
  function! s:obj.construct(config)
      let l:ret = deepcopy(self)
-
-     let l:ret.properties["project_name"] = a:config.get("project_name", "")
-     let l:ret.properties["is_project"]   = a:config.get("is_project", "0")
-
+ 
+     let l:ret.properties["project_name"] =
+         \ proset#lib#dict#get(a:config, "", "project_name")
+     let l:ret.properties["is_project"]   =
+         \ proset#lib#dict#get(a:config, "0", "is_project")
+ 
      return l:ret
  endfunction
 
 This is the internal implementation of Settings Dictionary constructor used
 to create Settings Object.  The object config is a configuration dictionary
-that stores all key-value pairs from configuration file.
-
-In |proset-configuration-file|, plugin's configuration parser was introduced.
-Using this parser saves your time of parsing options on your own. You just
-take configuration dictionary object that is already filled up with values
-from configuration file and you can get() what you want.
+that stores data coming from JSON configuration file. Helper function get()
+was used to handle case of missing entry in the file.
 
 
  function! XdConstruct(config)
@@ -534,7 +554,7 @@ from that function is not the one used to register Settings Object, but it HAS
 TO BE THE SAME as first argument passed to ProsetRegisterSettings() which is
 the value).
 
-                     *proset-settings-dictionary-constructor-multiple-objects*
+                     *proset:settings_dictionary:constructor_multiple_objects*
 Settings Dictionary Constructor - multiple objects
 
  function! s:obj.get_settings_name()
@@ -549,8 +569,10 @@ implementation.
  function! s:obj.construct(config, settings_name)
      let l:ret = deepcopy(self)
  
-     let l:ret.properties["project_name"] = a:config.get("project_name", "")
-     let l:ret.properties["is_project"]   = a:config.get("is_project", "0")
+     let l:ret.properties["project_name"] =
+         \ proset#lib#dict#get(a:config, "", "project_name")
+     let l:ret.properties["is_project"]   =
+         \ proset#lib#dict#get(a:config, "0", "is_project")
      let l:ret.properties["settings_name"]= a:settings_name
  
      return l:ret
@@ -578,7 +600,7 @@ in both places.
 
 
 ==============================================================================
-API                                                               *proset-api*
+API                                                               *proset:api*
 
 To interact with Proset plugin (besides plugin variables) you have to use
 public API described below or commands defined later.
@@ -602,7 +624,7 @@ Example:
  autocmd User ProsetRegisterSettingsEvent
          \ call ProsetRegisterSettings("cxx-cmake", "CXXCMakeConstruct")
 
-Take a look at |proset-settings-dictionary| to see how to create Settings
+Take a look at |proset:settings_dictionary| to see how to create Settings
 Dictionary.
 
 Note:
@@ -623,12 +645,7 @@ project, FALSE otherwise.
                                                      *ProsetGetSettingsName()*
 ProsetGetSettingsName()
 
-This function is used to get Settings Object name. This value has to be unique
-among other registered Settings Objects.  This name is compared with
-proset_settings configuration parameter (see |proset-configuration-file|) when
-Settings Objects has to be chosen, in other words if value from configuration
-file is the same as string from this function, then this Settings Object is
-chosen (loaded).
+This function is used to get current Settings Object name. 
 
                                                       *ProsetGetProjectName()*
 ProsetGetProjectName()
@@ -646,8 +663,9 @@ returned value from Settings Object function.
                                                     *ProsetGetConfiguration()*
 ProsetGetConfiguration()
 
-This function is used to get configuration data (|proset-configuration-file|)
-in the form of a dictionary. It creates deep copy of internal storage.
+This function is used to get configuration data (|proset:configuration:file|)
+in the form of a dictionary - everything that was read from configuration
+file. It creates deep copy of internal storage.
 
                                                         *ProsetLoadSettings()*
 ProsetLoadSettings(path)
@@ -656,14 +674,16 @@ This function loads project settings from the path. Even though loading
 project settings function is called when Vim starts, it can also be called to
 change projects settings (load different project, from different path).
 
-First of all, checking if configuration file (|proset-configuration|) exists.
+First of all, checking if configuration file (|proset:configuration|) exists.
 If missing, *proset-E20* is presented to you.
 
 Then configuration file is parsed, if proset_settings parameter is empty or
 missing you will get *proset-E21* error.
 
-If syntax error occurs during parsing configuration file, then *proset-E22* is
-what you get.
+If syntax error (JSON format) occurs during parsing configuration file, then
+*proset-E22* is what you get.
+
+If configuration file has duplicate keys, then *proset-E23* occurs.
 
 Configuration file can be correct, however if proset_settings holds value that
 has not been registered (not supported Settings Object), then *proset-E30*
@@ -719,7 +739,7 @@ This function does not return value.
 
 
 ==============================================================================
-COMMANDS                                                     *proset-commands*
+COMMANDS                                                     *proset:commands*
 
 Although you can use public API to do the same things, it is much more
 convenient to use Vim commands for some of them.
@@ -729,7 +749,7 @@ convenient to use Vim commands for some of them.
 *:ProsetCloseSettings*     - calls |ProsetCloseSettings| (no arguments).
 
 ==============================================================================
-SUPPORTED SETTINGS DICTIONARIES       *proset-supported-settings-dictionaries*
+SUPPORTED SETTINGS DICTIONARIES       *proset:supported_settings_dictionaries*
 
 List of supported Settings Dictionaries:
 
@@ -737,7 +757,7 @@ List of supported Settings Dictionaries:
 
 
 ==============================================================================
-CONTRIBUTE                                                 *proset-contribute*
+CONTRIBUTE                                                 *proset:contribute*
 
 If you see a bug, or something that can be improved, or have an idea of a new
 Settings Dictionary or even better you have already written one and want it to

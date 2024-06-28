@@ -9,7 +9,7 @@ if exists("g:loaded_proset")
 endif
 let g:loaded_proset = 1
 
-let g:proset_settings_file = get(g:, 'proset_settings_file', '.vim-proset/settings')
+let g:proset_settings_file = get(g:, 'proset_settings_file', '.vim-proset/settings.json')
 lockvar g:proset_settings_file
 
 let s:settings          = proset#settings#default#construct()
@@ -92,8 +92,8 @@ function! s:load_settings(path, init_phase)
                 return 1
             endif
 
-            let l:cfg = proset#lib#configuration#parse_file(l:settings_file, ":")
-            let l:name = l:cfg.get("proset_settings", "")
+            let l:cfg = json_decode(join(readfile(l:settings_file), "\n"))
+            let l:name = proset#lib#dict#get(l:cfg, "", "proset_settings")
 
             if empty(l:name)
                 throw s:get_error_number_and_message(21,
@@ -149,10 +149,12 @@ function! s:load_settings(path, init_phase)
             throw s:get_error_number_and_message(40,
                     \ "Can not construct Settings Object ("
                     \ . lst[2] . "): " . lst[3])
-        catch /^proset:parse-configuration:/
-            let lst = split(v:exception, ":")
+        catch /^Vim\%((\a\+)\)\=:E491:/
             throw s:get_error_number_and_message(22,
-                    \ "Configuration file syntax error (" . lst[3] . ")")
+                    \ "Configuration file syntax error (Vim:E491)")
+        catch /^Vim\%((\a\+)\)\=:E938:/
+            throw s:get_error_number_and_message(23,
+                    \ "Configuration file syntax error (Vim:E938)")
         endtry
     catch /\%(\d\+\)|proset-E\%(\d\+\):.*/
         noautocmd call chdir(l:cwd_orig)
