@@ -428,88 +428,86 @@ function! s:cxx_cmake.construct(config)
     \   "jobs_number":
     \   proset#lib#dict#get(a:config,
     \       "1",
-    \       "settings",
     \       "build",
+    \       "settings",
     \       "jobs"
     \   ),
     \
     \   "temporary_directory":
     \   s:get_correct_path(a:config,
     \       ".vim-proset_tmp",
-    \       "settings",
-    \       "directory",
-    \       "temporary"
+    \       "temporary_directory"
     \   ),
     \   "build_directory":
     \   s:get_correct_path(a:config,
     \       "build",
+    \       "build",
     \       "settings",
-    \       "directory",
-    \       "build"
+    \       "build_directory"
     \   ),
     \   "source_directory":
     \   s:get_correct_path(a:config,
     \       "src",
+    \       "source",
     \       "settings",
-    \       "directory",
-    \       "source"
+    \       "source_directory"
     \   ),
     \
     \   "additional_ctags_directories":
     \   join(
     \   proset#lib#dict#get(a:config,
     \       [],
+    \       "symbols",
     \       "settings",
-    \       "directories",
-    \       "additional_ctags"
+    \       "additional_ctags_directories"
     \   ), ";"),
     \   "additional_cscope_directories":
     \   join(
     \   proset#lib#dict#get(a:config,
     \       [],
+    \       "symbols",
     \       "settings",
-    \       "directories",
-    \       "additional_cscope"
+    \       "additional_cscope_directories"
     \   ), ";"),
     \   "additional_search_directories":
     \   join(
     \   proset#lib#dict#get(a:config,
     \       [],
+    \       "source",
     \       "settings",
-    \       "directories",
-    \       "additional_search"
+    \       "additional_search_directories"
     \   ), ";"),
     \
     \   "external_cscope_files":
     \   join(
     \   proset#lib#dict#get(a:config,
     \       [],
+    \       "symbols",
     \       "settings",
-    \       "files",
-    \       "external_cscope"
+    \       "external_cscope_files"
     \   ), ";"),
     \   "external_ctags_files":
     \   join(
     \   proset#lib#dict#get(a:config,
     \       [],
+    \       "symbols",
     \       "settings",
-    \       "files",
-    \       "external_ctags"
+    \       "external_ctags_files"
     \   ), ";"),
     \
     \   "header_extension":
     \   s:get_not_empty(a:config,
     \       "hpp",
+    \       "source",
     \       "settings",
-    \       "extension",
-    \       "header"
+    \       "header_extension"
     \   ),
     \   "source_extension":
     \   s:get_not_empty(a:config,
     \       "cpp",
+    \       "source",
     \       "settings",
-    \       "extension",
-    \       "source"
+    \       "source_extension"
     \   ),
     \ }
 
@@ -530,7 +528,7 @@ function! s:cxx_cmake.construct(config)
     \
     \   "bin_directory":
     \   proset#utils#cmake#get_output_directory(l:cmakelists_file,
-    \       l:ret.properties.settings["build_directory"]),
+    \       l:ret.properties.settings.build_directory),
     \
     \   "is_project":
     \   filereadable(l:cmakelists_file) &&
@@ -550,8 +548,9 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
-    \           "mappings",
     \           "alternate_file",
+    \           "mappings",
+    \           "normal",
     \           "current_window"
     \       ),
     \       "fun":
@@ -564,8 +563,9 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
-    \           "mappings",
     \           "alternate_file",
+    \           "mappings",
+    \           "normal",
     \           "split_window"
     \       ),
     \       "fun":
@@ -578,8 +578,9 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
-    \           "mappings",
     \           "alternate_file",
+    \           "mappings",
+    \           "normal",
     \           "vsplit_window"
     \       ),
     \       "fun":
@@ -593,7 +594,9 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "symbols",
     \           "mappings",
+    \           "normal",
     \           "cscope",
     \           "a_find_assignments_to_this_symbol"
     \       ),
@@ -607,7 +610,9 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "symbols",
     \           "mappings",
+    \           "normal",
     \           "cscope",
     \           "c_find_functions_calling_this_function"
     \       ),
@@ -621,7 +626,9 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "symbols",
     \           "mappings",
+    \           "normal",
     \           "cscope",
     \           "d_find_functions_called_by_this_function"
     \       ),
@@ -635,7 +642,9 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "symbols",
     \           "mappings",
+    \           "normal",
     \           "cscope",
     \           "e_find_this_egrep_pattern"
     \       ),
@@ -649,7 +658,9 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "symbols",
     \           "mappings",
+    \           "normal",
     \           "cscope",
     \           "f_find_this_file"
     \       ),
@@ -663,7 +674,9 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "symbols",
     \           "mappings",
+    \           "normal",
     \           "cscope",
     \           "g_find_this_definition"
     \       ),
@@ -677,7 +690,9 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "symbols",
     \           "mappings",
+    \           "normal",
     \           "cscope",
     \           "i_find_files_including_this_file"
     \       ),
@@ -691,7 +706,9 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "symbols",
     \           "mappings",
+    \           "normal",
     \           "cscope",
     \           "s_find_this_c_symbol"
     \       ),
@@ -705,7 +722,9 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "symbols",
     \           "mappings",
+    \           "normal",
     \           "cscope",
     \           "t_find_this_text_string"
     \       ),
@@ -720,8 +739,9 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "build",
     \           "mappings",
-    \           "project",
+    \           "normal",
     \           "build"
     \       ),
     \       "fun":
@@ -734,8 +754,9 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "build",
     \           "mappings",
-    \           "project",
+    \           "normal",
     \           "clean"
     \       ),
     \       "fun":
@@ -748,8 +769,9 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "build",
     \           "mappings",
-    \           "project",
+    \           "normal",
     \           "clean_and_build"
     \       ),
     \       "fun":
@@ -762,8 +784,9 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "run",
     \           "mappings",
-    \           "project",
+    \           "normal",
     \           "run"
     \       ),
     \       "fun":
@@ -776,8 +799,9 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "run",
     \           "mappings",
-    \           "project",
+    \           "normal",
     \           "run_args"
     \       ),
     \       "fun":
@@ -791,8 +815,10 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "symbols",
     \           "mappings",
-    \           "update_ctags_cscope_symbols"
+    \           "normal",
+    \           "update_symbols"
     \       ),
     \       "fun":
     \       function("s:set_nnoremap_silent_mapping",
@@ -805,9 +831,10 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "create_header",
     \           "mappings",
-    \           "create_file",
-    \           "header"
+    \           "normal",
+    \           "create"
     \       ),
     \       "fun":
     \       function("s:set_nnoremap_mapping",
@@ -819,9 +846,10 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "create_header",
     \           "mappings",
-    \           "create_file",
-    \           "header_edit"
+    \           "normal",
+    \           "create_edit"
     \       ),
     \       "fun":
     \       function("s:set_nnoremap_mapping",
@@ -833,9 +861,10 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "create_header",
     \           "mappings",
-    \           "create_file",
-    \           "header_edit_split"
+    \           "normal",
+    \           "create_edit_split"
     \       ),
     \       "fun":
     \       function("s:set_nnoremap_mapping",
@@ -847,9 +876,10 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "create_header",
     \           "mappings",
-    \           "create_file",
-    \           "header_edit_vsplit"
+    \           "normal",
+    \           "create_edit_vsplit"
     \       ),
     \       "fun":
     \       function("s:set_nnoremap_mapping",
@@ -861,9 +891,10 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "create_source",
     \           "mappings",
-    \           "create_file",
-    \           "source"
+    \           "normal",
+    \           "create"
     \       ),
     \       "fun":
     \       function("s:set_nnoremap_mapping",
@@ -875,9 +906,10 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "create_source",
     \           "mappings",
-    \           "create_file",
-    \           "source_edit"
+    \           "normal",
+    \           "create_edit"
     \       ),
     \       "fun":
     \       function("s:set_nnoremap_mapping",
@@ -889,9 +921,10 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "create_source",
     \           "mappings",
-    \           "create_file",
-    \           "source_edit_split"
+    \           "normal",
+    \           "create_edit_split"
     \       ),
     \       "fun":
     \       function("s:set_nnoremap_mapping",
@@ -903,9 +936,10 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "create_source",
     \           "mappings",
-    \           "create_file",
-    \           "source_edit_vsplit"
+    \           "normal",
+    \           "create_edit_vsplit"
     \       ),
     \       "fun":
     \       function("s:set_nnoremap_mapping",
@@ -917,9 +951,10 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "create_header_source",
     \           "mappings",
-    \           "create_file",
-    \           "header_source"
+    \           "normal",
+    \           "create"
     \       ),
     \       "fun":
     \       function("s:set_nnoremap_mapping",
@@ -931,9 +966,10 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "create_header_source",
     \           "mappings",
-    \           "create_file",
-    \           "header_source_edit_split"
+    \           "normal",
+    \           "create_edit_split"
     \       ),
     \       "fun":
     \       function("s:set_nnoremap_mapping",
@@ -945,9 +981,10 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "create_header_source",
     \           "mappings",
-    \           "create_file",
-    \           "header_source_edit_current_split"
+    \           "normal",
+    \           "create_edit_current_split"
     \       ),
     \       "fun":
     \       function("s:set_nnoremap_mapping",
@@ -959,9 +996,10 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "create_header_source",
     \           "mappings",
-    \           "create_file",
-    \           "header_source_edit_vsplit"
+    \           "normal",
+    \           "create_edit_vsplit"
     \       ),
     \       "fun":
     \       function("s:set_nnoremap_mapping",
@@ -973,9 +1011,10 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
+    \           "create_header_source",
     \           "mappings",
-    \           "create_file",
-    \           "header_source_edit_current_vsplit"
+    \           "normal",
+    \           "create_edit_current_vsplit"
     \       ),
     \       "fun":
     \       function("s:set_nnoremap_mapping",

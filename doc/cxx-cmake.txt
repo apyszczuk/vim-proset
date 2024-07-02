@@ -69,7 +69,10 @@ Just before we start, take a look:
       type : and then name of a command (CXXCMake*),
     - each command ends with <CR> (enter/return),
     - if there is no explicit information that a command takes some arguments,
-      then it takes 0 arguments.
+      then it takes 0 arguments,
+    - tags in this document are in the form of cxx-cmake:subtitle and some
+      subtitles can be read as cxx-cmake:module, which means it is a module
+      with functionalities.
 
 
 ==============================================================================
@@ -104,7 +107,7 @@ s:cxx_cmake.is_project()
 Returns TRUE if:
 
     - CMakeLists.txt is in the current directory and can be read, and
-    - |cxx-cmake:conf:settings.directory.source| exists, and
+    - |cxx-cmake:conf:source.settings.source_directory| exists, and
     - |g:proset_settings_file| can be read, and
     - PROJECT_NAME variable is defined in CMakeLists.txt and is not empty.
 
@@ -136,9 +139,9 @@ s:cxx_cmake.enable()
 
 Enables cxx-cmake settings which include:
 
-    - deleting |cxx-cmake:conf:settings.directory.temporary| if for some
-      reason one was there,
-    - creating new |cxx-cmake:conf:settings.directory.temporary|,
+    - deleting |cxx-cmake:conf:temporary_directory| if for some reason one was
+      there,
+    - creating new |cxx-cmake:conf:temporary_directory|,
     - setting |'makeprg'| option to CMake command used to build project,
     - adding commands,
     - adding mappings,
@@ -192,7 +195,7 @@ To switch from header to source or vice versa and load alternate file in a
 current window, use any of those:
 
 command: *:CXXCMakeAlternateFileCurrentWindow*
-mapping: |cxx-cmake:conf:mappings.alternate_file.current_window|
+mapping: |cxx-cmake:conf:alternate_file.mappings.normal.current_window|
 
                                        *cxx-cmake:alternate_file:split_window*
 2) Alternate file in a split window
@@ -201,7 +204,7 @@ To switch from header to source or vice versa and load alternate file in a
 split window, use any of those:
 
 command: *:CXXCMakeAlternateFileSplitWindow*
-mapping: |cxx-cmake:conf:mappings.alternate_file.split_window|
+mapping: |cxx-cmake:conf:alternate_file.mappings.normal.split_window|
 
                                       *cxx-cmake:alternate_file:vsplit_window*
 3) Alternate file in a vsplit window
@@ -210,7 +213,7 @@ To switch from header to source or vice versa and load alternate file in a
 vsplit window, use any of those:
 
 command: *:CXXCMakeAlternateFileVSplitWindow*
-mapping: |cxx-cmake:conf:mappings.alternate_file.vsplit_window|
+mapping: |cxx-cmake:conf:alternate_file.mappings.normal.vsplit_window|
 
 
 ==============================================================================
@@ -228,32 +231,32 @@ To create header file you have couple options:
 1) Create header
 
 command: *:CXXCMakeCreateHeader*
-mapping: |cxx-cmake:conf:mappings.create_header|
+mapping: |cxx-cmake:conf:create_header.mappings.normal.create|
 
                                          *cxx-cmake:create_header:create_edit*
 2) Create header and edit in a current window
 
 command: *:CXXCMakeCreateHeaderEdit*
-mapping: |cxx-cmake:conf:mappings.create_header_edit|
+mapping: |cxx-cmake:conf:create_header.mappings.normal.create_edit|
 
                                    *cxx-cmake:create_header:create_edit_split*
 3) Create header and edit in a split window
 
 command: *:CXXCMakeCreateHeaderEditSplit*
-mapping: |cxx-cmake:conf:mappings.create_header_edit_split|
+mapping: |cxx-cmake:conf:create_header.mappings.normal.create_edit_split|
 
                                   *cxx-cmake:create_header:create_edit_vsplit*
 4) Create header and edit in a vsplit window
 
 command: *:CXXCMakeCreateHeaderEditVSplit*
-mapping: |cxx-cmake:conf:mappings.create_header_edit_vsplit|
+mapping: |cxx-cmake:conf:create_header.mappings.normal.create_edit_vsplit|
 
 
 Each of the commands requires one argument (therefore mapping is a shortcut
 for the command), which is path to the file you want to create without
 extension (but if you pass it, it will be removed and what extension will be
-used is defined by |cxx-cmake:conf:settings.extension.header|). Any missing
-directory in the hierarchy will be created.
+used is defined by |cxx-cmake:conf:source.settings.header_extension|). Any
+missing directory in the hierarchy will be created.
 
 Note: All of the above commands will emit CXXCMakeHeaderCreatedEvent if the
 file was created.
@@ -269,7 +272,7 @@ where:
     D1, D2, D3  - D1/D2/D3 path to the file F,
     F           - filename,
     EXT         - extension of the file F taken from
-                  |cxx-cmake:conf:settings.extension.header|
+                  |cxx-cmake:conf:source.settings.header_extension|
 
 example:
     FOO1_SRC_BOO_FOO_BLA_HPP
@@ -306,32 +309,32 @@ To create source file you have couple options:
 1) Create source
 
 command: *:CXXCMakeCreateSource*
-mapping: |cxx-cmake:conf:mappings.create_source|
+mapping: |cxx-cmake:conf:create_source.mappings.normal.create|
 
                                          *cxx-cmake:create_source:create_edit*
 2) Create source and edit in a current window
 
 command: *:CXXCMakeCreateSourceEdit*
-mapping: |cxx-cmake:conf:mappings.create_source_edit|
+mapping: |cxx-cmake:conf:create_source.mappings.normal.create_edit|
 
                                    *cxx-cmake:create_source:create_edit_split*
 3) Create source and edit in a split window
 
 command: *:CXXCMakeCreateSourceEditSplit*
-mapping: |cxx-cmake:conf:mappings.create_source_edit_split|
+mapping: |cxx-cmake:conf:create_source.mappings.normal.create_edit_split|
 
                                   *cxx-cmake:create_source:create_edit_vsplit*
 4) Create source and edit in a vsplit window
 
 command: *:CXXCMakeCreateSourceEditVSplit*
-mapping: |cxx-cmake:conf:mappings.create_source_edit_vsplit|
+mapping: |cxx-cmake:conf:create_source.mappings.normal.create_edit_vsplit|
 
 
 Each of the commands requires one argument (therefore mapping is a shortcut
 for the command), which is path to the file you want to create without
 extension (but if you pass it, it will be removed and what extension will be
-used is defined by |cxx-cmake:conf:settings.extension.source|). Any missing
-directory in the hierarchy will be created.
+used is defined by |cxx-cmake:conf:source.settings.source_extension|). Any
+missing directory in the hierarchy will be created.
 
 Note: All of the above commands will emit CXXCMakeSourceCreatedEvent if the
 file was created.
@@ -365,31 +368,31 @@ To create header and source files you have couple options:
 1) Create header and source
 
 command: *:CXXCMakeCreateHeaderSource*
-mapping: |cxx-cmake:conf:mappings.create_header_source|
+mapping: |cxx-cmake:conf:create_header_source.mappings.normal.create|
 
                             *cxx-cmake:create_header_source:create_edit_split*
 2) Create header and source and edit in split windows
 
 command: *:CXXCMakeCreateHeaderSourceEditSplit*
-mapping: |cxx-cmake:conf:mappings.create_header_source_edit_split|
+mapping: |cxx-cmake:conf:create_header_source.mappings.normal.create_edit_split|
 
                     *cxx-cmake:create_header_source:create_edit_current_split*
 3) Create header and source and edit in current and split window
 
 command: *:CXXCMakeCreateHeaderSourceEditCurrentSplit*
-mapping: |cxx-cmake:conf:mappings.create_header_source_edit_current_split|
+mapping: |cxx-cmake:conf:create_header_source.mappings.normal.create_edit_current_split|
 
                            *cxx-cmake:create_header_source:create_edit_vsplit*
 4) Create header and source and edit in vsplit windows
 
 command: *:CXXCMakeCreateHeaderSourceEditVSplit*
-mapping: |cxx-cmake:conf:mappings.create_header_source_edit_vsplit|
+mapping: |cxx-cmake:conf:create_header_source.mappings.normal.create_edit_vsplit|
 
                    *cxx-cmake:create_header_source:create_edit_current_vsplit*
 5) Create header and source and edit in current and vsplit window
 
 command: *:CXXCMakeCreateHeaderSourceEditCurrentVSplit*
-mapping: |cxx-cmake:conf:mappings.create_header_source_edit_current_vsplit|
+mapping: |cxx-cmake:conf:create_header_source.mappings.normal.create_edit_current_vsplit|
 
 
 Except from Create Header and Create Source, you can not create and edit both
@@ -405,8 +408,8 @@ create. Any missing directory in the hierarchy will be created.
 extension on the other hand, it will be removed and extensions will be used as
 they are defined in:
 
-    - |cxx-cmake:conf:settings.extension.header|,
-    - |cxx-cmake:conf:settings.extension.source|.
+    - |cxx-cmake:conf:source.settings.header_extension|,
+    - |cxx-cmake:conf:source.settings.source_extension|.
 
 Note: All of the above commands will emit CXXCMakeHeaderCreatedEvent if header
 file was created and CXXCMakeSourceCreatedEvent if source file was created.
@@ -422,14 +425,14 @@ ability to move around in Vim and doing other things.
 To build project use command or mapping:
 
 command: *:CXXCMakeBuild*
-mapping: |cxx-cmake:conf:mappings.project.build|
+mapping: |cxx-cmake:conf:build.mappings.normal.build|
 
 Build process is defined by CMakeLists.txt file and it uses CMake to do the
 job using |AsyncRun| plugin. Automatically output of build process is loaded
 in QuickFix window. If build is success, then QuickFix window is closed
 automatically. If warning or error is detected, QuickFix window is left open.
 
-All build files are put into |cxx-cmake:conf:settings.directory.build|
+All build files are put into |cxx-cmake:conf:build.settings.build_directory|
 directory. Location of build result (application, library) depends on
 configuration in CMakeLists.txt (not in configuration file of cxx-cmake!).
 For more information see |cxx-cmake:cmake_input_file:bin_directory|.
@@ -442,11 +445,11 @@ To delete all previous build files (object files, CMake temporary files, build
 result), you can use:
 
 command: *:CXXCMakeClean*
-mapping: |cxx-cmake:conf:mappings.project.clean|
+mapping: |cxx-cmake:conf:build.mappings.normal.clean|
 
-which will remove |cxx-cmake:conf:settings.directory.build|. If you want to
-remove build directory, you probably want to build your project from scratch.
-You may like |cxx-cmake:clean_and_build| to do both at once.
+which will remove |cxx-cmake:conf:build.settings.build_directory|. If you want
+to remove build directory, you probably want to build your project from
+scratch.  You may like |cxx-cmake:clean_and_build| to do both at once.
 
 
 ==============================================================================
@@ -460,7 +463,7 @@ mapping that is designed for that.
 To build your project from scratch use command or mapping:
 
 command: *:CXXCMakeCleanAndBuild*
-mapping: |cxx-cmake:conf:mappings.project.clean_and_build|
+mapping: |cxx-cmake:conf:build.mappings.normal.clean_and_build|
 
 
 ==============================================================================
@@ -474,12 +477,12 @@ following commands or mappings to do what you want.
 1) To run your application without arguments, use command or mapping:
 
 command: *:CXXCMakeRun*
-mapping: |cxx-cmake:conf:mappings.project.run|
+mapping: |cxx-cmake:conf:run.mappings.normal.run|
 
 2) To run your application with arguments, use command or mapping:
 
 command: *:CXXCMakeRun* arg1 arg2 ...
-mapping: |cxx-cmake:conf:mappings.project.run_args|
+mapping: |cxx-cmake:conf:run.mappings.normal.run_args|
 
 Application is run in Vim inside terminal.
 
@@ -507,24 +510,24 @@ appropriate values (paths):
 
     - *cxx-cmake:symbols:ctags_file* - path to the file where tags are stored
       after they are generated or regenerated. Name of the file is hardcoded
-      in the cxx-cmake and it is
-      |cxx-cmake:conf:settings.directory.temporary|/tags,
-    - |cxx-cmake:conf:settings.files.external_ctags| - list of paths to the
-      files where tags of external sources are already generated (not by
-      cxx-cmake).
+      in the cxx-cmake and it is |cxx-cmake:conf:temporary_directory|/tags,
+    - |cxx-cmake:conf:symbols.settings.external_ctags_files| - list of paths
+      to the files where tags of external sources are already generated (not
+      by cxx-cmake).
 
 Second step is to generate tags file from:
 
-    - |cxx-cmake:conf:settings.directory.source| - directory with source code
-      of your project,
-    - |cxx-cmake:conf:settings.directories.additional_ctags| - list of paths
-      to the directories where some other source code lays.
+    - |cxx-cmake:conf:source.settings.source_directory| - directory with
+      source code of your project,
+    - |cxx-cmake:conf:symbols.settings.additional_ctags_directories| - list of
+      paths to the directories where some other source code lays.
 
 For both of them, tags will be generated every time you start Vim / load
 cxx-cmake Settings Object, or update them manually.  If you have files that do
 not change too often and want to be able to navigate to symbols defined there,
 consider generation of tags once and add path to generated file in
-|cxx-cmake:conf:settings.files.external_ctags| (for performance reason).
+|cxx-cmake:conf:symbols.settings.external_ctags_files| (for performance
+reason).
 
 Usage in short: |CTRL-]| jumps to the tag, |CTRL-T| goes back.
 See |tags| to get more information about tags.
@@ -533,13 +536,13 @@ See |tags| to get more information about tags.
 2) Cscope
 
 In |cxx-cmake:api:enable()| first step is to generate cscope file with symbols
-from |cxx-cmake:conf:settings.directory.source| and from
-|cxx-cmake:conf:settings.directories.additional_cscope| which is a list of
-paths to the directories where some other source code lays. Source code you
-want to generate cscope symbols from every time you start Vim / load cxx-cmake
-Settings Object, or update them manually.  If those directories do not change
-too often, consider generation of cscope symbols once and add path to the
-generated file in |cxx-cmake:conf:settings.files.external_cscope| (for
+from |cxx-cmake:conf:source.settings.source_directory| and from
+|cxx-cmake:conf:symbols.settings.additional_cscope_directories| which is a
+list of paths to the directories where some other source code lays. Source
+code you want to generate cscope symbols from every time you start Vim / load
+cxx-cmake Settings Object, or update them manually.  If those directories do
+not change too often, consider generation of cscope symbols file once and add
+path to it in |cxx-cmake:conf:symbols.settings.external_cscope_files| (for
 performance reason).
 
 Second step is to connect cscope symbols files to cscope Vim module using
@@ -548,10 +551,10 @@ Second step is to connect cscope symbols files to cscope Vim module using
     - *cxx-cmake:symbols:cscope_file* - path to the file where cscope symbols
       are stored after they are generated or regenerated. Name of the file is
       hardcoded in the cxx-cmake and it is
-      |cxx-cmake:conf:settings.directory.temporary|/cscope,
-    - |cxx-cmake:conf:settings.files.external_cscope| - list of paths to the
-      files where cscope symbols of external sources are already generated
-      (not by cxx-cmake).
+      |cxx-cmake:conf:temporary_directory|/cscope,
+    - |cxx-cmake:conf:symbols.settings.external_cscope_files| - list of paths
+      to the files where cscope symbols of external sources are already
+      generated (not by cxx-cmake).
 
 You have two options how to use cscope in Vim with cxx-cmake:
 
@@ -563,31 +566,31 @@ mapping there is an assumption it uses <cword> (word under the cursor as a
 name). All of these mappings work in normal mode.
 
 command: :cs find a name
-mapping: |cxx-cmake:conf:mappings.cscope.a_find_assignments_to_this_symbol|
+mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.a_find_assignments_to_this_symbol|
 
 command: :cs find c name
-mapping: |cxx-cmake:conf:mappings.cscope.c_find_functions_calling_this_function|
+mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.c_find_functions_calling_this_function|
 
 command: :cs find d name
-mapping: |cxx-cmake:conf:mappings.cscope.d_find_functions_called_by_this_function|
+mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.d_find_functions_called_by_this_function|
 
 command: :cs find e name
-mapping: |cxx-cmake:conf:mappings.cscope.e_find_this_egrep_pattern|
+mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.e_find_this_egrep_pattern|
 
 command: :cs find f name
-mapping: |cxx-cmake:conf:mappings.cscope.f_find_this_file|
+mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.f_find_this_file|
 
 command: :cs find g name
-mapping: |cxx-cmake:conf:mappings.cscope.g_find_this_definition|
+mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.g_find_this_definition|
 
 command: :cs find i name
-mapping: |cxx-cmake:conf:mappings.cscope.i_find_files_including_this_file|
+mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.i_find_files_including_this_file|
 
 command: :cs find s name
-mapping: |cxx-cmake:conf:mappings.cscope.s_find_this_c_symbol|
+mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.s_find_this_c_symbol|
 
 command: :cs find t name
-mapping: |cxx-cmake:conf:mappings.cscope.t_find_this_text_string|
+mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.t_find_this_text_string|
 
 See |cscope| to get more information how to use it.
 
@@ -603,7 +606,7 @@ Vim. State of the symbols database is on |cxx-cmake:api:enable()| time point.
 If you add new or modify current source files later, then your new symbols
 will most likely not be visible until you regenerate symbols database. For
 now, this has to be done manually and the mapping used for this is:
-|cxx-cmake:conf:mappings.update_ctags_cscope_symbols|. Future plan is to make
+|cxx-cmake:conf:symbols.mappings.normal.update_symbols|. Future plan is to make
 it automatically also.
 
 
@@ -611,12 +614,13 @@ it automatically also.
 CONFIGURATION                                                 *cxx-cmake:conf*
 
 There is only one configuration file that is required by cxx-cmake, this is
-|g:proset_settings_file| (JSON file). All parameters in it are optional - when
-missing, default (hardcoded) value will be used. Depending on the parameter
-itself, the functionality can behave in a default manner (build_directory and
-jobs_number will have default values, so you can build your project), or the
-functionality can be disabled (mappings are not available if missing). There
-are parameters that if present but empty will take default value anyway.
+|g:proset_settings_file| (JSON file). All parameters in it are optional
+(except "proset_settings") - when missing, default (hardcoded) value will be
+used. Depending on the parameter itself, the functionality can behave in a
+default manner (build_directory and jobs_number will have default values, so
+you can build your project), or the functionality can be disabled (mappings
+are not available if missing). There are parameters that if present but empty
+will take default value anyway.
 
 Additionally each parameter that has a command associated with will name that
 command.
@@ -635,25 +639,28 @@ Configuration is stored in JSON format, so below there is simplified example
 of cxx-cmake configuration file.
 
 {
-    "proset_settings": "cxx-cmake",
+
+"proset_settings":                      "cxx-cmake",
+"temporary_directory":                  ".vim-proset_tmp",
+
+"build":
+{
     "settings":
     {
-        "build":
-        {
-            "jobs":                 "8"
-        },
-        "directories":
-        {
-            "additional_ctags":     [ "../xd", "../../goo/lib/" ]
-        }
+        "build_directory":              "build",
+        "jobs":                         "8"
     },
     "mappings":
     {
-        "project":
+        "normal":
         {
-            "build":                "mk"
+            "build":                    "mk",
+            "clean":                    "mC",
+            "clean_and_build":          "mK"
         }
     }
+}
+
 }
 
 In the following description of configuration parameters, I will not use JSON
@@ -662,12 +669,25 @@ when I refer to proset_settings I will use:
 
     proset_settings: "cxx-cmake"
 
-since this is top-level parameter, and when I refer to additional_ctags
-directories, it will look like this:
+since this is top-level parameter, and when I refer to mapping for building
+project it will look like this:
 
-    settings.directories.additional_ctags: [ "../xd", "../../goo/lib/" ]
+    build.mappings.normal.build: "mk"
 
-String values will be surrounded by '"'.
+String values are surrounded by '"' and array values are in '[]'.
+
+The structure of this configuration file is more or less as follows:
+
+"module":
+{
+    "settings": { ... },
+    "mappings": { ... }
+}
+
+Some of the modules will have only settings, some of them will have only
+mappings and some of them will have both. Unless otherwise noted, every
+mapping parameter that is missing makes corresponding functionality not to be
+mapped at all.
 
 
                                                    *cxx-cmake:proset_settings*
@@ -678,101 +698,168 @@ Mandatory parameter used by Proset plugin to determine what Settings Object
 to choose.
 
 Required value:
-proset_settings:                        "cxx-cmake"
+proset_settings: "cxx-cmake"
 
 
-                                                     *cxx-cmake:conf:settings*
-Below, you will find all the settings of cxx-cmake that you can customize.
-
-
-                                 *cxx-cmake:conf:settings.directory.temporary*
-settings.directory.temporary
+                                          *cxx-cmake:conf:temporary_directory*
+temporary_directory
 
 Directory where cscope and ctags temporary (generated) files will be stored.
 
 If missing, empty or incorrect:
-settings.directory.temporary:           ".vim-proset_tmp"
+temporary_directory: ".vim-proset_tmp"
 
 
-                                     *cxx-cmake:conf:settings.directory.build*
-settings.directory.build
+                                                        *cxx-cmake:conf:build*
+                               *cxx-cmake:conf:build.settings.build_directory*
+build.settings.build_directory
 
 Directory for build files (CMake build files, objects *.o, etc).
 
 If missing, empty or incorrect:
-settings.directory.build:               "build"
+build.settings.build_directory: "build"
 
 
-                                    *cxx-cmake:conf:settings.directory.source*
-settings.directory.source
-
-Source directory where all C/C++ files are placed.
-
-If missing, empty or incorrect:
-settings.directory.source:              "src"
-
-
-                                          *cxx-cmake:conf:settings.build.jobs*
-settings.build.jobs
+                                          *cxx-cmake:conf:build.settings.jobs*
+build.settings.jobs
 
 Maximum number of jobs used to build your project (building in parallel). If
 you want single job to be used to build your project, set value of 1. If this
 parameter has empty value then maximum number of jobs will be used.
 
 If missing:
-settings.build.jobs:                    "1"
+build.settings.jobs: "1"
 
 For maximum number of jobs:
-settings.build.jobs:                    ""
+build.settings.jobs: ""
 
 
-                        *cxx-cmake:conf:settings.directories.additional_ctags*
-settings.directories.additional_ctags
+                                  *cxx-cmake:conf:build.mappings.normal.build*
+build.mappings.normal.build
 
-To generate tags file using ctags application you have to specify what source
-code directory is going to be parsed.  Using cxx-cmake this is done
-automatically for |cxx-cmake:conf:settings.directory.source| (parsing project
-source code). To parse even more source code (possibly some external code),
-put these directories (either one or more) in the array.
-
-If missing:
-settings.directories.additional_ctags:  []
+Mapping for build the project. See |cxx-cmake:build|.
 
 Example:
-settings.directories.additional_ctags:  [ "../xd", "../../goo/lib/" ]
+build.mappings.normal.build: "mk"
 
 
-                       *cxx-cmake:conf:settings.directories.additional_cscope*
-settings.directories.additional_cscope
+                                  *cxx-cmake:conf:build.mappings.normal.clean*
+build.mappings.normal.clean
 
-In cxx-cmake, cscope application is used to generate cscope file, by default
-it uses |cxx-cmake:conf:settings.directory.source|. If you want to parse
-source code from different directories as well, then this parameter is for
-that. You may specify one or more paths to (external) source directories, in
-both cases use array.
-
-If missing:
-settings.directories.additional_cscope: []
+Mapping for clean the project. See |cxx-cmake:clean|.
 
 Example:
-settings.directories.additional_cscope: [ "../xd", "../../goo/", "target" ]
+build.mappings.normal.clean: "mC"
 
 
-                       *cxx-cmake:conf:settings.directories.additional_search*
-settings.directories.additional_search
+                        *cxx-cmake:conf:build.mappings.normal.clean_and_build*
+build.mappings.normal.clean_and_build
+
+Mapping for clean and build the project. See |cxx-cmake:clean_and_build|.
+
+Example:
+build.mappings.normal.clean_and_build: "mK"
+
+
+                                                          *cxx-cmake:conf:run*
+                                      *cxx-cmake:conf:run.mappings.normal.run*
+run.mappings.normal.run
+
+Mapping for run the project. See |cxx-cmake:run|.
+
+Example:
+run.mappings.normal.run: "mr"
+
+
+                                 *cxx-cmake:conf:run.mappings.normal.run_args*
+run.mappings.normal.run_args
+
+Mapping for run the project with arguments. See |cxx-cmake:run|.
+
+Example:
+run.mappings.normal.run_args: "mR"
+
+
+                                                       *cxx-cmake:conf:source*
+                             *cxx-cmake:conf:source.settings.source_directory*
+source.settings.source_directory
+
+Source directory where all C/C++ files are placed.
+
+If missing, empty or incorrect:
+source.settings.source_directory: "src"
+
+
+                             *cxx-cmake:conf:source.settings.header_extension*
+source.settings.header_extension
+
+Extension for header file when creating file using cxx-cmake commands. This is
+also used for alternate-file module (switching between header and source
+files).
+
+If missing or empty:
+source.settings.header_extension: "hpp"
+
+
+                             *cxx-cmake:conf:source.settings.source_extension*
+source.settings.source_extension
+
+Extension for source file when creating file using cxx-cmake commands. This is
+also used for alternate-file module (switching between header and source
+files).
+
+If missing or empty:
+source.settings.source_extension: "cpp"
+
+
+                *cxx-cmake:conf:source.settings.additional_search_directories*
+source.settings.additional_search_directories
 
 This is a list of additional paths to directories which will be appended to
 |'path'|. You can specify one or more, in both cases put them in the array.
 
 If missing:
-settings.directories.additional_search: []
+source.settings.additional_search_directories: []
 
 Example:
-settings.directories.additional_search: [ "../" ]
+source.settings.additional_search_directories: [ "../" ]
 
 
-                                *cxx-cmake:conf:settings.files.external_ctags*
-settings.files.external_ctags
+                                                      *cxx-cmake:conf:symbols*
+                *cxx-cmake:conf:symbols.settings.additional_ctags_directories*
+symbols.settings.additional_ctags_directories
+
+To generate tags file using ctags application you have to specify what source
+code directory is going to be parsed.  Using cxx-cmake this is done
+automatically for |cxx-cmake:conf:source.settings.source_directory| (parsing
+project source code). To parse even more source code (possibly some external
+code), put these directories (either one or more) in the array.
+
+If missing:
+symbols.settings.additional_ctags_directories: []
+
+Example:
+symbols.settings.additional_ctags_directories: [ "../xd", "../../goo/lib/" ]
+
+
+               *cxx-cmake:conf:symbols.settings.additional_cscope_directories*
+symbols.settings.additional_cscope_directories
+
+In cxx-cmake, cscope application is used to generate cscope file, by default
+it uses |cxx-cmake:conf:source.settings.source_directory|. If you want to
+parse source code from different directories as well, then this parameter is
+for that. You may specify one or more paths to (external) source directories,
+in both cases use array.
+
+If missing:
+symbols.settings.additional_cscope_directories: []
+
+Example:
+symbols.settings.additional_cscope_directories: [ "../xd", "../../goo/" ]
+
+
+                        *cxx-cmake:conf:symbols.settings.external_ctags_files*
+symbols.settings.external_ctags_files
 
 (todo: do the test)
 To use external tags file (already generated, very rarely changing, for
@@ -780,14 +867,14 @@ standard C or C++ library for example), you are able to put its path here.
 Use array to specify one or more files.
 
 If missing:
-settings.files.external_ctags:          []
+symbols.settings.external_ctags_files: []
 
 Example:
-settings.files.external_ctags:          [ "/tmp/ctags" ]
+symbols.settings.external_ctags_files: [ "/tmp/ctags" ]
 
 
-                               *cxx-cmake:conf:settings.files.external_cscope*
-settings.files.external_cscope
+                       *cxx-cmake:conf:symbols.settings.external_cscope_files*
+symbols.settings.external_cscope_files
 
 (todo: do the test)
 To use external cscope file (already generated, very rarely changing, for
@@ -795,217 +882,14 @@ standard C or C++ library for example), you are able to put its path here.
 Use array to specify one or more files.
 
 If missing:
-settings.files.external_cscope:         []
+symbols.settings.external_cscope_files: []
 
 Example:
-settings.files.external_cscope:         [ "/tmp/cscopeX", "/tmp/cscope2" ]
+symbols.settings.external_cscope_files: [ "/tmp/cscopeX", "/tmp/cscope2" ]
 
 
-                                    *cxx-cmake:conf:settings.extension.header*
-settings.extension.header
-
-Extension for header file when creating file using cxx-cmake commands. This is
-also used for alternate-file module (switching between header and source
-files).
-
-If missing or empty:
-settings.extension.header:              "hpp"
-
-
-                                    *cxx-cmake:conf:settings.extension.source*
-settings.source_extension
-
-Extension for source file when creating file using cxx-cmake commands. This is
-also used for alternate-file module (switching between header and source
-files).
-
-If missing or empty:
-settings.extension.source:              "cpp"
-
-
-                                                     *cxx-cmake:conf:mappings*
-(todo: mappings are for normal mode only, some of them could be in visual as
-well)
-
-Unless otherwise noted, every mapping parameter that is missing makes
-corresponding functionality not to be mapped at all.
-
-
-                       *cxx-cmake:conf:mappings.alternate_file.current_window*
-mappings.alternate_file.current_window
-
-Mapping for switching between header and source files (in current window).
-See |cxx-cmake:alternate_file:current_window|.
-
-Example:
-mappings.alternate_file.current_window: "ma"
-mappings.alternate_file.current_window: "<Leader>a"
-
-
-                         *cxx-cmake:conf:mappings.alternate_file.split_window*
-mappings.alternate_file.split_window
-
-Mapping for switching between header and source files (in split window).
-See |cxx-cmake:alternate_file:split_window|.
-
-Example:
-mappings.alternate_file.split_window:   "mza"
-mappings.alternate_file.split_window:   "<F3>"
-
-
-                        *cxx-cmake:conf:mappings.alternate_file.vsplit_window*
-mappings.alternate_file.vsplit_window
-
-Mapping for switching between header and source files (in vsplit window).
-See |cxx-cmake:alternate_file:vsplit_window|.
-
-mappings.alternate_file.vsplit_window:  "mzA"
-mappings.alternate_file.vsplit_window:  "<C-F12>"
-
-
-                                              *cxx-cmake:conf:mappings.cscope*
-Every cscope mapping works in normal mode and takes <cword> as a name
-(see |cscope-find| to get more information about name and querytype).
-See also |cxx-cmake:symbols:cscope|.
-(todo: plan to do visual mappings as well)
-
-
-            *cxx-cmake:conf:mappings.cscope.a_find_assignments_to_this_symbol*
-mappings.cscope.a_find_assignments_to_this_symbol
-
-Mapping for searching symbol using cscope querytype a(9): "Find places where
-this symbol is assigned a value".
-
-Example:
-mappings.cscope.a_find_assignments_to_this_symbol:          "<Leader>ea"
-
-
-       *cxx-cmake:conf:mappings.cscope.c_find_functions_calling_this_function*
-mappings.cscope.c_find_functions_calling_this_function
-
-Mapping for searching symbol using cscope querytype c(3): "Find functions
-calling this function".
-
-Example:
-mappings.cscope.c_find_functions_calling_this_function:     "<Leader>ec"
-
-
-     *cxx-cmake:conf:mappings.cscope.d_find_functions_called_by_this_function*
-mappings.cscope.d_find_functions_called_by_this_function
-
-Mapping for searching symbol using cscope querytype d(2): "Find functions
-called by this function".
-
-Example:
-mappings.cscope.d_find_functions_called_by_this_function:   "<Leader>ed"
-
-
-                    *cxx-cmake:conf:mappings.cscope.e_find_this_egrep_pattern*
-mappings.cscope.e_find_this_egrep_pattern
-
-Mapping for searching symbol using cscope querytype e(6): "Find this egrep
-pattern".
-
-Example:
-mappings.cscope.e_find_this_egrep_pattern:                  "<Leader>ee"
-
-
-                             *cxx-cmake:conf:mappings.cscope.f_find_this_file*
-mappings.cscope.f_find_this_file
-
-Mapping for searching symbol using cscope querytype f(7): "Find this file".
-
-Example:
-mappings.cscope.f_find_this_file:                           "<Leader>ef"
-
-
-                       *cxx-cmake:conf:mappings.cscope.g_find_this_definition*
-mappings.cscope.g_find_this_definition
-
-Mapping for searching symbol using cscope querytype g(1): "Find this
-definition".
-
-Example:
-mappings.cscope.g_find_this_definition:                     "<Leader>eg"
-
-
-             *cxx-cmake:conf:mappings.cscope.i_find_files_including_this_file*
-mappings.cscope.i_find_files_including_this_file
-
-Mapping for searching symbol using cscope querytype i(8): "Find files
-#including this file".
-
-Example:
-mappings.cscope.i_find_files_including_this_file:           "<Leader>ei"
-
-
-                         *cxx-cmake:conf:mappings.cscope.s_find_this_c_symbol*
-mappings.cscope.s_find_this_c_symbol
-
-Mapping for searching symbol using cscope querytype s(0): "Find this C
-symbol".
-
-Example:
-mappings.cscope.s_find_this_c_symbol:                       "<Leader>es"
-
-
-                      *cxx-cmake:conf:mappings.cscope.t_find_this_text_string*
-mappings.cscope.t_find_this_text_string
-
-Mapping for searching symbol using cscope querytype t(4): "Find this text
-string".
-
-Example:
-mappings.cscope.t_find_this_text_string:                    "<Leader>et"
-
-
-                                       *cxx-cmake:conf:mappings.project.build*
-mappings.project.build
-
-Mapping for build the project. See |cxx-cmake:build|.
-
-Example:
-mappings.project.build:                 "mk"
-
-
-                                       *cxx-cmake:conf:mappings.project.clean*
-mappings.project.clean
-
-Mapping for clean the project. See |cxx-cmake:clean|.
-
-Example:
-mappings.project.clean:                 "mC"
-
-
-                             *cxx-cmake:conf:mappings.project.clean_and_build*
-mappings.project.clean_and_build
-
-Mapping for clean and build the project. See |cxx-cmake:clean_and_build|.
-
-Example:
-mappings.project.clean_and_build:       "mK"
-
-
-                                         *cxx-cmake:conf:mappings.project.run*
-mappings.project.run
-
-Mapping for run the project. See |cxx-cmake:run|.
-
-Example:
-mappings.project.run:                   "mr"
-
-
-                                    *cxx-cmake:conf:mappings.project.run_args*
-mappings.project.run_args
-
-Mapping for run the project with arguments. See |cxx-cmake:run|.
-
-Example:
-mappings.project.run_args:              "mR"
-
-
-                         *cxx-cmake:conf:mappings.update_ctags_cscope_symbols*
-mappings.update_ctags_cscope_symbols
+                       *cxx-cmake:conf:symbols.mappings.normal.update_symbols*
+symbols.mappings.normal.update_symbols
 
 Mapping for update ctags and cscope symbols manually.  Useful when your
 sources have been changed (add new files, modify existing files). New symbols
@@ -1013,137 +897,259 @@ are not visible before updating symbol files.
 See |cxx-cmake:symbols:update_symbols|.
 
 Example:
-mappings.update_ctags_cscope_symbols:   "mu"
+symbols.mappings.normal.update_symbols: "mu"
 
 
-                                       *cxx-cmake:conf:mappings.create_header*
-mappings.create_file.header
+*cxx-cmake:conf:symbols.mappings.normal.cscope.a_find_assignments_to_this_symbol*
+symbols.mappings.normal.cscope.a_find_assignments_to_this_symbol
+
+Mapping for searching symbol using cscope querytype a(9): "Find places where
+this symbol is assigned a value".
+
+Example:
+symbols.mappings.normal.cscope.a_find_assignments_to_this_symbol: "<Leader>ea"
+
+
+*cxx-cmake:conf:symbols.mappings.normal.cscope.c_find_functions_calling_this_function*
+symbols.mappings.normal.cscope.c_find_functions_calling_this_function
+
+Mapping for searching symbol using cscope querytype c(3): "Find functions
+calling this function".
+
+Example:
+symbols.mappings.normal.cscope.c_find_functions_calling_this_function: "<Leader>ec"
+
+
+*cxx-cmake:conf:symbols.mappings.normal.cscope.d_find_functions_called_by_this_function*
+symbols.mappings.normal.cscope.d_find_functions_called_by_this_function
+
+Mapping for searching symbol using cscope querytype d(2): "Find functions
+called by this function".
+
+Example:
+symbols.mappings.normal.cscope.d_find_functions_called_by_this_function: "<Leader>ed"
+
+
+     *cxx-cmake:conf:symbols.mappings.normal.cscope.e_find_this_egrep_pattern*
+symbols.mappings.normal.cscope.e_find_this_egrep_pattern
+
+Mapping for searching symbol using cscope querytype e(6): "Find this egrep
+pattern".
+
+Example:
+symbols.mappings.normal.cscope.e_find_this_egrep_pattern: "<Leader>ee"
+
+
+              *cxx-cmake:conf:symbols.mappings.normal.cscope.f_find_this_file*
+symbols.mappings.normal.cscope.f_find_this_file
+
+Mapping for searching symbol using cscope querytype f(7): "Find this file".
+
+Example:
+symbols.mappings.normal.cscope.f_find_this_file: "<Leader>ef"
+
+
+        *cxx-cmake:conf:symbols.mappings.normal.cscope.g_find_this_definition*
+symbols.mappings.normal.cscope.g_find_this_definition
+
+Mapping for searching symbol using cscope querytype g(1): "Find this
+definition".
+
+Example:
+symbols.mappings.normal.cscope.g_find_this_definition: "<Leader>eg"
+
+
+*cxx-cmake:conf:symbols.mappings.normal.cscope.i_find_files_including_this_file*
+symbols.mappings.normal.cscope.i_find_files_including_this_file
+
+Mapping for searching symbol using cscope querytype i(8): "Find files
+#including this file".
+
+Example:
+symbols.mappings.normal.cscope.i_find_files_including_this_file: "<Leader>ei"
+
+
+          *cxx-cmake:conf:symbols.mappings.normal.cscope.s_find_this_c_symbol*
+symbols.mappings.normal.cscope.s_find_this_c_symbol
+
+Mapping for searching symbol using cscope querytype s(0): "Find this C
+symbol".
+
+Example:
+symbols.mappings.normal.cscope.s_find_this_c_symbol: "<Leader>es"
+
+
+       *cxx-cmake:conf:symbols.mappings.normal.cscope.t_find_this_text_string*
+symbols.mappings.normal.cscope.t_find_this_text_string
+
+Mapping for searching symbol using cscope querytype t(4): "Find this text
+string".
+
+Example:
+symbols.mappings.normal.cscope.t_find_this_text_string: "<Leader>et"
+
+
+                                               *cxx-cmake:conf:alternate_file*
+                *cxx-cmake:conf:alternate_file.mappings.normal.current_window*
+alternate_file.mappings.normal.current_window
+
+Mapping for switching between header and source files (in current window).
+See |cxx-cmake:alternate_file:current_window|.
+
+Example:
+alternate_file.mappings.normal.current_window: "ma"
+
+
+                  *cxx-cmake:conf:alternate_file.mappings.normal.split_window*
+alternate_file.mappings.normal.split_window
+
+Mapping for switching between header and source files (in split window).
+See |cxx-cmake:alternate_file:split_window|.
+
+Example:
+alternate_file.mappings.normal.split_window: "mza"
+
+
+                 *cxx-cmake:conf:alternate_file.mappings.normal.vsplit_window*
+alternate_file.mappings.normal.vsplit_window
+
+Mapping for switching between header and source files (in vsplit window).
+See |cxx-cmake:alternate_file:vsplit_window|.
+
+alternate_file.mappings.normal.vsplit_window: "mzA"
+
+
+                                                *cxx-cmake:conf:create_header*
+                         *cxx-cmake:conf:create_header.mappings.normal.create*
+create_header.mappings.normal.create
 
 Mapping for creating (only) header file. See |cxx-cmake:create_header:create|.
 
 Example:
-mappings.create_file.header:                "<Leader>ch"
+create_header.mappings.normal.create: "<Leader>ch"
 
 
-                                  *cxx-cmake:conf:mappings.create_header_edit*
-mappings.create_file.header_edit
+                    *cxx-cmake:conf:create_header.mappings.normal.create_edit*
+create_header.mappings.normal.create_edit
 
 Mapping for creating and editing header file in current window.
 See |cxx-cmake:create_header:create_edit|.
 
 Example:
-mappings.create_file.header_edit:           "<Leader>che"
+create_header.mappings.normal.create_edit: "<Leader>che"
 
 
-                            *cxx-cmake:conf:mappings.create_header_edit_split*
-mappings.create_file.header_edit_split
+              *cxx-cmake:conf:create_header.mappings.normal.create_edit_split*
+create_header.mappings.normal.create_edit_split
 
 Mapping for creating and editing header file in split window.
 See |cxx-cmake:create_header:create_edit_split|.
 
 Example:
-mappings.create_file.header_edit_split:     "<Leader>ches"
+create_header.mappings.normal.create_edit_split: "<Leader>ches"
 
 
-                           *cxx-cmake:conf:mappings.create_header_edit_vsplit*
-mappings.create_file.header_edit_vsplit
+             *cxx-cmake:conf:create_header.mappings.normal.create_edit_vsplit*
+create_header.mappings.normal.create_edit_vsplit
 
 Mapping for creating and editing header file in vsplit window.
 See |cxx-cmake:create_header:create_edit_vsplit|.
 
 Example:
-mappings.create_file.header_edit_vsplit:    "<Leader>chevs"
+create_header.mappings.normal.create_edit_vsplit: "<Leader>chevs"
 
 
-                                       *cxx-cmake:conf:mappings.create_source*
-mappings.create_file.source
+                                                *cxx-cmake:conf:create_source*
+                         *cxx-cmake:conf:create_source.mappings.normal.create*
+create_source.mappings.normal.create
 
 Mapping for creating (only) source file. See |cxx-cmake:create_source:create|.
 
 Example:
-mappings.create_file.source:                "<Leader>cs"
+create_source.mappings.normal.create: "<Leader>cs"
 
 
-                                  *cxx-cmake:conf:mappings.create_source_edit*
-mappings.create_file.source_edit
+                    *cxx-cmake:conf:create_source.mappings.normal.create_edit*
+create_source.mappings.normal.create_edit
 
 Mapping for creating and editing source file in current window.
 See |cxx-cmake:create_source:create_edit|.
 
 Example:
-mappings.create_file.source_edit:           "<Leader>cse"
+create_source.mappings.normal.create_edit: "<Leader>cse"
 
 
-                            *cxx-cmake:conf:mappings.create_source_edit_split*
-mappings.create_file.source_edit_split
+              *cxx-cmake:conf:create_source.mappings.normal.create_edit_split*
+create_source.mappings.normal.create_edit_split
 
 Mapping for creating and editing source file in split window.
 See |cxx-cmake:create_source:create_edit_split|.
 
 Example:
-mappings.create_file.source_edit_split:     "<Leader>cses"
+create_source.mappings.normal.create_edit_split: "<Leader>cses"
 
 
-                           *cxx-cmake:conf:mappings.create_source_edit_vsplit*
-mappings.create_file.source_edit_vsplit
+             *cxx-cmake:conf:create_source.mappings.normal.create_edit_vsplit*
+create_source.mappings.normal.create_edit_vsplit
 
 Mapping for creating and editing source file in vsplit window.
 See |cxx-cmake:create_source:create_edit_vsplit|.
 
 Example:
-mappings.create_file.source_edit_vsplit:    "<Leader>csevs"
+create_source.mappings.normal.create_edit_vsplit: "<Leader>csevs"
 
 
-                                *cxx-cmake:conf:mappings.create_header_source*
-mappings.create_file.header_source
+                                         *cxx-cmake:conf:create_header_source*
+                  *cxx-cmake:conf:create_header_source.mappings.normal.create*
+create_header_source.mappings.normal.create
 
 Mapping for creating (only) header and source files.
 See |cxx-cmake:create_header_source:create|.
 
 Example:
-mappings.create_file.header_source:         "<Leader>chs"
+create_header_source.mappings.normal.create: "<Leader>chs"
 
 
-                     *cxx-cmake:conf:mappings.create_header_source_edit_split*
-mappings.create_file.header_source_edit_split
+       *cxx-cmake:conf:create_header_source.mappings.normal.create_edit_split*
+create_header_source.mappings.normal.create_edit_split
 
 Mapping for creating and editing header and source files in split windows
 leaving current window untouched.
 See |cxx-cmake:create_header_source:create_edit_split|.
 
 Example:
-mappings.create_file.header_source_edit_split:  "<Leader>chses"
+create_header_source.mappings.normal.create_edit_split: "<Leader>chses"
 
 
-             *cxx-cmake:conf:mappings.create_header_source_edit_current_split*
-mappings.create_file.header_source_edit_current_split
+*cxx-cmake:conf:create_header_source.mappings.normal.create_edit_current_split*
+create_header_source.mappings.normal.create_edit_current_split
 
 Mapping for creating and editing header and source files in current and split
 window. See |cxx-cmake:create_header_source:create_edit_current_split|.
 
 Example:
-mappings.create_file.header_source_edit_current_split:  "<Leader>chsecs"
+create_header_source.mappings.normal.create_edit_current_split: "<Leader>chsecs"
 
 
-                    *cxx-cmake:conf:mappings.create_header_source_edit_vsplit*
-mappings.create_file.header_source_edit_vsplit
+      *cxx-cmake:conf:create_header_source.mappings.normal.create_edit_vsplit*
+create_header_source.mappings.normal.create_edit_vsplit
 
 Mapping for creating and editing header and source files in vsplit windows
 leaving current window untouched.
 See |cxx-cmake:create_header_source:create_edit_vsplit|.
 
 Example:
-mappings.create_file.header_source_edit_vsplit:         "<Leader>chsev"
+create_header_source.mappings.normal.create_edit_vsplit: "<Leader>chsev"
 
 
-            *cxx-cmake:conf:mappings.create_header_source_edit_current_vsplit*
-mappings.create_file.header_source_edit_current_vsplit
+*cxx-cmake:conf:create_header_source.mappings.normal.create_edit_current_vsplit*
+create_header_source.mappings.normal.create_edit_current_vsplit
 
 Mapping for creating and editing header and source files in current and vsplit
 window. See |cxx-cmake:create_header_source:create_edit_current_vsplit|.
 
 Example:
-mappings.create_file.header_source_edit_current_vsplit: "<Leader>chsecv"
+create_header_source.mappings.normal.create_edit_current_vsplit: "<Leader>chsecv"
 
 
 ==============================================================================
@@ -1318,14 +1324,15 @@ variables:
                                     *cxx-cmake:cmake_input_file:bin_directory*
 It means that you can specify output (bin) directory for your project
 application or library. If you do not specify the path, then result of your
-build will be placed in |cxx-cmake:conf:settings.directory.build|. You can
-change your output directory using these variables like this:
+build will be placed in |cxx-cmake:conf:build.settings.build_directory|. You
+can change your output directory using these variables like this:
 
 1) Application will be in project_root/bin/
 
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
 
-2) Static library will be in |cxx-cmake:conf:settings.directory.build|/bin/
+2) Static library will be in
+   |cxx-cmake:conf:build.settings.build_directory|/bin/
 
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "bin")
 
