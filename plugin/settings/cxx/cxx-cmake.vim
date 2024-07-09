@@ -550,7 +550,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "alternate_file",
     \           "mappings",
-    \           "normal",
     \           "current_window"
     \       ),
     \       "fun":
@@ -565,7 +564,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "alternate_file",
     \           "mappings",
-    \           "normal",
     \           "split_window"
     \       ),
     \       "fun":
@@ -580,7 +578,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "alternate_file",
     \           "mappings",
-    \           "normal",
     \           "vsplit_window"
     \       ),
     \       "fun":
@@ -596,7 +593,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "symbols",
     \           "mappings",
-    \           "normal",
     \           "cscope",
     \           "a_find_assignments_to_this_symbol"
     \       ),
@@ -612,7 +608,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "symbols",
     \           "mappings",
-    \           "normal",
     \           "cscope",
     \           "c_find_functions_calling_this_function"
     \       ),
@@ -628,7 +623,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "symbols",
     \           "mappings",
-    \           "normal",
     \           "cscope",
     \           "d_find_functions_called_by_this_function"
     \       ),
@@ -644,7 +638,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "symbols",
     \           "mappings",
-    \           "normal",
     \           "cscope",
     \           "e_find_this_egrep_pattern"
     \       ),
@@ -660,7 +653,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "symbols",
     \           "mappings",
-    \           "normal",
     \           "cscope",
     \           "f_find_this_file"
     \       ),
@@ -676,7 +668,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "symbols",
     \           "mappings",
-    \           "normal",
     \           "cscope",
     \           "g_find_this_definition"
     \       ),
@@ -692,7 +683,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "symbols",
     \           "mappings",
-    \           "normal",
     \           "cscope",
     \           "i_find_files_including_this_file"
     \       ),
@@ -708,7 +698,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "symbols",
     \           "mappings",
-    \           "normal",
     \           "cscope",
     \           "s_find_this_c_symbol"
     \       ),
@@ -724,7 +713,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "symbols",
     \           "mappings",
-    \           "normal",
     \           "cscope",
     \           "t_find_this_text_string"
     \       ),
@@ -741,7 +729,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "build",
     \           "mappings",
-    \           "normal",
     \           "build"
     \       ),
     \       "fun":
@@ -756,7 +743,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "build",
     \           "mappings",
-    \           "normal",
     \           "clean"
     \       ),
     \       "fun":
@@ -771,7 +757,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "build",
     \           "mappings",
-    \           "normal",
     \           "clean_and_build"
     \       ),
     \       "fun":
@@ -786,7 +771,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "run",
     \           "mappings",
-    \           "normal",
     \           "run"
     \       ),
     \       "fun":
@@ -801,7 +785,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "run",
     \           "mappings",
-    \           "normal",
     \           "run_args"
     \       ),
     \       "fun":
@@ -817,7 +800,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "symbols",
     \           "mappings",
-    \           "normal",
     \           "update_symbols"
     \       ),
     \       "fun":
@@ -833,7 +815,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "create_header",
     \           "mappings",
-    \           "normal",
     \           "create"
     \       ),
     \       "fun":
@@ -848,7 +829,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "create_header",
     \           "mappings",
-    \           "normal",
     \           "create_edit"
     \       ),
     \       "fun":
@@ -863,7 +843,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "create_header",
     \           "mappings",
-    \           "normal",
     \           "create_edit_split"
     \       ),
     \       "fun":
@@ -878,7 +857,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "create_header",
     \           "mappings",
-    \           "normal",
     \           "create_edit_vsplit"
     \       ),
     \       "fun":
@@ -893,7 +871,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "create_source",
     \           "mappings",
-    \           "normal",
     \           "create"
     \       ),
     \       "fun":
@@ -908,7 +885,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "create_source",
     \           "mappings",
-    \           "normal",
     \           "create_edit"
     \       ),
     \       "fun":
@@ -923,7 +899,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "create_source",
     \           "mappings",
-    \           "normal",
     \           "create_edit_split"
     \       ),
     \       "fun":
@@ -938,7 +913,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "create_source",
     \           "mappings",
-    \           "normal",
     \           "create_edit_vsplit"
     \       ),
     \       "fun":
@@ -953,7 +927,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "create_header_source",
     \           "mappings",
-    \           "normal",
     \           "create"
     \       ),
     \       "fun":
@@ -968,7 +941,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "create_header_source",
     \           "mappings",
-    \           "normal",
     \           "create_edit_split"
     \       ),
     \       "fun":
@@ -983,7 +955,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "create_header_source",
     \           "mappings",
-    \           "normal",
     \           "create_edit_current_split"
     \       ),
     \       "fun":
@@ -998,7 +969,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "create_header_source",
     \           "mappings",
-    \           "normal",
     \           "create_edit_vsplit"
     \       ),
     \       "fun":
@@ -1013,7 +983,6 @@ function! s:cxx_cmake.construct(config)
     \           "",
     \           "create_header_source",
     \           "mappings",
-    \           "normal",
     \           "create_edit_current_vsplit"
     \       ),
     \       "fun":

@@ -195,7 +195,7 @@ To switch from header to source or vice versa and load alternate file in a
 current window, use any of those:
 
 command: *:CXXCMakeAlternateFileCurrentWindow*
-mapping: |cxx-cmake:conf:alternate_file.mappings.normal.current_window|
+mapping: |cxx-cmake:conf:alternate_file.mappings.current_window|
 
                                        *cxx-cmake:alternate_file:split_window*
 2) Alternate file in a split window
@@ -204,7 +204,7 @@ To switch from header to source or vice versa and load alternate file in a
 split window, use any of those:
 
 command: *:CXXCMakeAlternateFileSplitWindow*
-mapping: |cxx-cmake:conf:alternate_file.mappings.normal.split_window|
+mapping: |cxx-cmake:conf:alternate_file.mappings.split_window|
 
                                       *cxx-cmake:alternate_file:vsplit_window*
 3) Alternate file in a vsplit window
@@ -213,7 +213,7 @@ To switch from header to source or vice versa and load alternate file in a
 vsplit window, use any of those:
 
 command: *:CXXCMakeAlternateFileVSplitWindow*
-mapping: |cxx-cmake:conf:alternate_file.mappings.normal.vsplit_window|
+mapping: |cxx-cmake:conf:alternate_file.mappings.vsplit_window|
 
 
 ==============================================================================
@@ -231,25 +231,25 @@ To create header file you have couple options:
 1) Create header
 
 command: *:CXXCMakeCreateHeader*
-mapping: |cxx-cmake:conf:create_header.mappings.normal.create|
+mapping: |cxx-cmake:conf:create_header.mappings.create|
 
                                          *cxx-cmake:create_header:create_edit*
 2) Create header and edit in a current window
 
 command: *:CXXCMakeCreateHeaderEdit*
-mapping: |cxx-cmake:conf:create_header.mappings.normal.create_edit|
+mapping: |cxx-cmake:conf:create_header.mappings.create_edit|
 
                                    *cxx-cmake:create_header:create_edit_split*
 3) Create header and edit in a split window
 
 command: *:CXXCMakeCreateHeaderEditSplit*
-mapping: |cxx-cmake:conf:create_header.mappings.normal.create_edit_split|
+mapping: |cxx-cmake:conf:create_header.mappings.create_edit_split|
 
                                   *cxx-cmake:create_header:create_edit_vsplit*
 4) Create header and edit in a vsplit window
 
 command: *:CXXCMakeCreateHeaderEditVSplit*
-mapping: |cxx-cmake:conf:create_header.mappings.normal.create_edit_vsplit|
+mapping: |cxx-cmake:conf:create_header.mappings.create_edit_vsplit|
 
 
 Each of the commands requires one argument (therefore mapping is a shortcut
@@ -309,25 +309,25 @@ To create source file you have couple options:
 1) Create source
 
 command: *:CXXCMakeCreateSource*
-mapping: |cxx-cmake:conf:create_source.mappings.normal.create|
+mapping: |cxx-cmake:conf:create_source.mappings.create|
 
                                          *cxx-cmake:create_source:create_edit*
 2) Create source and edit in a current window
 
 command: *:CXXCMakeCreateSourceEdit*
-mapping: |cxx-cmake:conf:create_source.mappings.normal.create_edit|
+mapping: |cxx-cmake:conf:create_source.mappings.create_edit|
 
                                    *cxx-cmake:create_source:create_edit_split*
 3) Create source and edit in a split window
 
 command: *:CXXCMakeCreateSourceEditSplit*
-mapping: |cxx-cmake:conf:create_source.mappings.normal.create_edit_split|
+mapping: |cxx-cmake:conf:create_source.mappings.create_edit_split|
 
                                   *cxx-cmake:create_source:create_edit_vsplit*
 4) Create source and edit in a vsplit window
 
 command: *:CXXCMakeCreateSourceEditVSplit*
-mapping: |cxx-cmake:conf:create_source.mappings.normal.create_edit_vsplit|
+mapping: |cxx-cmake:conf:create_source.mappings.create_edit_vsplit|
 
 
 Each of the commands requires one argument (therefore mapping is a shortcut
@@ -368,31 +368,31 @@ To create header and source files you have couple options:
 1) Create header and source
 
 command: *:CXXCMakeCreateHeaderSource*
-mapping: |cxx-cmake:conf:create_header_source.mappings.normal.create|
+mapping: |cxx-cmake:conf:create_header_source.mappings.create|
 
                             *cxx-cmake:create_header_source:create_edit_split*
 2) Create header and source and edit in split windows
 
 command: *:CXXCMakeCreateHeaderSourceEditSplit*
-mapping: |cxx-cmake:conf:create_header_source.mappings.normal.create_edit_split|
+mapping: |cxx-cmake:conf:create_header_source.mappings.create_edit_split|
 
                     *cxx-cmake:create_header_source:create_edit_current_split*
 3) Create header and source and edit in current and split window
 
 command: *:CXXCMakeCreateHeaderSourceEditCurrentSplit*
-mapping: |cxx-cmake:conf:create_header_source.mappings.normal.create_edit_current_split|
+mapping: |cxx-cmake:conf:create_header_source.mappings.create_edit_current_split|
 
                            *cxx-cmake:create_header_source:create_edit_vsplit*
 4) Create header and source and edit in vsplit windows
 
 command: *:CXXCMakeCreateHeaderSourceEditVSplit*
-mapping: |cxx-cmake:conf:create_header_source.mappings.normal.create_edit_vsplit|
+mapping: |cxx-cmake:conf:create_header_source.mappings.create_edit_vsplit|
 
                    *cxx-cmake:create_header_source:create_edit_current_vsplit*
 5) Create header and source and edit in current and vsplit window
 
 command: *:CXXCMakeCreateHeaderSourceEditCurrentVSplit*
-mapping: |cxx-cmake:conf:create_header_source.mappings.normal.create_edit_current_vsplit|
+mapping: |cxx-cmake:conf:create_header_source.mappings.create_edit_current_vsplit|
 
 
 Except from Create Header and Create Source, you can not create and edit both
@@ -425,7 +425,7 @@ ability to move around in Vim and doing other things.
 To build project use command or mapping:
 
 command: *:CXXCMakeBuild*
-mapping: |cxx-cmake:conf:build.mappings.normal.build|
+mapping: |cxx-cmake:conf:build.mappings.build|
 
 Build process is defined by CMakeLists.txt file and it uses CMake to do the
 job using |AsyncRun| plugin. Automatically output of build process is loaded
@@ -445,7 +445,7 @@ To delete all previous build files (object files, CMake temporary files, build
 result), you can use:
 
 command: *:CXXCMakeClean*
-mapping: |cxx-cmake:conf:build.mappings.normal.clean|
+mapping: |cxx-cmake:conf:build.mappings.clean|
 
 which will remove |cxx-cmake:conf:build.settings.build_directory|. If you want
 to remove build directory, you probably want to build your project from
@@ -463,7 +463,7 @@ mapping that is designed for that.
 To build your project from scratch use command or mapping:
 
 command: *:CXXCMakeCleanAndBuild*
-mapping: |cxx-cmake:conf:build.mappings.normal.clean_and_build|
+mapping: |cxx-cmake:conf:build.mappings.clean_and_build|
 
 
 ==============================================================================
@@ -477,12 +477,12 @@ following commands or mappings to do what you want.
 1) To run your application without arguments, use command or mapping:
 
 command: *:CXXCMakeRun*
-mapping: |cxx-cmake:conf:run.mappings.normal.run|
+mapping: |cxx-cmake:conf:run.mappings.run|
 
 2) To run your application with arguments, use command or mapping:
 
 command: *:CXXCMakeRun* arg1 arg2 ...
-mapping: |cxx-cmake:conf:run.mappings.normal.run_args|
+mapping: |cxx-cmake:conf:run.mappings.run_args|
 
 Application is run in Vim inside terminal.
 
@@ -566,31 +566,31 @@ mapping there is an assumption it uses <cword> (word under the cursor as a
 name). All of these mappings work in normal mode.
 
 command: :cs find a name
-mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.a_find_assignments_to_this_symbol|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.a_find_assignments_to_this_symbol|
 
 command: :cs find c name
-mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.c_find_functions_calling_this_function|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.c_find_functions_calling_this_function|
 
 command: :cs find d name
-mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.d_find_functions_called_by_this_function|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.d_find_functions_called_by_this_function|
 
 command: :cs find e name
-mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.e_find_this_egrep_pattern|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.e_find_this_egrep_pattern|
 
 command: :cs find f name
-mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.f_find_this_file|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.f_find_this_file|
 
 command: :cs find g name
-mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.g_find_this_definition|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.g_find_this_definition|
 
 command: :cs find i name
-mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.i_find_files_including_this_file|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.i_find_files_including_this_file|
 
 command: :cs find s name
-mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.s_find_this_c_symbol|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.s_find_this_c_symbol|
 
 command: :cs find t name
-mapping: |cxx-cmake:conf:symbols.mappings.normal.cscope.t_find_this_text_string|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.t_find_this_text_string|
 
 See |cscope| to get more information how to use it.
 
@@ -606,8 +606,8 @@ Vim. State of the symbols database is on |cxx-cmake:api:enable()| time point.
 If you add new or modify current source files later, then your new symbols
 will most likely not be visible until you regenerate symbols database. For
 now, this has to be done manually and the mapping used for this is:
-|cxx-cmake:conf:symbols.mappings.normal.update_symbols|. Future plan is to make
-it automatically also.
+|cxx-cmake:conf:symbols.mappings.update_symbols|. Future plan is to make it
+automatically also.
 
 
 ==============================================================================
@@ -652,12 +652,9 @@ of cxx-cmake configuration file.
     },
     "mappings":
     {
-        "normal":
-        {
-            "build":                    "mk",
-            "clean":                    "mC",
-            "clean_and_build":          "mK"
-        }
+        "build":                    "mk",
+        "clean":                    "mC",
+        "clean_and_build":          "mK"
     }
 }
 
@@ -672,7 +669,7 @@ when I refer to proset_settings I will use:
 since this is top-level parameter, and when I refer to mapping for building
 project it will look like this:
 
-    build.mappings.normal.build: "mk"
+    build.mappings.build: "mk"
 
 String values are surrounded by '"' and array values are in '[]'.
 
@@ -734,50 +731,50 @@ For maximum number of jobs:
 build.settings.jobs: ""
 
 
-                                  *cxx-cmake:conf:build.mappings.normal.build*
-build.mappings.normal.build
+                                         *cxx-cmake:conf:build.mappings.build*
+build.mappings.build
 
 Mapping for build the project. See |cxx-cmake:build|.
 
 Example:
-build.mappings.normal.build: "mk"
+build.mappings.build: "mk"
 
 
-                                  *cxx-cmake:conf:build.mappings.normal.clean*
-build.mappings.normal.clean
+                                         *cxx-cmake:conf:build.mappings.clean*
+build.mappings.clean
 
 Mapping for clean the project. See |cxx-cmake:clean|.
 
 Example:
-build.mappings.normal.clean: "mC"
+build.mappings.clean: "mC"
 
 
-                        *cxx-cmake:conf:build.mappings.normal.clean_and_build*
-build.mappings.normal.clean_and_build
+                               *cxx-cmake:conf:build.mappings.clean_and_build*
+build.mappings.clean_and_build
 
 Mapping for clean and build the project. See |cxx-cmake:clean_and_build|.
 
 Example:
-build.mappings.normal.clean_and_build: "mK"
+build.mappings.clean_and_build: "mK"
 
 
                                                           *cxx-cmake:conf:run*
-                                      *cxx-cmake:conf:run.mappings.normal.run*
-run.mappings.normal.run
+                                             *cxx-cmake:conf:run.mappings.run*
+run.mappings.run
 
 Mapping for run the project. See |cxx-cmake:run|.
 
 Example:
-run.mappings.normal.run: "mr"
+run.mappings.run: "mr"
 
 
-                                 *cxx-cmake:conf:run.mappings.normal.run_args*
-run.mappings.normal.run_args
+                                        *cxx-cmake:conf:run.mappings.run_args*
+run.mappings.run_args
 
 Mapping for run the project with arguments. See |cxx-cmake:run|.
 
 Example:
-run.mappings.normal.run_args: "mR"
+run.mappings.run_args: "mR"
 
 
                                                        *cxx-cmake:conf:source*
@@ -888,8 +885,8 @@ Example:
 symbols.settings.external_cscope_files: [ "/tmp/cscopeX", "/tmp/cscope2" ]
 
 
-                       *cxx-cmake:conf:symbols.mappings.normal.update_symbols*
-symbols.mappings.normal.update_symbols
+                              *cxx-cmake:conf:symbols.mappings.update_symbols*
+symbols.mappings.update_symbols
 
 Mapping for update ctags and cscope symbols manually.  Useful when your
 sources have been changed (add new files, modify existing files). New symbols
@@ -897,259 +894,259 @@ are not visible before updating symbol files.
 See |cxx-cmake:symbols:update_symbols|.
 
 Example:
-symbols.mappings.normal.update_symbols: "mu"
+symbols.mappings.update_symbols: "mu"
 
 
-*cxx-cmake:conf:symbols.mappings.normal.cscope.a_find_assignments_to_this_symbol*
-symbols.mappings.normal.cscope.a_find_assignments_to_this_symbol
+    *cxx-cmake:conf:symbols.mappings.cscope.a_find_assignments_to_this_symbol*
+symbols.mappings.cscope.a_find_assignments_to_this_symbol
 
 Mapping for searching symbol using cscope querytype a(9): "Find places where
 this symbol is assigned a value".
 
 Example:
-symbols.mappings.normal.cscope.a_find_assignments_to_this_symbol: "<Leader>ea"
+symbols.mappings.cscope.a_find_assignments_to_this_symbol: "<Leader>ea"
 
 
-*cxx-cmake:conf:symbols.mappings.normal.cscope.c_find_functions_calling_this_function*
-symbols.mappings.normal.cscope.c_find_functions_calling_this_function
+*cxx-cmake:conf:symbols.mappings.cscope.c_find_functions_calling_this_function*
+symbols.mappings.cscope.c_find_functions_calling_this_function
 
 Mapping for searching symbol using cscope querytype c(3): "Find functions
 calling this function".
 
 Example:
-symbols.mappings.normal.cscope.c_find_functions_calling_this_function: "<Leader>ec"
+symbols.mappings.cscope.c_find_functions_calling_this_function: "<Leader>ec"
 
 
-*cxx-cmake:conf:symbols.mappings.normal.cscope.d_find_functions_called_by_this_function*
-symbols.mappings.normal.cscope.d_find_functions_called_by_this_function
+*cxx-cmake:conf:symbols.mappings.cscope.d_find_functions_called_by_this_function*
+symbols.mappings.cscope.d_find_functions_called_by_this_function
 
 Mapping for searching symbol using cscope querytype d(2): "Find functions
 called by this function".
 
 Example:
-symbols.mappings.normal.cscope.d_find_functions_called_by_this_function: "<Leader>ed"
+symbols.mappings.cscope.d_find_functions_called_by_this_function: "<Leader>ed"
 
 
-     *cxx-cmake:conf:symbols.mappings.normal.cscope.e_find_this_egrep_pattern*
-symbols.mappings.normal.cscope.e_find_this_egrep_pattern
+            *cxx-cmake:conf:symbols.mappings.cscope.e_find_this_egrep_pattern*
+symbols.mappings.cscope.e_find_this_egrep_pattern
 
 Mapping for searching symbol using cscope querytype e(6): "Find this egrep
 pattern".
 
 Example:
-symbols.mappings.normal.cscope.e_find_this_egrep_pattern: "<Leader>ee"
+symbols.mappings.cscope.e_find_this_egrep_pattern: "<Leader>ee"
 
 
-              *cxx-cmake:conf:symbols.mappings.normal.cscope.f_find_this_file*
-symbols.mappings.normal.cscope.f_find_this_file
+                     *cxx-cmake:conf:symbols.mappings.cscope.f_find_this_file*
+symbols.mappings.cscope.f_find_this_file
 
 Mapping for searching symbol using cscope querytype f(7): "Find this file".
 
 Example:
-symbols.mappings.normal.cscope.f_find_this_file: "<Leader>ef"
+symbols.mappings.cscope.f_find_this_file: "<Leader>ef"
 
 
-        *cxx-cmake:conf:symbols.mappings.normal.cscope.g_find_this_definition*
-symbols.mappings.normal.cscope.g_find_this_definition
+               *cxx-cmake:conf:symbols.mappings.cscope.g_find_this_definition*
+symbols.mappings.cscope.g_find_this_definition
 
 Mapping for searching symbol using cscope querytype g(1): "Find this
 definition".
 
 Example:
-symbols.mappings.normal.cscope.g_find_this_definition: "<Leader>eg"
+symbols.mappings.cscope.g_find_this_definition: "<Leader>eg"
 
 
-*cxx-cmake:conf:symbols.mappings.normal.cscope.i_find_files_including_this_file*
-symbols.mappings.normal.cscope.i_find_files_including_this_file
+     *cxx-cmake:conf:symbols.mappings.cscope.i_find_files_including_this_file*
+symbols.mappings.cscope.i_find_files_including_this_file
 
 Mapping for searching symbol using cscope querytype i(8): "Find files
 #including this file".
 
 Example:
-symbols.mappings.normal.cscope.i_find_files_including_this_file: "<Leader>ei"
+symbols.mappings.cscope.i_find_files_including_this_file: "<Leader>ei"
 
 
-          *cxx-cmake:conf:symbols.mappings.normal.cscope.s_find_this_c_symbol*
-symbols.mappings.normal.cscope.s_find_this_c_symbol
+                 *cxx-cmake:conf:symbols.mappings.cscope.s_find_this_c_symbol*
+symbols.mappings.cscope.s_find_this_c_symbol
 
 Mapping for searching symbol using cscope querytype s(0): "Find this C
 symbol".
 
 Example:
-symbols.mappings.normal.cscope.s_find_this_c_symbol: "<Leader>es"
+symbols.mappings.cscope.s_find_this_c_symbol: "<Leader>es"
 
 
-       *cxx-cmake:conf:symbols.mappings.normal.cscope.t_find_this_text_string*
-symbols.mappings.normal.cscope.t_find_this_text_string
+              *cxx-cmake:conf:symbols.mappings.cscope.t_find_this_text_string*
+symbols.mappings.cscope.t_find_this_text_string
 
 Mapping for searching symbol using cscope querytype t(4): "Find this text
 string".
 
 Example:
-symbols.mappings.normal.cscope.t_find_this_text_string: "<Leader>et"
+symbols.mappings.cscope.t_find_this_text_string: "<Leader>et"
 
 
                                                *cxx-cmake:conf:alternate_file*
-                *cxx-cmake:conf:alternate_file.mappings.normal.current_window*
-alternate_file.mappings.normal.current_window
+                       *cxx-cmake:conf:alternate_file.mappings.current_window*
+alternate_file.mappings.current_window
 
 Mapping for switching between header and source files (in current window).
 See |cxx-cmake:alternate_file:current_window|.
 
 Example:
-alternate_file.mappings.normal.current_window: "ma"
+alternate_file.mappings.current_window: "ma"
 
 
-                  *cxx-cmake:conf:alternate_file.mappings.normal.split_window*
-alternate_file.mappings.normal.split_window
+                         *cxx-cmake:conf:alternate_file.mappings.split_window*
+alternate_file.mappings.split_window
 
 Mapping for switching between header and source files (in split window).
 See |cxx-cmake:alternate_file:split_window|.
 
 Example:
-alternate_file.mappings.normal.split_window: "mza"
+alternate_file.mappings.split_window: "mza"
 
 
-                 *cxx-cmake:conf:alternate_file.mappings.normal.vsplit_window*
-alternate_file.mappings.normal.vsplit_window
+                        *cxx-cmake:conf:alternate_file.mappings.vsplit_window*
+alternate_file.mappings.vsplit_window
 
 Mapping for switching between header and source files (in vsplit window).
 See |cxx-cmake:alternate_file:vsplit_window|.
 
-alternate_file.mappings.normal.vsplit_window: "mzA"
+alternate_file.mappings.vsplit_window: "mzA"
 
 
                                                 *cxx-cmake:conf:create_header*
-                         *cxx-cmake:conf:create_header.mappings.normal.create*
-create_header.mappings.normal.create
+                                *cxx-cmake:conf:create_header.mappings.create*
+create_header.mappings.create
 
 Mapping for creating (only) header file. See |cxx-cmake:create_header:create|.
 
 Example:
-create_header.mappings.normal.create: "<Leader>ch"
+create_header.mappings.create: "<Leader>ch"
 
 
-                    *cxx-cmake:conf:create_header.mappings.normal.create_edit*
-create_header.mappings.normal.create_edit
+                           *cxx-cmake:conf:create_header.mappings.create_edit*
+create_header.mappings.create_edit
 
 Mapping for creating and editing header file in current window.
 See |cxx-cmake:create_header:create_edit|.
 
 Example:
-create_header.mappings.normal.create_edit: "<Leader>che"
+create_header.mappings.create_edit: "<Leader>che"
 
 
-              *cxx-cmake:conf:create_header.mappings.normal.create_edit_split*
-create_header.mappings.normal.create_edit_split
+                     *cxx-cmake:conf:create_header.mappings.create_edit_split*
+create_header.mappings.create_edit_split
 
 Mapping for creating and editing header file in split window.
 See |cxx-cmake:create_header:create_edit_split|.
 
 Example:
-create_header.mappings.normal.create_edit_split: "<Leader>ches"
+create_header.mappings.create_edit_split: "<Leader>ches"
 
 
-             *cxx-cmake:conf:create_header.mappings.normal.create_edit_vsplit*
-create_header.mappings.normal.create_edit_vsplit
+                    *cxx-cmake:conf:create_header.mappings.create_edit_vsplit*
+create_header.mappings.create_edit_vsplit
 
 Mapping for creating and editing header file in vsplit window.
 See |cxx-cmake:create_header:create_edit_vsplit|.
 
 Example:
-create_header.mappings.normal.create_edit_vsplit: "<Leader>chevs"
+create_header.mappings.create_edit_vsplit: "<Leader>chevs"
 
 
                                                 *cxx-cmake:conf:create_source*
-                         *cxx-cmake:conf:create_source.mappings.normal.create*
-create_source.mappings.normal.create
+                                *cxx-cmake:conf:create_source.mappings.create*
+create_source.mappings.create
 
 Mapping for creating (only) source file. See |cxx-cmake:create_source:create|.
 
 Example:
-create_source.mappings.normal.create: "<Leader>cs"
+create_source.mappings.create: "<Leader>cs"
 
 
-                    *cxx-cmake:conf:create_source.mappings.normal.create_edit*
-create_source.mappings.normal.create_edit
+                           *cxx-cmake:conf:create_source.mappings.create_edit*
+create_source.mappings.create_edit
 
 Mapping for creating and editing source file in current window.
 See |cxx-cmake:create_source:create_edit|.
 
 Example:
-create_source.mappings.normal.create_edit: "<Leader>cse"
+create_source.mappings.create_edit: "<Leader>cse"
 
 
-              *cxx-cmake:conf:create_source.mappings.normal.create_edit_split*
-create_source.mappings.normal.create_edit_split
+                     *cxx-cmake:conf:create_source.mappings.create_edit_split*
+create_source.mappings.create_edit_split
 
 Mapping for creating and editing source file in split window.
 See |cxx-cmake:create_source:create_edit_split|.
 
 Example:
-create_source.mappings.normal.create_edit_split: "<Leader>cses"
+create_source.mappings.create_edit_split: "<Leader>cses"
 
 
-             *cxx-cmake:conf:create_source.mappings.normal.create_edit_vsplit*
-create_source.mappings.normal.create_edit_vsplit
+                    *cxx-cmake:conf:create_source.mappings.create_edit_vsplit*
+create_source.mappings.create_edit_vsplit
 
 Mapping for creating and editing source file in vsplit window.
 See |cxx-cmake:create_source:create_edit_vsplit|.
 
 Example:
-create_source.mappings.normal.create_edit_vsplit: "<Leader>csevs"
+create_source.mappings.create_edit_vsplit: "<Leader>csevs"
 
 
                                          *cxx-cmake:conf:create_header_source*
-                  *cxx-cmake:conf:create_header_source.mappings.normal.create*
-create_header_source.mappings.normal.create
+                         *cxx-cmake:conf:create_header_source.mappings.create*
+create_header_source.mappings.create
 
 Mapping for creating (only) header and source files.
 See |cxx-cmake:create_header_source:create|.
 
 Example:
-create_header_source.mappings.normal.create: "<Leader>chs"
+create_header_source.mappings.create: "<Leader>chs"
 
 
-       *cxx-cmake:conf:create_header_source.mappings.normal.create_edit_split*
-create_header_source.mappings.normal.create_edit_split
+              *cxx-cmake:conf:create_header_source.mappings.create_edit_split*
+create_header_source.mappings.create_edit_split
 
 Mapping for creating and editing header and source files in split windows
 leaving current window untouched.
 See |cxx-cmake:create_header_source:create_edit_split|.
 
 Example:
-create_header_source.mappings.normal.create_edit_split: "<Leader>chses"
+create_header_source.mappings.create_edit_split: "<Leader>chses"
 
 
-*cxx-cmake:conf:create_header_source.mappings.normal.create_edit_current_split*
-create_header_source.mappings.normal.create_edit_current_split
+      *cxx-cmake:conf:create_header_source.mappings.create_edit_current_split*
+create_header_source.mappings.create_edit_current_split
 
 Mapping for creating and editing header and source files in current and split
 window. See |cxx-cmake:create_header_source:create_edit_current_split|.
 
 Example:
-create_header_source.mappings.normal.create_edit_current_split: "<Leader>chsecs"
+create_header_source.mappings.create_edit_current_split: "<Leader>chsecs"
 
 
-      *cxx-cmake:conf:create_header_source.mappings.normal.create_edit_vsplit*
-create_header_source.mappings.normal.create_edit_vsplit
+             *cxx-cmake:conf:create_header_source.mappings.create_edit_vsplit*
+create_header_source.mappings.create_edit_vsplit
 
 Mapping for creating and editing header and source files in vsplit windows
 leaving current window untouched.
 See |cxx-cmake:create_header_source:create_edit_vsplit|.
 
 Example:
-create_header_source.mappings.normal.create_edit_vsplit: "<Leader>chsev"
+create_header_source.mappings.create_edit_vsplit: "<Leader>chsev"
 
 
-*cxx-cmake:conf:create_header_source.mappings.normal.create_edit_current_vsplit*
-create_header_source.mappings.normal.create_edit_current_vsplit
+     *cxx-cmake:conf:create_header_source.mappings.create_edit_current_vsplit*
+create_header_source.mappings.create_edit_current_vsplit
 
 Mapping for creating and editing header and source files in current and vsplit
 window. See |cxx-cmake:create_header_source:create_edit_current_vsplit|.
 
 Example:
-create_header_source.mappings.normal.create_edit_current_vsplit: "<Leader>chsecv"
+create_header_source.mappings.create_edit_current_vsplit: "<Leader>chsecv"
 
 
 ==============================================================================
