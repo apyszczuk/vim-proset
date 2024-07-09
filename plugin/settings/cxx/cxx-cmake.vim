@@ -586,7 +586,7 @@ function! s:cxx_cmake.construct(config)
     \       )
     \   },
     \
-    \   "cscope.a_find_assignments_to_this_symbol":
+    \   "cscope.a_assignments":
     \   {
     \       "seq":
     \       proset#lib#dict#get(a:config,
@@ -594,14 +594,14 @@ function! s:cxx_cmake.construct(config)
     \           "symbols",
     \           "mappings",
     \           "cscope",
-    \           "a_find_assignments_to_this_symbol"
+    \           "a_assignments"
     \       ),
     \       "fun":
     \       function("s:set_cscope_mapping",
     \           ["a"]
     \       )
     \   },
-    \   "cscope.c_find_functions_calling_this_function":
+    \   "cscope.c_functions_calling":
     \   {
     \       "seq":
     \       proset#lib#dict#get(a:config,
@@ -609,14 +609,14 @@ function! s:cxx_cmake.construct(config)
     \           "symbols",
     \           "mappings",
     \           "cscope",
-    \           "c_find_functions_calling_this_function"
+    \           "c_functions_calling"
     \       ),
     \       "fun":
     \       function("s:set_cscope_mapping",
     \           ["c"]
     \       )
     \   },
-    \   "cscope.d_find_functions_called_by_this_function":
+    \   "cscope.d_functions_called_by":
     \   {
     \       "seq":
     \       proset#lib#dict#get(a:config,
@@ -624,14 +624,14 @@ function! s:cxx_cmake.construct(config)
     \           "symbols",
     \           "mappings",
     \           "cscope",
-    \           "d_find_functions_called_by_this_function"
+    \           "d_functions_called_by"
     \       ),
     \       "fun":
     \       function("s:set_cscope_mapping",
     \           ["d"]
     \       )
     \   },
-    \   "cscope.e_find_this_egrep_pattern":
+    \   "cscope.e_egrep":
     \   {
     \       "seq":
     \       proset#lib#dict#get(a:config,
@@ -639,14 +639,14 @@ function! s:cxx_cmake.construct(config)
     \           "symbols",
     \           "mappings",
     \           "cscope",
-    \           "e_find_this_egrep_pattern"
+    \           "e_egrep"
     \       ),
     \       "fun":
     \       function("s:set_cscope_mapping",
     \           ["e"]
     \       )
     \   },
-    \   "cscope.f_find_this_file":
+    \   "cscope.f_file":
     \   {
     \       "seq":
     \       proset#lib#dict#get(a:config,
@@ -654,14 +654,14 @@ function! s:cxx_cmake.construct(config)
     \           "symbols",
     \           "mappings",
     \           "cscope",
-    \           "f_find_this_file"
+    \           "f_file"
     \       ),
     \       "fun":
     \       function("s:set_cscope_mapping",
     \           ["f"]
     \       )
     \   },
-    \   "cscope.g_find_this_definition":
+    \   "cscope.g_definition":
     \   {
     \       "seq":
     \       proset#lib#dict#get(a:config,
@@ -669,14 +669,14 @@ function! s:cxx_cmake.construct(config)
     \           "symbols",
     \           "mappings",
     \           "cscope",
-    \           "g_find_this_definition"
+    \           "g_definition"
     \       ),
     \       "fun":
     \       function("s:set_cscope_mapping",
     \           ["g"]
     \       )
     \   },
-    \   "cscope.i_find_files_including_this_file":
+    \   "cscope.i_including":
     \   {
     \       "seq":
     \       proset#lib#dict#get(a:config,
@@ -684,14 +684,14 @@ function! s:cxx_cmake.construct(config)
     \           "symbols",
     \           "mappings",
     \           "cscope",
-    \           "i_find_files_including_this_file"
+    \           "i_including"
     \       ),
     \       "fun":
     \       function("s:set_cscope_mapping",
     \           ["i"]
     \       )
     \   },
-    \   "cscope.s_find_this_c_symbol":
+    \   "cscope.s_symbol":
     \   {
     \       "seq":
     \       proset#lib#dict#get(a:config,
@@ -699,14 +699,14 @@ function! s:cxx_cmake.construct(config)
     \           "symbols",
     \           "mappings",
     \           "cscope",
-    \           "s_find_this_c_symbol"
+    \           "s_symbol"
     \       ),
     \       "fun":
     \       function("s:set_cscope_mapping",
     \           ["s"]
     \       )
     \   },
-    \   "cscope.t_find_this_text_string":
+    \   "cscope.t_string":
     \   {
     \       "seq":
     \       proset#lib#dict#get(a:config,
@@ -714,7 +714,7 @@ function! s:cxx_cmake.construct(config)
     \           "symbols",
     \           "mappings",
     \           "cscope",
-    \           "t_find_this_text_string"
+    \           "t_string"
     \       ),
     \       "fun":
     \       function("s:set_cscope_mapping",

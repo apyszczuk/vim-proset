@@ -566,31 +566,31 @@ mapping there is an assumption it uses <cword> (word under the cursor as a
 name). All of these mappings work in normal mode.
 
 command: :cs find a name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.a_find_assignments_to_this_symbol|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.a_assignments|
 
 command: :cs find c name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.c_find_functions_calling_this_function|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.c_functions_calling|
 
 command: :cs find d name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.d_find_functions_called_by_this_function|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.d_functions_called_by|
 
 command: :cs find e name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.e_find_this_egrep_pattern|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.e_egrep|
 
 command: :cs find f name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.f_find_this_file|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.f_file|
 
 command: :cs find g name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.g_find_this_definition|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.g_definition|
 
 command: :cs find i name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.i_find_files_including_this_file|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.i_including|
 
 command: :cs find s name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.s_find_this_c_symbol|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.s_symbol|
 
 command: :cs find t name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.t_find_this_text_string|
+mapping: |cxx-cmake:conf:symbols.mappings.cscope.t_string|
 
 See |cscope| to get more information how to use it.
 
@@ -897,93 +897,93 @@ Example:
 symbols.mappings.update_symbols: "mu"
 
 
-    *cxx-cmake:conf:symbols.mappings.cscope.a_find_assignments_to_this_symbol*
-symbols.mappings.cscope.a_find_assignments_to_this_symbol
+                        *cxx-cmake:conf:symbols.mappings.cscope.a_assignments*
+symbols.mappings.cscope.a_assignments
 
 Mapping for searching symbol using cscope querytype a(9): "Find places where
 this symbol is assigned a value".
 
 Example:
-symbols.mappings.cscope.a_find_assignments_to_this_symbol: "<Leader>ea"
+symbols.mappings.cscope.a_assignments: "<Leader>ea"
 
 
-*cxx-cmake:conf:symbols.mappings.cscope.c_find_functions_calling_this_function*
-symbols.mappings.cscope.c_find_functions_calling_this_function
+                  *cxx-cmake:conf:symbols.mappings.cscope.c_functions_calling*
+symbols.mappings.cscope.c_functions_calling
 
 Mapping for searching symbol using cscope querytype c(3): "Find functions
 calling this function".
 
 Example:
-symbols.mappings.cscope.c_find_functions_calling_this_function: "<Leader>ec"
+symbols.mappings.cscope.c_functions_calling: "<Leader>ec"
 
 
-*cxx-cmake:conf:symbols.mappings.cscope.d_find_functions_called_by_this_function*
-symbols.mappings.cscope.d_find_functions_called_by_this_function
+                *cxx-cmake:conf:symbols.mappings.cscope.d_functions_called_by*
+symbols.mappings.cscope.d_functions_called_by
 
 Mapping for searching symbol using cscope querytype d(2): "Find functions
 called by this function".
 
 Example:
-symbols.mappings.cscope.d_find_functions_called_by_this_function: "<Leader>ed"
+symbols.mappings.cscope.d_functions_called_by: "<Leader>ed"
 
 
-            *cxx-cmake:conf:symbols.mappings.cscope.e_find_this_egrep_pattern*
-symbols.mappings.cscope.e_find_this_egrep_pattern
+                              *cxx-cmake:conf:symbols.mappings.cscope.e_egrep*
+symbols.mappings.cscope.e_egrep
 
 Mapping for searching symbol using cscope querytype e(6): "Find this egrep
 pattern".
 
 Example:
-symbols.mappings.cscope.e_find_this_egrep_pattern: "<Leader>ee"
+symbols.mappings.cscope.e_egrep: "<Leader>ee"
 
 
-                     *cxx-cmake:conf:symbols.mappings.cscope.f_find_this_file*
-symbols.mappings.cscope.f_find_this_file
+                               *cxx-cmake:conf:symbols.mappings.cscope.f_file*
+symbols.mappings.cscope.f_file
 
 Mapping for searching symbol using cscope querytype f(7): "Find this file".
 
 Example:
-symbols.mappings.cscope.f_find_this_file: "<Leader>ef"
+symbols.mappings.cscope.f_file: "<Leader>ef"
 
 
-               *cxx-cmake:conf:symbols.mappings.cscope.g_find_this_definition*
-symbols.mappings.cscope.g_find_this_definition
+                         *cxx-cmake:conf:symbols.mappings.cscope.g_definition*
+symbols.mappings.cscope.g_definition
 
 Mapping for searching symbol using cscope querytype g(1): "Find this
 definition".
 
 Example:
-symbols.mappings.cscope.g_find_this_definition: "<Leader>eg"
+symbols.mappings.cscope.g_definition: "<Leader>eg"
 
 
-     *cxx-cmake:conf:symbols.mappings.cscope.i_find_files_including_this_file*
-symbols.mappings.cscope.i_find_files_including_this_file
+                          *cxx-cmake:conf:symbols.mappings.cscope.i_including*
+symbols.mappings.cscope.i_including
 
 Mapping for searching symbol using cscope querytype i(8): "Find files
 #including this file".
 
 Example:
-symbols.mappings.cscope.i_find_files_including_this_file: "<Leader>ei"
+symbols.mappings.cscope.i_including: "<Leader>ei"
 
 
-                 *cxx-cmake:conf:symbols.mappings.cscope.s_find_this_c_symbol*
-symbols.mappings.cscope.s_find_this_c_symbol
+                             *cxx-cmake:conf:symbols.mappings.cscope.s_symbol*
+symbols.mappings.cscope.s_symbol
 
 Mapping for searching symbol using cscope querytype s(0): "Find this C
 symbol".
 
 Example:
-symbols.mappings.cscope.s_find_this_c_symbol: "<Leader>es"
+symbols.mappings.cscope.s_symbol: "<Leader>es"
 
 
-              *cxx-cmake:conf:symbols.mappings.cscope.t_find_this_text_string*
-symbols.mappings.cscope.t_find_this_text_string
+                             *cxx-cmake:conf:symbols.mappings.cscope.t_string*
+symbols.mappings.cscope.t_string
 
 Mapping for searching symbol using cscope querytype t(4): "Find this text
 string".
 
 Example:
-symbols.mappings.cscope.t_find_this_text_string: "<Leader>et"
+symbols.mappings.cscope.t_string: "<Leader>et"
 
 
                                                *cxx-cmake:conf:alternate_file*
