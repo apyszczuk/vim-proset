@@ -380,7 +380,8 @@ mapping: |cxx-cmake:conf:create_header_source.mappings.create_edit_split|
 3) Create header and source and edit in current and split window
 
 command: *:CXXCMakeCreateHeaderSourceEditCurrentSplit*
-mapping: |cxx-cmake:conf:create_header_source.mappings.create_edit_current_split|
+mapping:
+|cxx-cmake:conf:create_header_source.mappings.create_edit_current_split|
 
                            *cxx-cmake:create_header_source:create_edit_vsplit*
 4) Create header and source and edit in vsplit windows
@@ -392,7 +393,8 @@ mapping: |cxx-cmake:conf:create_header_source.mappings.create_edit_vsplit|
 5) Create header and source and edit in current and vsplit window
 
 command: *:CXXCMakeCreateHeaderSourceEditCurrentVSplit*
-mapping: |cxx-cmake:conf:create_header_source.mappings.create_edit_current_vsplit|
+mapping:
+|cxx-cmake:conf:create_header_source.mappings.create_edit_current_vsplit|
 
 
 Except from Create Header and Create Source, you can not create and edit both
@@ -640,21 +642,21 @@ of cxx-cmake configuration file.
 
 {
 
-"proset_settings":                      "cxx-cmake",
-"temporary_directory":                  ".vim-proset_tmp",
+"proset_settings":          "cxx-cmake",
+"temporary_directory":      ".vim-proset_tmp",
 
 "build":
 {
     "settings":
     {
-        "build_directory":              "build",
-        "jobs":                         "8"
+        "build_directory":  "build",
+        "jobs":             "8"
     },
     "mappings":
     {
-        "build":                    "mk",
-        "clean":                    "mC",
-        "clean_and_build":          "mK"
+        "build":            "mk",
+        "clean":            "<Leader>bc",
+        "clean_and_build":  "<S-F10>"
     }
 }
 
@@ -685,6 +687,9 @@ Some of the modules will have only settings, some of them will have only
 mappings and some of them will have both. Unless otherwise noted, every
 mapping parameter that is missing makes corresponding functionality not to be
 mapped at all.
+
+Key mapping sequence in configuration can be anything that is valid key
+sequence in Vim (in nnoremap, etc).
 
 
                                                    *cxx-cmake:proset_settings*
@@ -904,7 +909,7 @@ Mapping for searching symbol using cscope querytype a(9): "Find places where
 this symbol is assigned a value".
 
 Example:
-symbols.mappings.cscope.a_assignments: "<Leader>ea"
+symbols.mappings.cscope.a_assignments: "mea"
 
 
                   *cxx-cmake:conf:symbols.mappings.cscope.c_functions_calling*
@@ -914,7 +919,7 @@ Mapping for searching symbol using cscope querytype c(3): "Find functions
 calling this function".
 
 Example:
-symbols.mappings.cscope.c_functions_calling: "<Leader>ec"
+symbols.mappings.cscope.c_functions_calling: "mec"
 
 
                 *cxx-cmake:conf:symbols.mappings.cscope.d_functions_called_by*
@@ -924,7 +929,7 @@ Mapping for searching symbol using cscope querytype d(2): "Find functions
 called by this function".
 
 Example:
-symbols.mappings.cscope.d_functions_called_by: "<Leader>ed"
+symbols.mappings.cscope.d_functions_called_by: "med"
 
 
                               *cxx-cmake:conf:symbols.mappings.cscope.e_egrep*
@@ -934,7 +939,7 @@ Mapping for searching symbol using cscope querytype e(6): "Find this egrep
 pattern".
 
 Example:
-symbols.mappings.cscope.e_egrep: "<Leader>ee"
+symbols.mappings.cscope.e_egrep: "mee"
 
 
                                *cxx-cmake:conf:symbols.mappings.cscope.f_file*
@@ -943,7 +948,7 @@ symbols.mappings.cscope.f_file
 Mapping for searching symbol using cscope querytype f(7): "Find this file".
 
 Example:
-symbols.mappings.cscope.f_file: "<Leader>ef"
+symbols.mappings.cscope.f_file: "mef"
 
 
                          *cxx-cmake:conf:symbols.mappings.cscope.g_definition*
@@ -953,7 +958,7 @@ Mapping for searching symbol using cscope querytype g(1): "Find this
 definition".
 
 Example:
-symbols.mappings.cscope.g_definition: "<Leader>eg"
+symbols.mappings.cscope.g_definition: "meg"
 
 
                           *cxx-cmake:conf:symbols.mappings.cscope.i_including*
@@ -963,7 +968,7 @@ Mapping for searching symbol using cscope querytype i(8): "Find files
 #including this file".
 
 Example:
-symbols.mappings.cscope.i_including: "<Leader>ei"
+symbols.mappings.cscope.i_including: "mei"
 
 
                              *cxx-cmake:conf:symbols.mappings.cscope.s_symbol*
@@ -973,7 +978,7 @@ Mapping for searching symbol using cscope querytype s(0): "Find this C
 symbol".
 
 Example:
-symbols.mappings.cscope.s_symbol: "<Leader>es"
+symbols.mappings.cscope.s_symbol: "mes"
 
 
                              *cxx-cmake:conf:symbols.mappings.cscope.t_string*
@@ -983,7 +988,7 @@ Mapping for searching symbol using cscope querytype t(4): "Find this text
 string".
 
 Example:
-symbols.mappings.cscope.t_string: "<Leader>et"
+symbols.mappings.cscope.t_string: "met"
 
 
                                                *cxx-cmake:conf:alternate_file*
@@ -1023,7 +1028,7 @@ create_header.mappings.create
 Mapping for creating (only) header file. See |cxx-cmake:create_header:create|.
 
 Example:
-create_header.mappings.create: "<Leader>ch"
+create_header.mappings.create: "mhc"
 
 
                            *cxx-cmake:conf:create_header.mappings.create_edit*
@@ -1033,7 +1038,7 @@ Mapping for creating and editing header file in current window.
 See |cxx-cmake:create_header:create_edit|.
 
 Example:
-create_header.mappings.create_edit: "<Leader>che"
+create_header.mappings.create_edit: "mhe"
 
 
                      *cxx-cmake:conf:create_header.mappings.create_edit_split*
@@ -1043,7 +1048,7 @@ Mapping for creating and editing header file in split window.
 See |cxx-cmake:create_header:create_edit_split|.
 
 Example:
-create_header.mappings.create_edit_split: "<Leader>ches"
+create_header.mappings.create_edit_split: "mhi"
 
 
                     *cxx-cmake:conf:create_header.mappings.create_edit_vsplit*
@@ -1053,7 +1058,7 @@ Mapping for creating and editing header file in vsplit window.
 See |cxx-cmake:create_header:create_edit_vsplit|.
 
 Example:
-create_header.mappings.create_edit_vsplit: "<Leader>chevs"
+create_header.mappings.create_edit_vsplit: "mhv"
 
 
                                                 *cxx-cmake:conf:create_source*
@@ -1063,7 +1068,7 @@ create_source.mappings.create
 Mapping for creating (only) source file. See |cxx-cmake:create_source:create|.
 
 Example:
-create_source.mappings.create: "<Leader>cs"
+create_source.mappings.create: "msc"
 
 
                            *cxx-cmake:conf:create_source.mappings.create_edit*
@@ -1073,7 +1078,7 @@ Mapping for creating and editing source file in current window.
 See |cxx-cmake:create_source:create_edit|.
 
 Example:
-create_source.mappings.create_edit: "<Leader>cse"
+create_source.mappings.create_edit: "mse"
 
 
                      *cxx-cmake:conf:create_source.mappings.create_edit_split*
@@ -1083,7 +1088,7 @@ Mapping for creating and editing source file in split window.
 See |cxx-cmake:create_source:create_edit_split|.
 
 Example:
-create_source.mappings.create_edit_split: "<Leader>cses"
+create_source.mappings.create_edit_split: "msi"
 
 
                     *cxx-cmake:conf:create_source.mappings.create_edit_vsplit*
@@ -1093,7 +1098,7 @@ Mapping for creating and editing source file in vsplit window.
 See |cxx-cmake:create_source:create_edit_vsplit|.
 
 Example:
-create_source.mappings.create_edit_vsplit: "<Leader>csevs"
+create_source.mappings.create_edit_vsplit: "msv"
 
 
                                          *cxx-cmake:conf:create_header_source*
@@ -1104,7 +1109,7 @@ Mapping for creating (only) header and source files.
 See |cxx-cmake:create_header_source:create|.
 
 Example:
-create_header_source.mappings.create: "<Leader>chs"
+create_header_source.mappings.create: "mhsc"
 
 
               *cxx-cmake:conf:create_header_source.mappings.create_edit_split*
@@ -1115,7 +1120,7 @@ leaving current window untouched.
 See |cxx-cmake:create_header_source:create_edit_split|.
 
 Example:
-create_header_source.mappings.create_edit_split: "<Leader>chses"
+create_header_source.mappings.create_edit_split: "mhsi"
 
 
       *cxx-cmake:conf:create_header_source.mappings.create_edit_current_split*
@@ -1125,7 +1130,7 @@ Mapping for creating and editing header and source files in current and split
 window. See |cxx-cmake:create_header_source:create_edit_current_split|.
 
 Example:
-create_header_source.mappings.create_edit_current_split: "<Leader>chsecs"
+create_header_source.mappings.create_edit_current_split: "mhsI"
 
 
              *cxx-cmake:conf:create_header_source.mappings.create_edit_vsplit*
@@ -1136,7 +1141,7 @@ leaving current window untouched.
 See |cxx-cmake:create_header_source:create_edit_vsplit|.
 
 Example:
-create_header_source.mappings.create_edit_vsplit: "<Leader>chsev"
+create_header_source.mappings.create_edit_vsplit: "mhsv"
 
 
      *cxx-cmake:conf:create_header_source.mappings.create_edit_current_vsplit*
@@ -1146,7 +1151,7 @@ Mapping for creating and editing header and source files in current and vsplit
 window. See |cxx-cmake:create_header_source:create_edit_current_vsplit|.
 
 Example:
-create_header_source.mappings.create_edit_current_vsplit: "<Leader>chsecv"
+create_header_source.mappings.create_edit_current_vsplit: "mhsV"
 
 
 ==============================================================================
