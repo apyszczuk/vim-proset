@@ -224,7 +224,7 @@ function! s:register_update_symbols_command(source_directory,
                 \ ') ' .
                 \ "\| :redraw!"
 
-    execute "command! -nargs=0 CXXCMakeUpdateCtagsCscopeSymbols " . l:cmd
+    execute "command! -nargs=0 CXXCMakeUpdateSymbols " . l:cmd
 endfunction
 
 function! s:add_commands(source_directory,
@@ -793,7 +793,7 @@ function! s:cxx_cmake.construct(config)
     \       )
     \   },
     \
-    \   "update_ctags_cscope_symbols":
+    \   "update_symbols":
     \   {
     \       "seq":
     \       proset#lib#dict#get(a:config,
@@ -804,7 +804,7 @@ function! s:cxx_cmake.construct(config)
     \       ),
     \       "fun":
     \       function("s:set_nnoremap_silent_mapping",
-    \           [":CXXCMakeUpdateCtagsCscopeSymbols<CR>"]
+    \           [":CXXCMakeUpdateSymbols<CR>"]
     \       )
     \   },
     \

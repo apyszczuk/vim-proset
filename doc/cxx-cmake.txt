@@ -607,9 +607,12 @@ is invoked which does all necessary things to make ctags and cscope work from
 Vim. State of the symbols database is on |cxx-cmake:api:enable()| time point.
 If you add new or modify current source files later, then your new symbols
 will most likely not be visible until you regenerate symbols database. For
-now, this has to be done manually and the mapping used for this is:
-|cxx-cmake:conf:symbols.mappings.update_symbols|. Future plan is to make it
-automatically also.
+now, this has to be done manually using either command or a mapping.
+
+command: *:CXXCMakeUpdateSymbols*
+mapping: |cxx-cmake:conf:symbols.mappings.update_symbols|
+
+Future plan is to make it automatically also.
 
 
 ==============================================================================
