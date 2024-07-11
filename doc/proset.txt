@@ -197,7 +197,7 @@ So, to use get() function, you should do:
 
  let l:x_val = proset#lib#dict#get(config, 10, "foo", "boo")
 
-and if key 'foo.boo' was in the configuration file then x_val has its value,
+and if key 'foo.boo' was in the configuration file then l:x_val has its value,
 otherwise it has value of 10, which is the default value passed as second
 argument to get() function.
 
@@ -518,7 +518,7 @@ Settings Dictionary Constructor - one object only
  endfunction
 
 This is the internal implementation of Settings Dictionary constructor used
-to create Settings Object.  The object config is a configuration dictionary
+to create Settings Object.  The object a:config is a configuration dictionary
 that stores data coming from JSON configuration file. Helper function get()
 was used to handle case of missing entry in the file.
 
@@ -531,7 +531,7 @@ This is the public constructor that is used to create Settings Object by the
 plugin when needed. It uses internal constructor implementation because all
 the logic of object creation is there, not here. This is just simple wrapper
 function that is used to be registered. This function has to take exactly one
-parameter which is a config object.
+parameter which is a configuration object.
 
  
  autocmd User ProsetRegisterSettingsEvent
@@ -608,11 +608,11 @@ public API described below or commands defined later.
                                                     *ProsetRegisterSettings()*
 ProsetRegisterSettings(settings_name, constructor_name)
 
-This function is used to associate constructor_name with settings_name in the
-internal storage. If settings_name key is already defined in internal storage
-dictionary, then you will get *proset-E10* error and Proset plugin will not
-work.  There is an assumption that registered Settings Objects names are
-unique.
+This function is used to associate a:constructor_name with a:settings_name in
+the internal storage. If a:settings_name key is already defined in internal
+storage dictionary, then you will get *proset-E10* error and Proset plugin
+will not work.  There is an assumption that registered Settings Objects names
+are unique.
 
 If user wants to register its own Settings Object then it should be called
 from an autocommand, rather than just a function call from own plugin package.
@@ -670,7 +670,7 @@ file. It creates deep copy of internal storage.
                                                         *ProsetLoadSettings()*
 ProsetLoadSettings(path)
 
-This function loads project settings from the path. Even though loading
+This function loads project settings from provided path. Even though loading
 project settings function is called when Vim starts, it can also be called to
 change projects settings (load different project, from different path).
 
@@ -713,9 +713,9 @@ reasons why, couple of them are:
     - if enable() creates directory, the directory should be deleted in
       disable() - so if current directory changes between enable() and
       disable() what directory will be deleted?
-    - it would be very inconvenient for Settings Objects commands to be
-      outside of the project root path, like delete build files, create files,
-      etc.
+    - it would be very inconvenient for Settings Objects commands like delete
+      build files, create files, etc to be outside of the project root path.
+
 
                                                       *ProsetReloadSettings()*
 ProsetReloadSettings()
