@@ -12,38 +12,37 @@ let g:loaded_proset_settings_cxx_cxx_cmake = 1
 let s:cxx_cmake = {'properties': {}}
 
 function! s:generate_tags_file(source_directory,
-        \ additional_ctags_directories,
-        \ temporary_ctags_file)
-    let l:cmd = proset#utils#ctags#get_ctags_command(
-                \ a:source_directory,
-                \ a:additional_ctags_directories,
-                \ a:temporary_ctags_file)
+    \       additional_ctags_directories,
+    \       temporary_ctags_file)
+    let l:cmd = proset#utils#ctags#get_ctags_command(a:source_directory,
+    \               a:additional_ctags_directories,
+    \               a:temporary_ctags_file)
     silent execute '!' . l:cmd
 endfunction
 
 function! s:generate_cscope_file(source_directory,
-        \ additional_cscope_directories,
-        \ temporary_cscope_file)
-    silent execute "!" . proset#utils#cscope#get_cscope_command(
-                        \ a:source_directory,
-                        \ a:additional_cscope_directories,
-                        \ a:temporary_cscope_file)
+    \       additional_cscope_directories,
+    \       temporary_cscope_file)
+    let l:cmd = proset#utils#cscope#get_cscope_command(a:source_directory,
+    \               a:additional_cscope_directories,
+    \               a:temporary_cscope_file)
+    silent execute "!" . l:cmd
 endfunction
 
 function! s:set_makeprg(build_directory, jobs_number)
     let l:cmd = proset#utils#cmake#get_build_command(a:build_directory,
-                \ a:jobs_number)
+    \               a:jobs_number)
     silent execute "set makeprg=" . l:cmd
 endfunction
 
 function! s:create_file(create_function,
-        \ project_name,
-        \ extension,
-        \ other_extension,
-        \ path)
+    \       project_name,
+    \       extension,
+    \       other_extension,
+    \       path)
     if a:path[len(a:path)-1] == "/"
         echoerr "(" . s:cxx_cmake.get_settings_name() . "): "
-            \ . "Need file name, not directory name."
+        \       . "Need file name, not directory name."
         return ""
     endif
 
@@ -88,17 +87,17 @@ function! s:create_source_file(project_name, path, header_extension)
 endfunction
 
 function! s:create_file_command(create_function,
-        \ user_command,
-        \ open_mode,
-        \ project_name,
-        \ extension,
-        \ other_extension,
-        \ path)
+    \       user_command,
+    \       open_mode,
+    \       project_name,
+    \       extension,
+    \       other_extension,
+    \       path)
     let l:path = s:create_file(a:create_function,
-                \ a:project_name,
-                \ a:extension,
-                \ a:other_extension,
-                \ a:path)
+    \               a:project_name,
+    \               a:extension,
+    \               a:other_extension,
+    \               a:path)
     if empty(l:path)
         return
     endif
@@ -113,66 +112,66 @@ function! s:create_file_command(create_function,
 endfunction
 
 function! s:create_header_command(open_mode,
-        \ project_name,
-        \ header_extension,
-        \ source_extension,
-        \ path)
+    \       project_name,
+    \       header_extension,
+    \       source_extension,
+    \       path)
     return s:create_file_command("s:create_header_file",
-            \ "CXXCMakeHeaderCreatedEvent",
-            \ a:open_mode,
-            \ a:project_name,
-            \ a:header_extension,
-            \ a:source_extension,
-            \ a:path)
+    \       "CXXCMakeHeaderCreatedEvent",
+    \       a:open_mode,
+    \       a:project_name,
+    \       a:header_extension,
+    \       a:source_extension,
+    \       a:path)
 endfunction
 
 function! s:create_source_command(open_mode,
-        \ project_name,
-        \ header_extension,
-        \ source_extension,
-        \ path)
+    \       project_name,
+    \       header_extension,
+    \       source_extension,
+    \       path)
     return s:create_file_command("s:create_source_file",
-            \ "CXXCMakeSourceCreatedEvent",
-            \ a:open_mode,
-            \ a:project_name,
-            \ a:source_extension,
-            \ a:header_extension,
-            \ a:path)
+    \       "CXXCMakeSourceCreatedEvent",
+    \       a:open_mode,
+    \       a:project_name,
+    \       a:source_extension,
+    \       a:header_extension,
+    \       a:path)
 endfunction
 
 function! s:create_header_source_command(open_mode,
-        \ project_name,
-        \ header_extension,
-        \ source_extension,
-        \ path)
+    \       project_name,
+    \       header_extension,
+    \       source_extension,
+    \       path)
     let l:open_modes = split(a:open_mode, ";", 1)
 
     call s:create_header_command(l:open_modes[0],
-        \ a:project_name,
-        \ a:header_extension,
-        \ a:source_extension,
-        \ a:path)
+    \       a:project_name,
+    \       a:header_extension,
+    \       a:source_extension,
+    \       a:path)
 
     call s:create_source_command(l:open_modes[1],
-        \ a:project_name,
-        \ a:header_extension,
-        \ a:source_extension,
-        \ a:path)
+    \       a:project_name,
+    \       a:header_extension,
+    \       a:source_extension,
+    \       a:path)
 endfunction
 
 function! s:register_create_file_command(command_name,
-        \ create_function,
-        \ open_mode,
-        \ project_name,
-        \ header_extension,
-        \ source_extension)
+    \       create_function,
+    \       open_mode,
+    \       project_name,
+    \       header_extension,
+    \       source_extension)
     execute 'command! -complete=file -nargs=1 ' . a:command_name . ' '
-                \ . 'call ' . a:create_function . '('
-                \ . '"' . a:open_mode . '", '
-                \ . '"' . a:project_name . '", '
-                \ . '"' . a:header_extension . '", '
-                \ . '"' . a:source_extension . '", '
-                \ . '"<args>")'
+    \       . 'call ' . a:create_function . '('
+    \       . '"' . a:open_mode . '", '
+    \       . '"' . a:project_name . '", '
+    \       . '"' . a:header_extension . '", '
+    \       . '"' . a:source_extension . '", '
+    \       . '"<args>")'
 endfunction
 
 function! s:post_build_task()
@@ -203,48 +202,48 @@ function! s:cxx_cmake_build_fn()
 endfunction
 
 function! s:register_update_symbols_command(source_directory,
-        \ additional_ctags_directories,
-        \ temporary_ctags_file,
-        \ additional_cscope_directories,
-        \ temporary_cscope_file,
-        \ external_cscope_files)
+    \       additional_ctags_directories,
+    \       temporary_ctags_file,
+    \       additional_cscope_directories,
+    \       temporary_cscope_file,
+    \       external_cscope_files)
     let l:cmd = ':call <SID>generate_tags_file(' .
-                \ '"' . a:source_directory . '", ' .
-                \ '"' . a:additional_ctags_directories . '", ' .
-                \ '"' . a:temporary_ctags_file . '"' .
-                \ ') ' .
-                \ "\| :call <SID>generate_cscope_file(" .
-                \ '"' . a:source_directory . '", ' .
-                \ '"' . a:additional_cscope_directories . '", ' .
-                \ '"' . a:temporary_cscope_file . '"' .
-                \ ') ' .
-                \ "\| :call proset#utils#cscope#add_cscope_files(" .
-                \ '"' . a:temporary_cscope_file . '", ' .
-                \ '"' . a:external_cscope_files . '"' .
-                \ ') ' .
-                \ "\| :redraw!"
+    \           '"' . a:source_directory . '", ' .
+    \           '"' . a:additional_ctags_directories . '", ' .
+    \           '"' . a:temporary_ctags_file . '"' .
+    \           ') ' .
+    \           "\| :call <SID>generate_cscope_file(" .
+    \           '"' . a:source_directory . '", ' .
+    \           '"' . a:additional_cscope_directories . '", ' .
+    \           '"' . a:temporary_cscope_file . '"' .
+    \           ') ' .
+    \           "\| :call proset#utils#cscope#add_cscope_files(" .
+    \           '"' . a:temporary_cscope_file . '", ' .
+    \           '"' . a:external_cscope_files . '"' .
+    \           ') ' .
+    \           "\| :redraw!"
 
     execute "command! -nargs=0 CXXCMakeUpdateSymbols " . l:cmd
 endfunction
 
 function! s:add_commands(source_directory,
-        \ build_directory,
-        \ bin_directory,
-        \ project_name,
-        \ additional_ctags_directories,
-        \ temporary_ctags_file,
-        \ additional_cscope_directories,
-        \ temporary_cscope_file,
-        \ external_cscope_files,
-        \ header_extension,
-        \ source_extension)
+    \       build_directory,
+    \       bin_directory,
+    \       project_name,
+    \       additional_ctags_directories,
+    \       temporary_ctags_file,
+    \       additional_cscope_directories,
+    \       temporary_cscope_file,
+    \       external_cscope_files,
+    \       header_extension,
+    \       source_extension)
     command! -nargs=0 CXXCMakeBuild :call s:cxx_cmake_build_fn()
 
     execute "command! -nargs=* CXXCMakeRun "
-        \ . "term " . a:bin_directory . "/" . a:project_name . " <args>"
+    \       . "term " . a:bin_directory . "/" . a:project_name . " <args>"
 
     execute "command! -nargs=0 CXXCMakeClean "
-        \ . "call delete(\"" . a:build_directory . "\", \"rf\")"
+    \       . "call delete(\"" . a:build_directory . "\", \"rf\")"
 
     command -nargs=0 CXXCMakeCleanAndBuild {
         :CXXCMakeClean
@@ -252,11 +251,11 @@ function! s:add_commands(source_directory,
     }
 
     call s:register_update_symbols_command(a:source_directory,
-        \ a:additional_ctags_directories,
-        \ a:temporary_ctags_file,
-        \ a:additional_cscope_directories,
-        \ a:temporary_cscope_file,
-        \ a:external_cscope_files)
+    \       a:additional_ctags_directories,
+    \       a:temporary_ctags_file,
+    \       a:additional_cscope_directories,
+    \       a:temporary_cscope_file,
+    \       a:external_cscope_files)
 
     command! -nargs=0 CXXCMakeAlternateFileCurrentWindow {
         :call proset#utils#alternate_file#current_window()
@@ -271,103 +270,103 @@ function! s:add_commands(source_directory,
     }
 
     call s:register_create_file_command(
-                \ "CXXCMakeCreateHeader",
-                \ "<SID>create_header_command",
-                \ "",
-                \ a:project_name,
-                \ a:header_extension,
-                \ a:source_extension)
+    \       "CXXCMakeCreateHeader",
+    \       "<SID>create_header_command",
+    \       "",
+    \       a:project_name,
+    \       a:header_extension,
+    \       a:source_extension)
     call s:register_create_file_command(
-                \ "CXXCMakeCreateHeaderEdit",
-                \ "<SID>create_header_command",
-                \ ":e",
-                \ a:project_name,
-                \ a:header_extension,
-                \ a:source_extension)
+    \       "CXXCMakeCreateHeaderEdit",
+    \       "<SID>create_header_command",
+    \       ":e",
+    \       a:project_name,
+    \       a:header_extension,
+    \       a:source_extension)
     call s:register_create_file_command(
-                \ "CXXCMakeCreateHeaderEditSplit",
-                \ "<SID>create_header_command",
-                \ ":spl",
-                \ a:project_name,
-                \ a:header_extension,
-                \ a:source_extension)
+    \       "CXXCMakeCreateHeaderEditSplit",
+    \       "<SID>create_header_command",
+    \       ":spl",
+    \       a:project_name,
+    \       a:header_extension,
+    \       a:source_extension)
     call s:register_create_file_command(
-                \ "CXXCMakeCreateHeaderEditVSplit",
-                \ "<SID>create_header_command",
-                \ ":vspl",
-                \ a:project_name,
-                \ a:header_extension,
-                \ a:source_extension)
+    \       "CXXCMakeCreateHeaderEditVSplit",
+    \       "<SID>create_header_command",
+    \       ":vspl",
+    \       a:project_name,
+    \       a:header_extension,
+    \       a:source_extension)
 
     call s:register_create_file_command(
-                \ "CXXCMakeCreateSource",
-                \ "<SID>create_source_command",
-                \ "",
-                \ a:project_name,
-                \ a:header_extension,
-                \ a:source_extension)
+    \       "CXXCMakeCreateSource",
+    \       "<SID>create_source_command",
+    \       "",
+    \       a:project_name,
+    \       a:header_extension,
+    \       a:source_extension)
     call s:register_create_file_command(
-                \ "CXXCMakeCreateSourceEdit",
-                \ "<SID>create_source_command",
-                \ ":e",
-                \ a:project_name,
-                \ a:header_extension,
-                \ a:source_extension)
+    \       "CXXCMakeCreateSourceEdit",
+    \       "<SID>create_source_command",
+    \       ":e",
+    \       a:project_name,
+    \       a:header_extension,
+    \       a:source_extension)
     call s:register_create_file_command(
-                \ "CXXCMakeCreateSourceEditSplit",
-                \ "<SID>create_source_command",
-                \ ":spl",
-                \ a:project_name,
-                \ a:header_extension,
-                \ a:source_extension)
+    \       "CXXCMakeCreateSourceEditSplit",
+    \       "<SID>create_source_command",
+    \       ":spl",
+    \       a:project_name,
+    \       a:header_extension,
+    \       a:source_extension)
     call s:register_create_file_command(
-                \ "CXXCMakeCreateSourceEditVSplit",
-                \ "<SID>create_source_command",
-                \ ":vspl",
-                \ a:project_name,
-                \ a:header_extension,
-                \ a:source_extension)
+    \       "CXXCMakeCreateSourceEditVSplit",
+    \       "<SID>create_source_command",
+    \       ":vspl",
+    \       a:project_name,
+    \       a:header_extension,
+    \       a:source_extension)
 
     call s:register_create_file_command(
-                \ "CXXCMakeCreateHeaderSource",
-                \ "<SID>create_header_source_command",
-                \ ";",
-                \ a:project_name,
-                \ a:header_extension,
-                \ a:source_extension)
+    \       "CXXCMakeCreateHeaderSource",
+    \       "<SID>create_header_source_command",
+    \       ";",
+    \       a:project_name,
+    \       a:header_extension,
+    \       a:source_extension)
     call s:register_create_file_command(
-                \ "CXXCMakeCreateHeaderSourceEditSplit",
-                \ "<SID>create_header_source_command",
-                \ ":spl;:spl",
-                \ a:project_name,
-                \ a:header_extension,
-                \ a:source_extension)
+    \       "CXXCMakeCreateHeaderSourceEditSplit",
+    \       "<SID>create_header_source_command",
+    \       ":spl;:spl",
+    \       a:project_name,
+    \       a:header_extension,
+    \       a:source_extension)
     call s:register_create_file_command(
-                \ "CXXCMakeCreateHeaderSourceEditCurrentSplit",
-                \ "<SID>create_header_source_command",
-                \ ":e;:spl",
-                \ a:project_name,
-                \ a:header_extension,
-                \ a:source_extension)
+    \       "CXXCMakeCreateHeaderSourceEditCurrentSplit",
+    \       "<SID>create_header_source_command",
+    \       ":e;:spl",
+    \       a:project_name,
+    \       a:header_extension,
+    \       a:source_extension)
     call s:register_create_file_command(
-                \ "CXXCMakeCreateHeaderSourceEditVSplit",
-                \ "<SID>create_header_source_command",
-                \ ":vspl;:vspl",
-                \ a:project_name,
-                \ a:header_extension,
-                \ a:source_extension)
+    \       "CXXCMakeCreateHeaderSourceEditVSplit",
+    \       "<SID>create_header_source_command",
+    \       ":vspl;:vspl",
+    \       a:project_name,
+    \       a:header_extension,
+    \       a:source_extension)
     call s:register_create_file_command(
-                \ "CXXCMakeCreateHeaderSourceEditCurrentVSplit",
-                \ "<SID>create_header_source_command",
-                \ ":e;:vspl",
-                \ a:project_name,
-                \ a:header_extension,
-                \ a:source_extension)
+    \       "CXXCMakeCreateHeaderSourceEditCurrentVSplit",
+    \       "<SID>create_header_source_command",
+    \       ":e;:vspl",
+    \       a:project_name,
+    \       a:header_extension,
+    \       a:source_extension)
 endfunction
 
 function! s:set_cscope_mapping(cmd, seq)
     execute "nnoremap <silent> " . a:seq
-        \ . " :cs find " . a:cmd . ' <C-R>=expand("<cword>")<CR><CR>'
+    \       . " :cs find " . a:cmd . ' <C-R>=expand("<cword>")<CR><CR>'
 endfunction
 
 function! s:set_nnoremap_silent_mapping(cmd, seq)
@@ -404,7 +403,8 @@ function! s:remove_mappings(mappings)
 endfunction
 
 function! s:get_not_empty(config, default_value, ...)
-    let l:ret = trim(call(function('proset#lib#dict#get'), [a:config, a:default_value] + a:000))
+    let l:ret = trim(call(function('proset#lib#dict#get'),
+    \                       [a:config, a:default_value] + a:000))
     if empty(l:ret)
         let l:ret = a:default_value
     endif
@@ -413,7 +413,8 @@ endfunction
 
 
 function! s:get_correct_path(config, default_value, ...)
-    let l:ret = call(function('s:get_not_empty'), [a:config, a:default_value] + a:000)
+    let l:ret = call(function('s:get_not_empty'),
+    \                   [a:config, a:default_value] + a:000)
     if proset#utils#path#is_subpath(getcwd(), l:ret) == 0
         let l:ret = a:default_value
     endif
@@ -512,8 +513,7 @@ function! s:cxx_cmake.construct(config)
     \ }
 
     let l:cmakelists_file = "CMakeLists.txt"
-    let l:project_name
-        \ = proset#utils#cmake#get_project_name(l:cmakelists_file)
+    let l:project_name = proset#utils#cmake#get_project_name(l:cmakelists_file)
 
     let l:ret.properties.internal =
     \ {
@@ -538,8 +538,8 @@ function! s:cxx_cmake.construct(config)
     \ }
 
     call proset#utils#alternate_file#add_extensions_pair(
-        \ l:ret.properties.settings.header_extension,
-        \ l:ret.properties.settings.source_extension)
+    \       l:ret.properties.settings.header_extension,
+    \       l:ret.properties.settings.source_extension)
 
     let l:ret.properties.mappings =
     \ {
@@ -1015,10 +1015,11 @@ function! s:cxx_cmake.enable() abort
     let l:s = self.properties.settings
     let l:p = self.properties.internal
 
-    let s:options_initial_values = {
-        \ "makeprg":    &makeprg,
-        \ "tags":       &tags,
-        \ "path":       &path,
+    let s:options_initial_values =
+    \ {
+    \   "makeprg":    &makeprg,
+    \   "tags":       &tags,
+    \   "path":       &path,
     \ }
 
     call delete(l:s.temporary_directory, "rf")
@@ -1026,28 +1027,28 @@ function! s:cxx_cmake.enable() abort
 
     call s:set_makeprg(l:s.build_directory, l:s.jobs_number)
     call s:add_commands(l:s.source_directory,
-                \ l:s.build_directory,
-                \ l:p.bin_directory,
-                \ l:p.project_name,
-                \ l:s.additional_ctags_directories,
-                \ l:p.temporary_ctags_file,
-                \ l:s.additional_cscope_directories,
-                \ l:p.temporary_cscope_file,
-                \ l:s.external_cscope_files,
-                \ l:s.header_extension,
-                \ l:s.source_extension)
+    \       l:s.build_directory,
+    \       l:p.bin_directory,
+    \       l:p.project_name,
+    \       l:s.additional_ctags_directories,
+    \       l:p.temporary_ctags_file,
+    \       l:s.additional_cscope_directories,
+    \       l:p.temporary_cscope_file,
+    \       l:s.external_cscope_files,
+    \       l:s.header_extension,
+    \       l:s.source_extension)
     call s:add_mappings(self.properties.mappings)
 
     let &tags = proset#utils#ctags#get_tags_filenames(l:p.temporary_ctags_file,
-                \ l:s.external_ctags_files)
+    \               l:s.external_ctags_files)
     call s:generate_tags_file(l:s.source_directory,
-                \ l:s.additional_ctags_directories,
-                \ l:p.temporary_ctags_file)
+    \       l:s.additional_ctags_directories,
+    \       l:p.temporary_ctags_file)
     call s:generate_cscope_file(l:s.source_directory,
-                \ l:s.additional_cscope_directories,
-                \ l:p.temporary_cscope_file)
+    \       l:s.additional_cscope_directories,
+    \       l:p.temporary_cscope_file)
     call proset#utils#cscope#add_cscope_files(l:p.temporary_cscope_file,
-                \ l:s.external_cscope_files)
+    \       l:s.external_cscope_files)
     let &path .= substitute(l:s.additional_search_directories, ";", ",", "g")
 endfunction
 
@@ -1064,7 +1065,7 @@ function! s:cxx_cmake.disable()
 endfunction
 
 autocmd User ProsetRegisterInternalSettingsEvent
-        \ call ProsetRegisterSettings("cxx-cmake", "CXXCMakeConstruct")
+    \ call ProsetRegisterSettings("cxx-cmake", "CXXCMakeConstruct")
 
 function! CXXCMakeConstruct(config)
     return s:cxx_cmake.construct(a:config)

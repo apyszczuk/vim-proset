@@ -9,7 +9,9 @@ if exists("g:loaded_proset")
 endif
 let g:loaded_proset = 1
 
-let g:proset_settings_file = get(g:, 'proset_settings_file', '.vim-proset/settings.json')
+let g:proset_settings_file = get(g:,
+\                               "proset_settings_file",
+\                               ".vim-proset/settings.json")
 lockvar g:proset_settings_file
 
 let s:settings          = proset#settings#default#construct()
@@ -85,8 +87,8 @@ function! s:load_settings(path, init_phase)
 
             if !filereadable(l:settings_file)
                 if a:init_phase == 0
-                    throw s:get_error_number_and_message(20,
-                            \ "Configuration file is missing")
+                    let l:msg = "Configuration file is missing"
+                    throw s:get_error_number_and_message(20, l:msg)
                 endif
 
                 return 1
@@ -96,13 +98,14 @@ function! s:load_settings(path, init_phase)
             let l:name = proset#lib#dict#get(l:cfg, "", "proset_settings")
 
             if empty(l:name)
-                throw s:get_error_number_and_message(21,
-                        \ "Configuration parameter proset_settings is empty or missing")
+                let l:msg = "Configuration parameter proset_settings "
+                \           . "is empty or missing"
+                throw s:get_error_number_and_message(21, l:msg)
             endif
 
             if !has_key(s:storage, l:name)
-                throw s:get_error_number_and_message(30,
-                        \ "Not supported Settings Object (" . l:name . ")")
+                let l:msg = "Not supported Settings Object (" . l:name . ")"
+                throw s:get_error_number_and_message(30, l:msg)
             endif
 
             noautocmd call chdir(a:path)
@@ -120,12 +123,10 @@ function! s:load_settings(path, init_phase)
 
             let s:settings      = deepcopy(l:settings_tmp)
             let s:configuration = deepcopy(l:cfg)
-            let s:success_msg   = s:get_info_message(
-                    \ s:get_project_info(
-                    \   ProsetGetProjectName(),
-                    \   ProsetGetSettingsName()
-                    \ )
-                    \ . " was loaded")
+
+            let l:pro_info      = s:get_project_info(ProsetGetProjectName(),
+            \                       ProsetGetSettingsName())
+            let s:success_msg   = s:get_info_message(l:pro_info . " was loaded")
 
             if a:init_phase == 0
                 call s:enable()
@@ -145,16 +146,16 @@ function! s:load_settings(path, init_phase)
             return 0
 
         catch /^proset:construct-settings:/
-            let lst = split(v:exception, ":")
-            throw s:get_error_number_and_message(40,
-                    \ "Can not construct Settings Object ("
-                    \ . lst[2] . "): " . lst[3])
+            let l:lst = split(v:exception, ":")
+            let l:msg = "Can not construct Settings Object (" . l:lst[2] . "): "
+            \           . l:lst[3]
+            throw s:get_error_number_and_message(40, l:msg)
         catch /^Vim\%((\a\+)\)\=:E491:/
-            throw s:get_error_number_and_message(22,
-                    \ "Configuration file syntax error (Vim:E491)")
+            let l:msg = "Configuration file syntax error (Vim:E491)"
+            throw s:get_error_number_and_message(22, l:msg)
         catch /^Vim\%((\a\+)\)\=:E938:/
-            throw s:get_error_number_and_message(23,
-                    \ "Configuration file syntax error (Vim:E938)")
+            let l:msg = "Configuration file syntax error (Vim:E938)"
+            throw s:get_error_number_and_message(23, l:msg)
         endtry
     catch /\%(\d\+\)|proset-E\%(\d\+\):.*/
         noautocmd call chdir(l:cwd_orig)
@@ -191,22 +192,18 @@ function! ProsetCloseSettings()
     let s:configuration = {}
 
     if l:is_project
-        call s:print_message(
-            \ s:get_project_info(l:project_name, l:settings_name)
-            \ . " was closed.")
+        let l:msg = s:get_project_info(l:project_name, l:settings_name)
+        call s:print_message(l:msg . " was closed.")
     endif
 
 endfunction
 
 function! s:add_commands()
     command! -nargs=1 -complete=dir ProsetLoadSettings
-            \ :call ProsetLoadSettings(<f-args>)
+    \   :call ProsetLoadSettings(<f-args>)
 
-    command! -nargs=0 ProsetCloseSettings
-            \ :call ProsetCloseSettings()
-
-    command! -nargs=0 ProsetReloadSettings
-            \ :call ProsetReloadSettings()
+    command! -nargs=0 ProsetCloseSettings  :call ProsetCloseSettings()
+    command! -nargs=0 ProsetReloadSettings :call ProsetReloadSettings()
 endfunction
 
 function! s:remove_commands()
@@ -242,10 +239,10 @@ augroup Proset
 
         call s:add_commands()
     catch /^proset:register-settings:/
-        let lst = split(v:exception, ":")
-        let regset_msg = s:get_error_message(10,
-                \ "Settings Object (" . lst[2] . ") is already registered")
-        autocmd VimEnter * call s:print_message(regset_msg)
+        let lst  = split(v:exception, ":")
+        let desc = "Settings Object (" . lst[2] . ") is already registered"
+        let msg  = s:get_error_message(10, desc)
+        autocmd VimEnter * call s:print_message(msg)
 
         " without this, one can load Settings Object that was already
         " registered. Registering two Settings Objects with the same name is
