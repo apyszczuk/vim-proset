@@ -28,9 +28,11 @@ TABLE OF CONTENTS
 11) CLEAN AND BUILD                                |cxx-cmake:clean_and_build|
 12) RUN                                                        |cxx-cmake:run|
 13) SYMBOLS                                                |cxx-cmake:symbols|
-14) CONFIGURATION                                             |cxx-cmake:conf|
-15) DERIVATIVES (CXX-CMAKE-AP)                         |cxx-cmake:derivatives|
-16) CMAKE INPUT FILE                              |cxx-cmake:cmake_input_file|
+14) CTAGS                                                    |cxx-cmake:ctags|
+15) CSCOPE                                                  |cxx-cmake:cscope|
+16) CONFIGURATION                                             |cxx-cmake:conf|
+17) DERIVATIVES (CXX-CMAKE-AP)                         |cxx-cmake:derivatives|
+18) CMAKE INPUT FILE                              |cxx-cmake:cmake_input_file|
 
 
 ==============================================================================
@@ -70,8 +72,8 @@ Just before we start, take a look:
     - each command ends with <CR> (enter/return),
     - if there is no explicit information that a command takes some arguments,
       then it takes 0 arguments,
-    - tags in this document are in the form of cxx-cmake:subtitle and some
-      subtitles can be read as cxx-cmake:module, which means it is a module
+    - tags in this document are in the form of cxx-cmake:section and some
+      sections can be read as cxx-cmake:module, which means it is a module
       with functionalities.
 
 
@@ -145,7 +147,7 @@ Enables cxx-cmake settings which include:
     - setting |'makeprg'| option to CMake command used to build project,
     - adding commands,
     - adding mappings,
-    - setting |'tags'| option with all required tags filenames,
+    - setting paths to tags files in the 'tags' option,
     - generating tags file,
     - generating cscope file,
     - adding cscope (connections to) files,
@@ -493,70 +495,102 @@ Application is run in Vim inside terminal.
 SYMBOLS                                                    *cxx-cmake:symbols*
 
 To easily navigate through the source code of your project and possibly
-external source code (for example: libraries) ctags and cscope are used in
-cxx-cmake.
+external source code (for example: libraries) ctags and cscope applications
+are used by cxx-cmake. These applications are well known and that is why it
+should not be a big problem to make them available in your system. Ctags
+generates tags file and cscope generates symbols cross-reference file. Both of
+them will be referred as symbols database.
 
-To use ctags you need to generate tags file and update |'tags'| option to
-point to it.  To use cscope you need to have Vim compiled with +cscope module
-(you can find it in |:version|) and then generate cscope file and connect it
-to the cscope module using |:cs| add command.
+To use Vim tags module you need to generate tags file and update |'tags'|
+option to point to it.  To use cscope you need to have Vim compiled with
++cscope module (you can find it in |:version|) and then generate cscope
+symbols file and connect it to the cscope module using |:cs| add command.
 
 In cxx-cmake these tedious and boring tasks are done automatically not to
-bother you every single time you start Vim / load cxx-cmake Settings Object.
+bother you every single time you start Vim or load cxx-cmake Settings Object.
 
-                                                     *cxx-cmake:symbols:ctags*
-1) Ctags
+                                            *cxx-cmake:symbols:update_symbols*
+When cxx-cmake Settings Object is loaded and we are in the project
+(|ProsetIsProject()|, |cxx-cmake:api:is_project()|) |cxx-cmake:api:enable()|
+is invoked which does all necessary things to make ctags and cscope symbols be
+available in Vim. State of the symbols database is on |cxx-cmake:api:enable()|
+time point.  If you add new or modify current source files later, then your
+new symbols will most likely not be visible until you regenerate symbols
+database (here both ctags and cscope, you can also do it separately). For now,
+this has to be done manually using either command or a mapping.
+
+command: *:CXXCMakeUpdateSymbols*
+mapping: |cxx-cmake:conf:symbols.mappings.update_symbols|
+
+Future plan is to make it automatically also.
+
+
+==============================================================================
+CTAGS                                                        *cxx-cmake:ctags*
 
 In |cxx-cmake:api:enable()| first step is to set Vim option |'tags'| to have
 appropriate values (paths):
 
-    - *cxx-cmake:symbols:ctags_file* - path to the file where tags are stored
-      after they are generated or regenerated. Name of the file is hardcoded
-      in the cxx-cmake and it is |cxx-cmake:conf:temporary_directory|/tags,
-    - |cxx-cmake:conf:symbols.settings.external_ctags_files| - list of paths
-      to the files where tags of external sources are already generated (not
-      by cxx-cmake).
+    - *cxx-cmake:ctags:ctags_file* - path to the ctags symbols file whose
+      name is hardcoded to |cxx-cmake:conf:temporary_directory|/ctags.
+    - |cxx-cmake:conf:ctags.settings.external_ctags_files| - list of paths
+      to already generated (not by cxx-cmake) ctags symbols files most likely
+      for some external sources.
 
-Second step is to generate tags file from:
+Second step is to generate ctags symbols (tags) file from:
 
     - |cxx-cmake:conf:source.settings.source_directory| - directory with
       source code of your project,
-    - |cxx-cmake:conf:symbols.settings.additional_ctags_directories| - list of
+    - |cxx-cmake:conf:ctags.settings.additional_ctags_directories| - list of
       paths to the directories where some other source code lays.
 
-For both of them, tags will be generated every time you start Vim / load
-cxx-cmake Settings Object, or update them manually.  If you have files that do
-not change too often and want to be able to navigate to symbols defined there,
-consider generation of tags once and add path to generated file in
-|cxx-cmake:conf:symbols.settings.external_ctags_files| (for performance
-reason).
+For both of them, ctags symbols will be generated every time you start Vim,
+load cxx-cmake Settings Object, or update them manually.  If you have files
+that do not change too often and want to be able to navigate to the symbols
+defined there, consider generation of ctags symbols once and add path to
+generated file(s) in |cxx-cmake:conf:ctags.settings.external_ctags_files|
+(for performance reason).
 
-Usage in short: |CTRL-]| jumps to the tag, |CTRL-T| goes back.
+To update ctags symbols manually, you can use either command or a mapping.
+
+command: *:CXXCMakeUpdateCtagsSymbols*
+mapping: |cxx-cmake:conf:ctags.mappings.update_ctags_symbols|
+
+Usage in short: |CTRL-]| jumps to the tag, |CTRL-T|/|CTRL-O| goes back.
 See |tags| to get more information about tags.
 
-                                                    *cxx-cmake:symbols:cscope*
-2) Cscope
 
-In |cxx-cmake:api:enable()| first step is to generate cscope file with symbols
-from |cxx-cmake:conf:source.settings.source_directory| and from
-|cxx-cmake:conf:symbols.settings.additional_cscope_directories| which is a
-list of paths to the directories where some other source code lays. Source
-code you want to generate cscope symbols from every time you start Vim / load
-cxx-cmake Settings Object, or update them manually.  If those directories do
-not change too often, consider generation of cscope symbols file once and add
-path to it in |cxx-cmake:conf:symbols.settings.external_cscope_files| (for
-performance reason).
+==============================================================================
+CSCOPE                                                      *cxx-cmake:cscope*
 
-Second step is to connect cscope symbols files to cscope Vim module using
+In |cxx-cmake:api:enable()| first step is to generate cscope symbols file
+from:
+
+    - |cxx-cmake:conf:source.settings.source_directory| - directory with
+      source code of your project,
+    - |cxx-cmake:conf:cscope.settings.additional_cscope_directories| - list
+      of paths to the directories where some other source code lays.
+
+For both of them, cscope symbols will be generated every time you start Vim,
+load cxx-cmake Settings Object, or update them manually. If you have files
+that do not change too often and want to be able to navigate to the symbols
+defined there, consider generation of cscope symbols once and add path to
+generated file(s) in |cxx-cmake:conf:cscope.settings.external_cscope_files|
+(for performance reason).
+
+Second step is to connect cscope symbols files to Vim cscope module using
 |:cs| add command. These files are:
 
-    - *cxx-cmake:symbols:cscope_file* - path to the file where cscope symbols
-      are stored after they are generated or regenerated. Name of the file is
-      hardcoded in the cxx-cmake and it is
-      |cxx-cmake:conf:temporary_directory|/cscope,
-    - |cxx-cmake:conf:symbols.settings.external_cscope_files| - list of paths
-      to the files where cscope symbols of external sources are already
-      generated (not by cxx-cmake).
+    - *cxx-cmake:cscope:cscope_file* - path to the cscope symbols file whose
+      name is hardcoded to |cxx-cmake:conf:temporary_directory|/cscope,
+    - |cxx-cmake:conf:cscope.settings.external_cscope_files| - list of paths
+      to already generated (not by cxx-cmake) cscope symbols files most likely
+      for some external sources.
+
+To update cscope symbols manually, you can use either command or a mapping.
+
+command: *:CXXCMakeUpdateCscopeSymbols*
+mapping: |cxx-cmake:conf:cscope.mappings.update_cscope_symbols|
 
 You have two options how to use cscope in Vim with cxx-cmake:
 
@@ -568,51 +602,33 @@ mapping there is an assumption it uses <cword> (word under the cursor as a
 name). All of these mappings work in normal mode.
 
 command: :cs find a name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.a_assignments|
+mapping: |cxx-cmake:conf:cscope.mappings.a_assignments|
 
 command: :cs find c name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.c_functions_calling|
+mapping: |cxx-cmake:conf:cscope.mappings.c_functions_calling|
 
 command: :cs find d name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.d_functions_called_by|
+mapping: |cxx-cmake:conf:cscope.mappings.d_functions_called_by|
 
 command: :cs find e name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.e_egrep|
+mapping: |cxx-cmake:conf:cscope.mappings.e_egrep|
 
 command: :cs find f name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.f_file|
+mapping: |cxx-cmake:conf:cscope.mappings.f_file|
 
 command: :cs find g name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.g_definition|
+mapping: |cxx-cmake:conf:cscope.mappings.g_definition|
 
 command: :cs find i name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.i_including|
+mapping: |cxx-cmake:conf:cscope.mappings.i_including|
 
 command: :cs find s name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.s_symbol|
+mapping: |cxx-cmake:conf:cscope.mappings.s_symbol|
 
 command: :cs find t name
-mapping: |cxx-cmake:conf:symbols.mappings.cscope.t_string|
+mapping: |cxx-cmake:conf:cscope.mappings.t_string|
 
 See |cscope| to get more information how to use it.
-
-For now, there is something you need to do manually, which is described below.
-
-                                            *cxx-cmake:symbols:update_symbols*
-3) Update symbols 
-
-When cxx-cmake Settings Object is loaded and we are in the project
-(|ProsetIsProject()|, |cxx-cmake:api:is_project()|) |cxx-cmake:api:enable()|
-is invoked which does all necessary things to make ctags and cscope work from
-Vim. State of the symbols database is on |cxx-cmake:api:enable()| time point.
-If you add new or modify current source files later, then your new symbols
-will most likely not be visible until you regenerate symbols database. For
-now, this has to be done manually using either command or a mapping.
-
-command: *:CXXCMakeUpdateSymbols*
-mapping: |cxx-cmake:conf:symbols.mappings.update_symbols|
-
-Future plan is to make it automatically also.
 
 
 ==============================================================================
@@ -709,7 +725,8 @@ proset_settings: "cxx-cmake"
                                           *cxx-cmake:conf:temporary_directory*
 temporary_directory
 
-Directory where cscope and ctags temporary (generated) files will be stored.
+Directory where cscope and ctags temporary (generated) symbols files will be
+stored.
 
 If missing, empty or incorrect:
 temporary_directory: ".vim-proset_tmp"
@@ -830,9 +847,8 @@ Example:
 source.settings.additional_search_directories: [ "../" ]
 
 
-                                                      *cxx-cmake:conf:symbols*
-                *cxx-cmake:conf:symbols.settings.additional_ctags_directories*
-symbols.settings.additional_ctags_directories
+                  *cxx-cmake:conf:ctags.settings.additional_ctags_directories*
+ctags.settings.additional_ctags_directories
 
 To generate tags file using ctags application you have to specify what source
 code directory is going to be parsed.  Using cxx-cmake this is done
@@ -841,56 +857,163 @@ project source code). To parse even more source code (possibly some external
 code), put these directories (either one or more) in the array.
 
 If missing:
-symbols.settings.additional_ctags_directories: []
+ctags.settings.additional_ctags_directories: []
 
 Example:
-symbols.settings.additional_ctags_directories: [ "../xd", "../../goo/lib/" ]
+ctags.settings.additional_ctags_directories: [ "../xd", "../../goo/lib/" ]
 
 
-               *cxx-cmake:conf:symbols.settings.additional_cscope_directories*
-symbols.settings.additional_cscope_directories
-
-In cxx-cmake, cscope application is used to generate cscope file, by default
-it uses |cxx-cmake:conf:source.settings.source_directory|. If you want to
-parse source code from different directories as well, then this parameter is
-for that. You may specify one or more paths to (external) source directories,
-in both cases use array.
-
-If missing:
-symbols.settings.additional_cscope_directories: []
-
-Example:
-symbols.settings.additional_cscope_directories: [ "../xd", "../../goo/" ]
-
-
-                        *cxx-cmake:conf:symbols.settings.external_ctags_files*
-symbols.settings.external_ctags_files
+                          *cxx-cmake:conf:ctags.settings.external_ctags_files*
+ctags.settings.external_ctags_files
 
 (todo: do the test)
 To use external tags file (already generated, very rarely changing, for
-standard C or C++ library for example), you are able to put its path here.
+example: standard C or C++ library), you are able to put its path here.
 Use array to specify one or more files.
 
 If missing:
-symbols.settings.external_ctags_files: []
+ctags.settings.external_ctags_files: []
 
 Example:
-symbols.settings.external_ctags_files: [ "/tmp/ctags" ]
+ctags.settings.external_ctags_files: [ "/tmp/ctags" ]
 
 
-                       *cxx-cmake:conf:symbols.settings.external_cscope_files*
-symbols.settings.external_cscope_files
+                          *cxx-cmake:conf:ctags.mappings.update_ctags_symbols*
+ctags.mappings.update_ctags_symbols
+
+Mapping for update ctags symbols manually.
+
+Example:
+ctags.mappings.update_ctags_symbols: "mut"
+
+
+                *cxx-cmake:conf:cscope.settings.additional_cscope_directories*
+cscope.settings.additional_cscope_directories
+
+In cxx-cmake, cscope application is used to generate cscope symbols file, by
+default it uses |cxx-cmake:conf:source.settings.source_directory|. If you want
+to parse source code from different directories as well, then this parameter
+is for that. You may specify one or more paths to (external) source
+directories, in both cases use array.
+
+If missing:
+cscope.settings.additional_cscope_directories: []
+
+Example:
+cscope.settings.additional_cscope_directories: [ "../xd", "../../goo/" ]
+
+
+                        *cxx-cmake:conf:cscope.settings.external_cscope_files*
+cscope.settings.external_cscope_files
 
 (todo: do the test)
-To use external cscope file (already generated, very rarely changing, for
-standard C or C++ library for example), you are able to put its path here.
+To use external cscope symbols file (already generated, very rarely changing,
+for example: standard C or C++ library), you are able to put its path here.
 Use array to specify one or more files.
 
 If missing:
-symbols.settings.external_cscope_files: []
+cscope.settings.external_cscope_files: []
 
 Example:
-symbols.settings.external_cscope_files: [ "/tmp/cscopeX", "/tmp/cscope2" ]
+cscope.settings.external_cscope_files: [ "/tmp/cscopeX", "/tmp/cscope2" ]
+
+
+                        *cxx-cmake:conf:cscope.mappings.update_cscope_symbols*
+cscope.mappings.update_cscope_symbols
+
+Mapping for update cscope symbols manually.
+
+Example:
+cscope.mappings.update_cscope_symbols: "muc"
+
+
+                                *cxx-cmake:conf:cscope.mappings.a_assignments*
+cscope.mappings.a_assignments
+
+Mapping for searching symbol using cscope querytype a(9): "Find places where
+this symbol is assigned a value".
+
+Example:
+cscope.mappings.a_assignments: "mea"
+
+
+                          *cxx-cmake:conf:cscope.mappings.c_functions_calling*
+cscope.mappings.c_functions_calling
+
+Mapping for searching symbol using cscope querytype c(3): "Find functions
+calling this function".
+
+Example:
+cscope.mappings.c_functions_calling: "mec"
+
+
+                        *cxx-cmake:conf:cscope.mappings.d_functions_called_by*
+cscope.mappings.d_functions_called_by
+
+Mapping for searching symbol using cscope querytype d(2): "Find functions
+called by this function".
+
+Example:
+cscope.mappings.d_functions_called_by: "med"
+
+
+                                      *cxx-cmake:conf:cscope.mappings.e_egrep*
+cscope.mappings.e_egrep
+
+Mapping for searching symbol using cscope querytype e(6): "Find this egrep
+pattern".
+
+Example:
+cscope.mappings.e_egrep: "mee"
+
+
+                                       *cxx-cmake:conf:cscope.mappings.f_file*
+cscope.mappings.f_file
+
+Mapping for searching symbol using cscope querytype f(7): "Find this file".
+
+Example:
+cscope.mappings.f_file: "mef"
+
+
+                                 *cxx-cmake:conf:cscope.mappings.g_definition*
+cscope.mappings.g_definition
+
+Mapping for searching symbol using cscope querytype g(1): "Find this
+definition".
+
+Example:
+cscope.mappings.g_definition: "meg"
+
+
+                                  *cxx-cmake:conf:cscope.mappings.i_including*
+cscope.mappings.i_including
+
+Mapping for searching symbol using cscope querytype i(8): "Find files
+#including this file".
+
+Example:
+cscope.mappings.i_including: "mei"
+
+
+                                     *cxx-cmake:conf:cscope.mappings.s_symbol*
+cscope.mappings.s_symbol
+
+Mapping for searching symbol using cscope querytype s(0): "Find this C
+symbol".
+
+Example:
+cscope.mappings.s_symbol: "mes"
+
+
+                                     *cxx-cmake:conf:cscope.mappings.t_string*
+cscope.mappings.t_string
+
+Mapping for searching symbol using cscope querytype t(4): "Find this text
+string".
+
+Example:
+cscope.mappings.t_string: "met"
 
 
                               *cxx-cmake:conf:symbols.mappings.update_symbols*
@@ -898,100 +1021,11 @@ symbols.mappings.update_symbols
 
 Mapping for update ctags and cscope symbols manually.  Useful when your
 sources have been changed (add new files, modify existing files). New symbols
-are not visible before updating symbol files.
+are not visible before updating symbols database.
 See |cxx-cmake:symbols:update_symbols|.
 
 Example:
 symbols.mappings.update_symbols: "mu"
-
-
-                        *cxx-cmake:conf:symbols.mappings.cscope.a_assignments*
-symbols.mappings.cscope.a_assignments
-
-Mapping for searching symbol using cscope querytype a(9): "Find places where
-this symbol is assigned a value".
-
-Example:
-symbols.mappings.cscope.a_assignments: "mea"
-
-
-                  *cxx-cmake:conf:symbols.mappings.cscope.c_functions_calling*
-symbols.mappings.cscope.c_functions_calling
-
-Mapping for searching symbol using cscope querytype c(3): "Find functions
-calling this function".
-
-Example:
-symbols.mappings.cscope.c_functions_calling: "mec"
-
-
-                *cxx-cmake:conf:symbols.mappings.cscope.d_functions_called_by*
-symbols.mappings.cscope.d_functions_called_by
-
-Mapping for searching symbol using cscope querytype d(2): "Find functions
-called by this function".
-
-Example:
-symbols.mappings.cscope.d_functions_called_by: "med"
-
-
-                              *cxx-cmake:conf:symbols.mappings.cscope.e_egrep*
-symbols.mappings.cscope.e_egrep
-
-Mapping for searching symbol using cscope querytype e(6): "Find this egrep
-pattern".
-
-Example:
-symbols.mappings.cscope.e_egrep: "mee"
-
-
-                               *cxx-cmake:conf:symbols.mappings.cscope.f_file*
-symbols.mappings.cscope.f_file
-
-Mapping for searching symbol using cscope querytype f(7): "Find this file".
-
-Example:
-symbols.mappings.cscope.f_file: "mef"
-
-
-                         *cxx-cmake:conf:symbols.mappings.cscope.g_definition*
-symbols.mappings.cscope.g_definition
-
-Mapping for searching symbol using cscope querytype g(1): "Find this
-definition".
-
-Example:
-symbols.mappings.cscope.g_definition: "meg"
-
-
-                          *cxx-cmake:conf:symbols.mappings.cscope.i_including*
-symbols.mappings.cscope.i_including
-
-Mapping for searching symbol using cscope querytype i(8): "Find files
-#including this file".
-
-Example:
-symbols.mappings.cscope.i_including: "mei"
-
-
-                             *cxx-cmake:conf:symbols.mappings.cscope.s_symbol*
-symbols.mappings.cscope.s_symbol
-
-Mapping for searching symbol using cscope querytype s(0): "Find this C
-symbol".
-
-Example:
-symbols.mappings.cscope.s_symbol: "mes"
-
-
-                             *cxx-cmake:conf:symbols.mappings.cscope.t_string*
-symbols.mappings.cscope.t_string
-
-Mapping for searching symbol using cscope querytype t(4): "Find this text
-string".
-
-Example:
-symbols.mappings.cscope.t_string: "met"
 
 
                                                *cxx-cmake:conf:alternate_file*

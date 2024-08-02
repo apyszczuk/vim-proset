@@ -11,7 +11,7 @@ let g:loaded_proset_settings_cxx_cxx_cmake = 1
 
 let s:cxx_cmake = {'properties': {}}
 
-function! s:generate_tags_file(source_directory,
+function! s:generate_ctags_file(source_directory,
     \       additional_ctags_directories,
     \       temporary_ctags_file)
     let l:cmd = proset#utils#ctags#get_ctags_command(a:source_directory,
@@ -201,29 +201,43 @@ function! s:cxx_cmake_build_fn()
     :update | :AsyncRun -program=make -post=call\ <SID>post_build_task()
 endfunction
 
-function! s:register_update_symbols_command(source_directory,
+function! s:register_update_ctags_symbols_command(source_directory,
     \       additional_ctags_directories,
-    \       temporary_ctags_file,
+    \       temporary_ctags_file)
+    function! s:register_update_ctags_symbols_command_impl(redraw) closure
+        call <SID>generate_ctags_file(a:source_directory,
+        \           a:additional_ctags_directories,
+        \           a:temporary_ctags_file)
+
+        if empty(a:redraw)
+            :redraw!
+        endif
+    endfunction
+
+    command! -nargs=? CXXCMakeUpdateCtagsSymbols
+    \   call <SID>register_update_ctags_symbols_command_impl(<q-args>)
+endfunction
+
+function! s:register_update_cscope_symbols_command(source_directory,
     \       additional_cscope_directories,
     \       temporary_cscope_file,
     \       external_cscope_files)
-    let l:cmd = ':call <SID>generate_tags_file(' .
-    \           '"' . a:source_directory . '", ' .
-    \           '"' . a:additional_ctags_directories . '", ' .
-    \           '"' . a:temporary_ctags_file . '"' .
-    \           ') ' .
-    \           "\| :call <SID>generate_cscope_file(" .
-    \           '"' . a:source_directory . '", ' .
-    \           '"' . a:additional_cscope_directories . '", ' .
-    \           '"' . a:temporary_cscope_file . '"' .
-    \           ') ' .
-    \           "\| :call proset#utils#cscope#add_cscope_files(" .
-    \           '"' . a:temporary_cscope_file . '", ' .
-    \           '"' . a:external_cscope_files . '"' .
-    \           ') ' .
-    \           "\| :redraw!"
+    function! s:register_update_cscope_symbols_command_impl(redraw) closure
+        call <SID>generate_cscope_file(a:source_directory,
+        \           a:additional_cscope_directories,
+        \           a:temporary_cscope_file)
 
-    execute "command! -nargs=0 CXXCMakeUpdateSymbols " . l:cmd
+        call proset#utils#cscope#add_cscope_files(a:temporary_cscope_file,
+        \       a:external_cscope_files)
+
+        if empty(a:redraw)
+            :redraw!
+        endif
+
+    endfunction
+
+    command! -nargs=? CXXCMakeUpdateCscopeSymbols
+    \   call <SID>register_update_cscope_symbols_command_impl(<q-args>)
 endfunction
 
 function! s:add_commands(source_directory,
@@ -250,12 +264,20 @@ function! s:add_commands(source_directory,
         :CXXCMakeBuild
     }
 
-    call s:register_update_symbols_command(a:source_directory,
+    call s:register_update_ctags_symbols_command(a:source_directory,
     \       a:additional_ctags_directories,
-    \       a:temporary_ctags_file,
+    \       a:temporary_ctags_file)
+
+    call s:register_update_cscope_symbols_command(a:source_directory,
     \       a:additional_cscope_directories,
     \       a:temporary_cscope_file,
     \       a:external_cscope_files)
+
+    command -nargs=0 CXXCMakeUpdateSymbols {
+        :CXXCMakeUpdateCtagsSymbols 0
+        :CXXCMakeUpdateCscopeSymbols 0
+        :redraw!
+    }
 
     command! -nargs=0 CXXCMakeAlternateFileCurrentWindow {
         :call proset#utils#alternate_file#current_window()
@@ -458,7 +480,7 @@ function! s:cxx_cmake.construct(config)
     \   join(
     \   proset#lib#dict#get(a:config,
     \       [],
-    \       "symbols",
+    \       "ctags",
     \       "settings",
     \       "additional_ctags_directories"
     \   ), ";"),
@@ -466,7 +488,7 @@ function! s:cxx_cmake.construct(config)
     \   join(
     \   proset#lib#dict#get(a:config,
     \       [],
-    \       "symbols",
+    \       "cscope",
     \       "settings",
     \       "additional_cscope_directories"
     \   ), ";"),
@@ -483,7 +505,7 @@ function! s:cxx_cmake.construct(config)
     \   join(
     \   proset#lib#dict#get(a:config,
     \       [],
-    \       "symbols",
+    \       "cscope",
     \       "settings",
     \       "external_cscope_files"
     \   ), ";"),
@@ -491,7 +513,7 @@ function! s:cxx_cmake.construct(config)
     \   join(
     \   proset#lib#dict#get(a:config,
     \       [],
-    \       "symbols",
+    \       "ctags",
     \       "settings",
     \       "external_ctags_files"
     \   ), ";"),
@@ -518,7 +540,7 @@ function! s:cxx_cmake.construct(config)
     let l:ret.properties.internal =
     \ {
     \   "temporary_ctags_file":
-    \   l:ret.properties.settings.temporary_directory . "/tags",
+    \   l:ret.properties.settings.temporary_directory . "/ctags",
     \
     \   "temporary_cscope_file":
     \   l:ret.properties.settings.temporary_directory . "/cscope",
@@ -586,14 +608,42 @@ function! s:cxx_cmake.construct(config)
     \       )
     \   },
     \
+    \   "ctags.update_ctags_symbols":
+    \   {
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "ctags",
+    \           "mappings",
+    \           "update_ctags_symbols"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_silent_mapping",
+    \           [":CXXCMakeUpdateCtagsSymbols<CR>"]
+    \       )
+    \   },
+    \
+    \   "cscope.update_cscope_symbols":
+    \   {
+    \       "seq":
+    \       proset#lib#dict#get(a:config,
+    \           "",
+    \           "cscope",
+    \           "mappings",
+    \           "update_cscope_symbols"
+    \       ),
+    \       "fun":
+    \       function("s:set_nnoremap_silent_mapping",
+    \           [":CXXCMakeUpdateCscopeSymbols<CR>"]
+    \       )
+    \   },
     \   "cscope.a_assignments":
     \   {
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
-    \           "symbols",
-    \           "mappings",
     \           "cscope",
+    \           "mappings",
     \           "a_assignments"
     \       ),
     \       "fun":
@@ -606,9 +656,8 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
-    \           "symbols",
-    \           "mappings",
     \           "cscope",
+    \           "mappings",
     \           "c_functions_calling"
     \       ),
     \       "fun":
@@ -621,9 +670,8 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
-    \           "symbols",
-    \           "mappings",
     \           "cscope",
+    \           "mappings",
     \           "d_functions_called_by"
     \       ),
     \       "fun":
@@ -636,9 +684,8 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
-    \           "symbols",
-    \           "mappings",
     \           "cscope",
+    \           "mappings",
     \           "e_egrep"
     \       ),
     \       "fun":
@@ -651,9 +698,8 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
-    \           "symbols",
-    \           "mappings",
     \           "cscope",
+    \           "mappings",
     \           "f_file"
     \       ),
     \       "fun":
@@ -666,9 +712,8 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
-    \           "symbols",
-    \           "mappings",
     \           "cscope",
+    \           "mappings",
     \           "g_definition"
     \       ),
     \       "fun":
@@ -681,9 +726,8 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
-    \           "symbols",
-    \           "mappings",
     \           "cscope",
+    \           "mappings",
     \           "i_including"
     \       ),
     \       "fun":
@@ -696,9 +740,8 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
-    \           "symbols",
-    \           "mappings",
     \           "cscope",
+    \           "mappings",
     \           "s_symbol"
     \       ),
     \       "fun":
@@ -711,9 +754,8 @@ function! s:cxx_cmake.construct(config)
     \       "seq":
     \       proset#lib#dict#get(a:config,
     \           "",
-    \           "symbols",
-    \           "mappings",
     \           "cscope",
+    \           "mappings",
     \           "t_string"
     \       ),
     \       "fun":
@@ -1039,9 +1081,9 @@ function! s:cxx_cmake.enable() abort
     \       l:s.source_extension)
     call s:add_mappings(self.properties.mappings)
 
-    let &tags = proset#utils#ctags#get_tags_filenames(l:p.temporary_ctags_file,
+    let &tags = proset#utils#ctags#get_ctags_filenames(l:p.temporary_ctags_file,
     \               l:s.external_ctags_files)
-    call s:generate_tags_file(l:s.source_directory,
+    call s:generate_ctags_file(l:s.source_directory,
     \       l:s.additional_ctags_directories,
     \       l:p.temporary_ctags_file)
     call s:generate_cscope_file(l:s.source_directory,

@@ -17,7 +17,7 @@ function! proset#utils#ctags#get_ctags_command(source_directory,
     return l:cmd
 endfunction
 
-function! proset#utils#ctags#get_tags_filenames(temporary_ctags_file,
+function! proset#utils#ctags#get_ctags_filenames(temporary_ctags_file,
         \ external_ctags_files)
     let l:ret   = a:temporary_ctags_file
     let l:files = substitute(a:external_ctags_files, ";", ",", "g")
