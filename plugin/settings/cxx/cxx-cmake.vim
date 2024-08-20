@@ -111,103 +111,41 @@ function! s:create_file_command(create_function,
     endif
 endfunction
 
-function! s:create_header_command(open_mode,
-    \       project_name,
-    \       header_extension,
-    \       source_extension,
-    \       path)
+function! s:create_header_command(open_mode, input, path)
     return s:create_file_command("s:create_header_file",
     \       "CXXCMakeHeaderCreatedEvent",
     \       a:open_mode,
-    \       a:project_name,
-    \       a:header_extension,
-    \       a:source_extension,
+    \       a:input.project_name,
+    \       a:input.header_extension,
+    \       a:input.source_extension,
     \       a:path)
 endfunction
 
-function! s:create_source_command(open_mode,
-    \       project_name,
-    \       header_extension,
-    \       source_extension,
-    \       path)
+function! s:create_source_command(open_mode, input, path)
     return s:create_file_command("s:create_source_file",
     \       "CXXCMakeSourceCreatedEvent",
     \       a:open_mode,
-    \       a:project_name,
-    \       a:source_extension,
-    \       a:header_extension,
+    \       a:input.project_name,
+    \       a:input.source_extension,
+    \       a:input.header_extension,
     \       a:path)
 endfunction
 
-function! s:create_header_source_command(open_mode,
-    \       project_name,
-    \       header_extension,
-    \       source_extension,
-    \       path)
+function! s:create_header_source_command(open_mode, input, path)
     let l:open_modes = split(a:open_mode, ";", 1)
 
-    call s:create_header_command(l:open_modes[0],
-    \       a:project_name,
-    \       a:header_extension,
-    \       a:source_extension,
-    \       a:path)
+    call s:create_header_command(l:open_modes[0], a:input, a:path)
+    call s:create_source_command(l:open_modes[1], a:input, a:path)
 
-    call s:create_source_command(l:open_modes[1],
-    \       a:project_name,
-    \       a:header_extension,
-    \       a:source_extension,
-    \       a:path)
 endfunction
 
-function! s:register_create_file_command(command_name,
-    \       create_function,
-    \       open_mode,
-    \       project_name,
-    \       header_extension,
-    \       source_extension)
-    execute 'command! -complete=file -nargs=1 ' . a:command_name . ' '
-    \       . 'call ' . a:create_function . '('
-    \       . '"' . a:open_mode . '", '
-    \       . '"' . a:project_name . '", '
-    \       . '"' . a:header_extension . '", '
-    \       . '"' . a:source_extension . '", '
-    \       . '"<args>")'
-endfunction
-
-function! s:post_build_task()
-    let l:msg = "Success: "
-    let l:st  = 0
-
-    if g:asyncrun_code != 0
-        let l:msg = "Failure: "
-        let l:st  = 1
-    else
-        let l:list = getqflist()
-        for item in l:list
-            if item["valid"] == 1
-                let l:st = 1
-                break
-            endif
-        endfor
-    endif
-
-    echo l:msg . &makeprg
-    if l:st == 0
-        :ccl
-    endif
-endfunction
-
-function! s:cxx_cmake_build_fn()
-    :update | :AsyncRun -program=make -post=call\ <SID>post_build_task()
-endfunction
-
-function! s:register_update_ctags_symbols_command(source_directory,
+function! s:add_update_ctags_symbols_command(source_directory,
     \       additional_ctags_directories,
     \       temporary_ctags_file)
-    function! s:register_update_ctags_symbols_command_impl(redraw) closure
-        call <SID>generate_ctags_file(a:source_directory,
-        \           a:additional_ctags_directories,
-        \           a:temporary_ctags_file)
+    function! s:update_ctags_symbols_command_impl(redraw) closure
+        call s:generate_ctags_file(a:source_directory,
+        \       a:additional_ctags_directories,
+        \       a:temporary_ctags_file)
 
         if empty(a:redraw)
             :redraw!
@@ -215,17 +153,17 @@ function! s:register_update_ctags_symbols_command(source_directory,
     endfunction
 
     command! -nargs=? CXXCMakeUpdateCtagsSymbols
-    \   call <SID>register_update_ctags_symbols_command_impl(<q-args>)
+    \   call s:update_ctags_symbols_command_impl(<q-args>)
 endfunction
 
-function! s:register_update_cscope_symbols_command(source_directory,
+function! s:add_update_cscope_symbols_command(source_directory,
     \       additional_cscope_directories,
     \       temporary_cscope_file,
     \       external_cscope_files)
-    function! s:register_update_cscope_symbols_command_impl(redraw) closure
-        call <SID>generate_cscope_file(a:source_directory,
-        \           a:additional_cscope_directories,
-        \           a:temporary_cscope_file)
+    function! s:update_cscope_symbols_command_impl(redraw) closure
+        call s:generate_cscope_file(a:source_directory,
+        \       a:additional_cscope_directories,
+        \       a:temporary_cscope_file)
 
         call proset#utils#cscope#add_cscope_files(a:temporary_cscope_file,
         \       a:external_cscope_files)
@@ -233,11 +171,222 @@ function! s:register_update_cscope_symbols_command(source_directory,
         if empty(a:redraw)
             :redraw!
         endif
-
     endfunction
 
     command! -nargs=? CXXCMakeUpdateCscopeSymbols
-    \   call <SID>register_update_cscope_symbols_command_impl(<q-args>)
+    \   call s:update_cscope_symbols_command_impl(<q-args>)
+endfunction
+
+function! s:add_run_command(bin_directory, project_name)
+    function! s:run_command_impl(arg) closure
+        let l:cmd = a:bin_directory . "/" . a:project_name . " " . a:arg
+        call term_start(l:cmd)
+    endfunction
+
+    command! -nargs=* CXXCMakeRun call s:run_command_impl(<q-args>)
+endfunction
+
+function! s:add_build_command()
+    function! s:post_build_task()
+        let l:msg = "Success: "
+        let l:st  = 0
+
+        if g:asyncrun_code != 0
+            let l:msg = "Failure: "
+            let l:st  = 1
+        else
+            let l:list = getqflist()
+            for item in l:list
+                if item["valid"] == 1
+                    let l:st = 1
+                    break
+                endif
+            endfor
+        endif
+
+        echo l:msg . &makeprg
+        if l:st == 0
+            :ccl
+        endif
+    endfunction
+
+    function! s:build_command_impl()
+        :update
+        :AsyncRun -program=make -post=call\ <SID>post_build_task()
+    endfunction
+
+    command! -nargs=0 CXXCMakeBuild call s:build_command_impl()
+endfunction
+
+function! s:add_clean_command(build_directory)
+    function! s:clean_command_impl() closure
+        call delete(a:build_directory, "rf")
+    endfunction
+
+    command! -nargs=0 CXXCMakeClean call s:clean_command_impl()
+endfunction
+
+function! s:add_clean_and_build_command()
+    function! s:clean_and_build_command_impl()
+        :CXXCMakeClean
+        :CXXCMakeBuild
+    endfunction
+
+    command -nargs=0 CXXCMakeCleanAndBuild call s:clean_and_build_command_impl()
+endfunction
+
+function! s:add_update_symbols_command()
+    function! s:update_symbols_command_impl()
+        :CXXCMakeUpdateCtagsSymbols 0
+        :CXXCMakeUpdateCscopeSymbols 0
+        :redraw!
+    endfunction
+
+    command -nargs=0 CXXCMakeUpdateSymbols call s:update_symbols_command_impl()
+endfunction
+
+function! s:add_alternate_file_current_window_command()
+    function! s:alternate_file_current_window_command_impl()
+        call proset#utils#alternate_file#current_window()
+    endfunction
+
+    command! -nargs=0 CXXCMakeAlternateFileCurrentWindow
+    \ call s:alternate_file_current_window_command_impl()
+endfunction
+
+function! s:add_alternate_file_split_window_command()
+    function! s:alternate_file_split_window_command_impl()
+        call proset#utils#alternate_file#split_window()
+    endfunction
+
+    command! -nargs=0 CXXCMakeAlternateFileSplitWindow
+    \ call s:alternate_file_split_window_command_impl()
+endfunction
+
+function! s:add_alternate_file_vsplit_window_command()
+    function! s:alternate_file_vsplit_window_command_impl()
+        call proset#utils#alternate_file#vsplit_window()
+    endfunction
+
+    command! -nargs=0 CXXCMakeAlternateFileVSplitWindow
+    \ call s:alternate_file_vsplit_window_command_impl()
+endfunction
+
+function! s:add_create_header_command(input_dict)
+    function! s:create_header_command_impl(path) closure
+        call s:create_header_command("", a:input_dict, a:path)
+    endfunction
+
+    command! -complete=file -nargs=1 CXXCMakeCreateHeader
+    \   call s:create_header_command_impl(<f-args>)
+endfunction
+
+function! s:add_create_header_edit_command(input_dict)
+    function! s:create_header_edit_command_impl(path) closure
+        call s:create_header_command(":e", a:input_dict, a:path)
+    endfunction
+
+    command! -complete=file -nargs=1 CXXCMakeCreateHeaderEdit
+    \   call s:create_header_edit_command_impl(<f-args>)
+endfunction
+
+function! s:add_create_header_edit_split_command(input_dict)
+    function! s:create_header_edit_split_command_impl(path) closure
+        call s:create_header_command(":spl", a:input_dict, a:path)
+    endfunction
+
+    command! -complete=file -nargs=1 CXXCMakeCreateHeaderEditSplit
+    \   call s:create_header_edit_split_command_impl(<f-args>)
+endfunction
+
+function! s:add_create_header_edit_vsplit_command(input_dict)
+    function! s:create_header_edit_vsplit_command_impl(path) closure
+        call s:create_header_command(":vspl", a:input_dict, a:path)
+    endfunction
+
+    command! -complete=file -nargs=1 CXXCMakeCreateHeaderEditVSplit
+    \   call s:create_header_edit_vsplit_command_impl(<f-args>)
+endfunction
+
+function! s:add_create_source_command(input_dict)
+    function! s:create_source_command_impl(path) closure
+        call s:create_source_command("", a:input_dict, a:path)
+    endfunction
+
+    command! -complete=file -nargs=1 CXXCMakeCreateSource
+    \   call s:create_source_command_impl(<f-args>)
+endfunction
+
+function! s:add_create_source_edit_command(input_dict)
+    function! s:create_source_edit_command_impl(path) closure
+        call s:create_source_command(":e", a:input_dict, a:path)
+    endfunction
+
+    command! -complete=file -nargs=1 CXXCMakeCreateSourceEdit
+    \   call s:create_source_edit_command_impl(<f-args>)
+endfunction
+
+function! s:add_create_source_edit_split_command(input_dict)
+    function! s:create_source_edit_split_command_impl(path) closure
+        call s:create_source_command(":spl", a:input_dict, a:path)
+    endfunction
+
+    command! -complete=file -nargs=1 CXXCMakeCreateSourceEditSplit
+    \   call s:create_source_edit_split_command_impl(<f-args>)
+endfunction
+
+function! s:add_create_source_edit_vsplit_command(input_dict)
+    function! s:create_source_edit_vsplit_command_impl(path) closure
+        call s:create_source_command(":vspl", a:input_dict, a:path)
+    endfunction
+
+    command! -complete=file -nargs=1 CXXCMakeCreateSourceEditVSplit
+    \   call s:create_source_edit_vsplit_command_impl(<f-args>)
+endfunction
+
+function! s:add_create_header_source_command(input_dict)
+    function! s:create_header_source_command_impl(path) closure
+        call s:create_header_source_command(";", a:input_dict, a:path)
+    endfunction
+
+    command! -complete=file -nargs=1 CXXCMakeCreateHeaderSource
+    \   call s:create_header_source_command_impl(<f-args>)
+endfunction
+
+function! s:add_create_header_source_edit_split_command(input_dict)
+    function! s:create_header_source_edit_split_command_impl(path) closure
+        call s:create_header_source_command(":spl;:spl", a:input_dict, a:path)
+    endfunction
+
+    command! -complete=file -nargs=1 CXXCMakeCreateHeaderSourceEditSplit
+    \   call s:create_header_source_edit_split_command_impl(<f-args>)
+endfunction
+
+function! s:add_create_header_source_edit_vsplit_command(input_dict)
+    function! s:create_header_source_edit_vsplit_command_impl(path) closure
+        call s:create_header_source_command(":vspl;:vspl", a:input_dict, a:path)
+    endfunction
+
+    command! -complete=file -nargs=1 CXXCMakeCreateHeaderSourceEditVSplit
+    \   call s:create_header_source_edit_vsplit_command_impl(<f-args>)
+endfunction
+
+function! s:add_create_header_source_edit_current_split_command(input_dict)
+    function! s:create_header_source_edit_current_split_command_impl(path) closure
+        call s:create_header_source_command(":e;:spl", a:input_dict, a:path)
+    endfunction
+
+    command! -complete=file -nargs=1 CXXCMakeCreateHeaderSourceEditCurrentSplit
+    \   call s:create_header_source_edit_current_split_command_impl(<f-args>)
+endfunction
+
+function! s:add_create_header_source_edit_current_vsplit_command(input_dict)
+    function! s:create_header_source_edit_current_vsplit_command_impl(path) closure
+        call s:create_header_source_command(":e;:vspl", a:input_dict, a:path)
+    endfunction
+
+    command! -complete=file -nargs=1 CXXCMakeCreateHeaderSourceEditCurrentVSplit
+    \   call s:create_header_source_edit_current_vsplit_command_impl(<f-args>)
 endfunction
 
 function! s:add_commands(source_directory,
@@ -251,139 +400,49 @@ function! s:add_commands(source_directory,
     \       external_cscope_files,
     \       header_extension,
     \       source_extension)
-    command! -nargs=0 CXXCMakeBuild :call s:cxx_cmake_build_fn()
 
-    execute "command! -nargs=* CXXCMakeRun "
-    \       . "term " . a:bin_directory . "/" . a:project_name . " <args>"
+    call s:add_build_command()
+    call s:add_run_command(a:bin_directory, a:project_name)
+    call s:add_clean_command(a:build_directory)
+    call s:add_clean_and_build_command()
 
-    execute "command! -nargs=0 CXXCMakeClean "
-    \       . "call delete(\"" . a:build_directory . "\", \"rf\")"
-
-    command -nargs=0 CXXCMakeCleanAndBuild {
-        :CXXCMakeClean
-        :CXXCMakeBuild
-    }
-
-    call s:register_update_ctags_symbols_command(a:source_directory,
+    call s:add_update_ctags_symbols_command(a:source_directory,
     \       a:additional_ctags_directories,
     \       a:temporary_ctags_file)
 
-    call s:register_update_cscope_symbols_command(a:source_directory,
+    call s:add_update_cscope_symbols_command(a:source_directory,
     \       a:additional_cscope_directories,
     \       a:temporary_cscope_file,
     \       a:external_cscope_files)
 
-    command -nargs=0 CXXCMakeUpdateSymbols {
-        :CXXCMakeUpdateCtagsSymbols 0
-        :CXXCMakeUpdateCscopeSymbols 0
-        :redraw!
-    }
+    call s:add_update_symbols_command()
+    call s:add_alternate_file_current_window_command()
+    call s:add_alternate_file_split_window_command()
+    call s:add_alternate_file_vsplit_window_command()
 
-    command! -nargs=0 CXXCMakeAlternateFileCurrentWindow {
-        :call proset#utils#alternate_file#current_window()
-    }
+    const l:create_input =
+    \ {
+    \   "project_name":         a:project_name,
+    \   "header_extension":     a:header_extension,
+    \   "source_extension":     a:source_extension
+    \ }
 
-    command! -nargs=0 CXXCMakeAlternateFileSplitWindow {
-        :call proset#utils#alternate_file#split_window()
-    }
+    call s:add_create_header_command(l:create_input)
+    call s:add_create_header_edit_command(l:create_input)
+    call s:add_create_header_edit_split_command(l:create_input)
+    call s:add_create_header_edit_vsplit_command(l:create_input)
 
-    command! -nargs=0 CXXCMakeAlternateFileVSplitWindow {
-        :call proset#utils#alternate_file#vsplit_window()
-    }
+    call s:add_create_source_command(l:create_input)
+    call s:add_create_source_edit_command(l:create_input)
+    call s:add_create_source_edit_split_command(l:create_input)
+    call s:add_create_source_edit_vsplit_command(l:create_input)
 
-    call s:register_create_file_command(
-    \       "CXXCMakeCreateHeader",
-    \       "<SID>create_header_command",
-    \       "",
-    \       a:project_name,
-    \       a:header_extension,
-    \       a:source_extension)
-    call s:register_create_file_command(
-    \       "CXXCMakeCreateHeaderEdit",
-    \       "<SID>create_header_command",
-    \       ":e",
-    \       a:project_name,
-    \       a:header_extension,
-    \       a:source_extension)
-    call s:register_create_file_command(
-    \       "CXXCMakeCreateHeaderEditSplit",
-    \       "<SID>create_header_command",
-    \       ":spl",
-    \       a:project_name,
-    \       a:header_extension,
-    \       a:source_extension)
-    call s:register_create_file_command(
-    \       "CXXCMakeCreateHeaderEditVSplit",
-    \       "<SID>create_header_command",
-    \       ":vspl",
-    \       a:project_name,
-    \       a:header_extension,
-    \       a:source_extension)
+    call s:add_create_header_source_command(l:create_input)
+    call s:add_create_header_source_edit_split_command(l:create_input)
+    call s:add_create_header_source_edit_vsplit_command(l:create_input)
+    call s:add_create_header_source_edit_current_split_command(l:create_input)
+    call s:add_create_header_source_edit_current_vsplit_command(l:create_input)
 
-    call s:register_create_file_command(
-    \       "CXXCMakeCreateSource",
-    \       "<SID>create_source_command",
-    \       "",
-    \       a:project_name,
-    \       a:header_extension,
-    \       a:source_extension)
-    call s:register_create_file_command(
-    \       "CXXCMakeCreateSourceEdit",
-    \       "<SID>create_source_command",
-    \       ":e",
-    \       a:project_name,
-    \       a:header_extension,
-    \       a:source_extension)
-    call s:register_create_file_command(
-    \       "CXXCMakeCreateSourceEditSplit",
-    \       "<SID>create_source_command",
-    \       ":spl",
-    \       a:project_name,
-    \       a:header_extension,
-    \       a:source_extension)
-    call s:register_create_file_command(
-    \       "CXXCMakeCreateSourceEditVSplit",
-    \       "<SID>create_source_command",
-    \       ":vspl",
-    \       a:project_name,
-    \       a:header_extension,
-    \       a:source_extension)
-
-    call s:register_create_file_command(
-    \       "CXXCMakeCreateHeaderSource",
-    \       "<SID>create_header_source_command",
-    \       ";",
-    \       a:project_name,
-    \       a:header_extension,
-    \       a:source_extension)
-    call s:register_create_file_command(
-    \       "CXXCMakeCreateHeaderSourceEditSplit",
-    \       "<SID>create_header_source_command",
-    \       ":spl;:spl",
-    \       a:project_name,
-    \       a:header_extension,
-    \       a:source_extension)
-    call s:register_create_file_command(
-    \       "CXXCMakeCreateHeaderSourceEditCurrentSplit",
-    \       "<SID>create_header_source_command",
-    \       ":e;:spl",
-    \       a:project_name,
-    \       a:header_extension,
-    \       a:source_extension)
-    call s:register_create_file_command(
-    \       "CXXCMakeCreateHeaderSourceEditVSplit",
-    \       "<SID>create_header_source_command",
-    \       ":vspl;:vspl",
-    \       a:project_name,
-    \       a:header_extension,
-    \       a:source_extension)
-    call s:register_create_file_command(
-    \       "CXXCMakeCreateHeaderSourceEditCurrentVSplit",
-    \       "<SID>create_header_source_command",
-    \       ":e;:vspl",
-    \       a:project_name,
-    \       a:header_extension,
-    \       a:source_extension)
 endfunction
 
 function! s:set_cscope_mapping(cmd, seq)
