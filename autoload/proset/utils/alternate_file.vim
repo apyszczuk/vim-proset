@@ -84,7 +84,11 @@ function! proset#utils#alternate_file#vsplit_window()
     call s:handle(s:extensions, function('s:open_in_vsplit_window'))
 endfunction
 
-function! proset#utils#alternate_file#add_extensions_pair(header_extension,
-        \ source_extension)
-    let s:extensions[a:header_extension] = a:source_extension
+function! proset#utils#alternate_file#add_extensions_pair(first_extension,
+        \ second_extension)
+    let s:extensions[a:first_extension] = a:second_extension
+endfunction
+
+function! proset#utils#alternate_file#remove_extensions_pair(first_extension)
+    call remove(s:extensions, a:first_extension)
 endfunction

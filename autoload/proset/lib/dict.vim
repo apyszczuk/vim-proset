@@ -21,3 +21,12 @@ function! proset#lib#dict#get(dictionary, default_value, ...)
 
     return l:ret
 endfunction
+
+function! proset#lib#dict#get_not_empty(dictionary, default_value, ...)
+    let l:ret = trim(call(function('proset#lib#dict#get'),
+    \                       [a:dictionary, a:default_value] + a:000))
+    if empty(l:ret)
+        let l:ret = a:default_value
+    endif
+    return l:ret
+endfunction

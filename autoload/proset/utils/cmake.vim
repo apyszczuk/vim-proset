@@ -70,14 +70,3 @@ function! proset#utils#cmake#get_output_directory(project_file, build_directory)
 
     return a:build_directory
 endfunction
-
-function! proset#utils#cmake#get_build_command(build_directory, jobs_number)
-    let l:cmd = "cmake\\ " .
-                \ "-B" . a:build_directory . "\\ " .
-                \ ".\\ " .
-                \ "&&\\ " .
-                \ "cmake\\ --build\\ " . a:build_directory . "\\ " .
-                \ "--\\ " .
-                \ "-j" . a:jobs_number
-    return l:cmd
-endfunction

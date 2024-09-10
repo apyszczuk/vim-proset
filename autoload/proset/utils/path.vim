@@ -11,3 +11,13 @@ function! proset#utils#path#is_subpath(base, path)
         \ (len(l:path) > len(l:base)) &&
         \ !isabsolutepath(a:path)
 endfunction
+
+function! proset#utils#path#get_correct_path(dictionary, default_value, ...)
+    let l:ret = call(function('proset#lib#dict#get_not_empty'),
+    \                   [a:dictionary, a:default_value] + a:000)
+    if proset#utils#path#is_subpath(getcwd(), l:ret) == 0
+        let l:ret = a:default_value
+    endif
+    return l:ret
+endfunction
+
