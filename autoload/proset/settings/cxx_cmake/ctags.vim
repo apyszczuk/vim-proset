@@ -3,10 +3,34 @@ if exists("g:autoloaded_proset_settings_cxx_cmake_ctags")
 endif
 let g:autoloaded_proset_settings_cxx_cmake_ctags = 1
 
+function! s:get_ctags_command(source_directory,
+        \ additional_ctags_directories,
+        \ temporary_ctags_file)
+    let l:cmd = "ctags -R " .
+                \ "--c++-kinds=+p " .
+                \ "--fields=+iaS " .
+                \ "--extras=+q " .
+                \ "--tag-relative=yes " .
+                \ "-f " . a:temporary_ctags_file . " " .
+                \ a:source_directory . " " .
+                \ substitute(a:additional_ctags_directories, ";", " ", "g")
+    return l:cmd
+endfunction
+
+function! s:get_ctags_filenames(temporary_ctags_file,
+        \ external_ctags_files)
+    let l:ret   = a:temporary_ctags_file
+    let l:files = substitute(a:external_ctags_files, ";", ",", "g")
+    if !empty(l:files)
+        let l:ret .= "," . l:files
+    endif
+    return l:ret
+endfunction
+
 function! s:generate_ctags_file(source_directory,
     \       additional_ctags_directories,
     \       temporary_ctags_file)
-    let l:cmd = proset#utils#ctags#get_ctags_command(a:source_directory,
+    let l:cmd = s:get_ctags_command(a:source_directory,
     \               a:additional_ctags_directories,
     \               a:temporary_ctags_file)
     silent execute '!' . l:cmd
@@ -18,7 +42,7 @@ endfunction
 
 function! s:set_tags_option(temporary_ctags_file, external_ctags_files)
     let s:init_tags = &tags
-    let &tags = proset#utils#ctags#get_ctags_filenames(a:temporary_ctags_file,
+    let &tags = s:get_ctags_filenames(a:temporary_ctags_file,
     \               a:external_ctags_files)
 endfunction
 
