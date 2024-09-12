@@ -49,8 +49,11 @@ function! s:cxx_cmake.construct(config)
     let l:ret.properties.configuration.source =
     \ l:ret.modules.source.get_configuration()
 
-    let l:cmakelists_file = "CMakeLists.txt"
-    let l:project_name = proset#utils#cmake#get_project_name(l:cmakelists_file)
+    let l:ret.modules.cmake =
+    \ proset#settings#cxx_cmake#cmake#construct(a:config,
+    \   l:ret.properties.configuration.build.settings.build_directory)
+    let l:ret.properties.configuration.cmake =
+    \ l:ret.modules.cmake.get_configuration()
 
     let l:ret.properties.internal =
     \ {
@@ -61,17 +64,16 @@ function! s:cxx_cmake.construct(config)
     \   l:ret.properties.configuration.temporary_directory . "/cscope",
     \
     \   "project_name":
-    \   l:project_name,
+    \   l:ret.properties.configuration.cmake.settings.project_name,
     \
     \   "bin_directory":
-    \   proset#utils#cmake#get_output_directory(l:cmakelists_file,
-    \       l:ret.properties.configuration.build.settings.build_directory),
+    \   l:ret.properties.configuration.cmake.settings.bin_directory,
     \
     \   "is_project":
-    \   filereadable(l:cmakelists_file) &&
+    \   filereadable(l:ret.properties.configuration.cmake.settings.input_file) &&
     \   isdirectory(l:ret.properties.configuration.source.settings.source_directory) &&
     \   filereadable(g:proset_settings_file) &&
-    \   !empty(l:project_name)
+    \   !empty(l:ret.properties.configuration.cmake.settings.project_name)
     \ }
 
     let l:ret.modules.run =
