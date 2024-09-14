@@ -64,6 +64,12 @@ function! s:cxx_cmake.construct(config)
     let l:ret.properties.configuration.ctags =
     \ l:ret.modules.ctags.get_configuration()
 
+    let l:ret.modules.cscope =
+    \ proset#settings#cxx_cmake#cscope#construct(a:config,
+    \       l:ret.properties.configuration.source.settings.source_directory,
+    \       l:ret.properties.configuration.temporary_directory)
+    let l:ret.properties.configuration.cscope =
+    \ l:ret.modules.cscope.get_configuration()
 
     let l:ret.properties.internal =
     \ {
@@ -71,7 +77,7 @@ function! s:cxx_cmake.construct(config)
     \   l:ret.properties.configuration.ctags.settings.temporary_ctags_file,
     \
     \   "temporary_cscope_file":
-    \   l:ret.properties.configuration.temporary_directory . "/cscope",
+    \   l:ret.properties.configuration.cscope.settings.temporary_cscope_file,
     \
     \   "project_name":
     \   l:ret.properties.configuration.cmake.settings.project_name,
@@ -89,13 +95,6 @@ function! s:cxx_cmake.construct(config)
     \       l:ret.properties.internal.project_name)
     let l:ret.properties.configuration.run =
     \ l:ret.modules.run.get_configuration()
-
-    let l:ret.modules.cscope =
-    \ proset#settings#cxx_cmake#cscope#construct(a:config,
-    \       l:ret.properties.internal.temporary_cscope_file,
-    \       l:ret.properties.configuration.source.settings.source_directory)
-    let l:ret.properties.configuration.cscope =
-    \ l:ret.modules.cscope.get_configuration()
 
     let l:ret.modules.symbols =
     \ proset#settings#cxx_cmake#symbols#construct(a:config)
