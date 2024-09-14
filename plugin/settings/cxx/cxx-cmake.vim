@@ -51,7 +51,9 @@ function! s:cxx_cmake.construct(config)
 
     let l:ret.modules.cmake =
     \ proset#settings#cxx_cmake#cmake#construct(a:config,
-    \   l:ret.properties.configuration.build.settings.build_directory)
+    \   l:ret.properties.configuration.build.settings.build_directory,
+    \   l:ret.properties.configuration.source.settings.source_directory,
+    \   g:proset_settings_file)
     let l:ret.properties.configuration.cmake =
     \ l:ret.modules.cmake.get_configuration()
 
@@ -70,10 +72,7 @@ function! s:cxx_cmake.construct(config)
     \   l:ret.properties.configuration.cmake.settings.bin_directory,
     \
     \   "is_project":
-    \   filereadable(l:ret.properties.configuration.cmake.settings.input_file) &&
-    \   isdirectory(l:ret.properties.configuration.source.settings.source_directory) &&
-    \   filereadable(g:proset_settings_file) &&
-    \   !empty(l:ret.properties.configuration.cmake.settings.project_name)
+    \   l:ret.properties.configuration.cmake.settings.is_project
     \ }
 
     let l:ret.modules.run =

@@ -73,22 +73,38 @@ endfunction
 
 let s:object = {'properties': {}}
 
-function! s:get_cmake_configuration(config, build_directory)
+function! s:get_cmake_configuration(config,
+    \       build_directory,
+    \       source_directory,
+    \       proset_settings_file)
     let l:ret = {"settings": {}, "mappings": {}}
 
     let l:ret.settings.input_file       = "CMakeLists.txt"
+
     let l:ret.settings.project_name     =
     \ s:get_project_name(l:ret.settings.input_file)
+
     let l:ret.settings.bin_directory    =
     \ s:get_output_directory(l:ret.settings.input_file, a:build_directory)
+
+    let l:ret.settings.is_project       =
+    \ filereadable(l:ret.settings.input_file) &&
+    \ isdirectory(a:source_directory) &&
+    \ filereadable(a:proset_settings_file) &&
+    \ !empty(l:ret.settings.project_name)
 
     return l:ret
 endfunction
 
-function! s:object.construct(config, build_directory)
+function! s:object.construct(config,
+    \       build_directory,
+    \       source_directory,
+    \       proset_settings_file)
     let l:ret               = deepcopy(self)
     let l:ret.properties    = s:get_cmake_configuration(a:config,
-    \                           a:build_directory)
+    \                           a:build_directory,
+    \                           a:source_directory,
+    \                           a:proset_settings_file)
 
     return l:ret
 endfunction
@@ -103,6 +119,12 @@ endfunction
 function! s:object.disable()
 endfunction
 
-function! proset#settings#cxx_cmake#cmake#construct(config, build_directory)
-    return s:object.construct(a:config, a:build_directory)
+function! proset#settings#cxx_cmake#cmake#construct(config,
+    \       build_directory,
+    \       source_directory,
+    \       proset_settings_file)
+    return s:object.construct(a:config,
+    \       a:build_directory,
+    \       a:source_directory,
+    \       a:proset_settings_file)
 endfunction
