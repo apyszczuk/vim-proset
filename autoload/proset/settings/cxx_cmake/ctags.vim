@@ -87,8 +87,10 @@ function! s:remove_mappings(mappings)
     call proset#utils#mapping#remove_mappings(a:mappings)
 endfunction
 
-function! s:get_ctags_configuration(config)
+function! s:get_ctags_configuration(config, temporary_directory)
     let l:ret = {"settings": {}, "mappings": {}}
+
+    let l:ret.settings.temporary_ctags_file = a:temporary_directory . "/ctags"
 
     let l:ret.settings.additional_ctags_directories =
     \ join(
@@ -132,13 +134,15 @@ endfunction
 
 let s:object = {'properties': {}, 'input': {}}
 
-function! s:object.construct(config, temporary_ctags_file, source_directory)
+function! s:object.construct(config,
+    \       source_directory,
+    \       temporary_directory)
     let l:ret               = deepcopy(self)
-    let l:ret.properties    = s:get_ctags_configuration(a:config)
+    let l:ret.properties    = s:get_ctags_configuration(a:config,
+    \                           a:temporary_directory)
 
     let l:ret.input =
     \ {
-    \   "temporary_ctags_file":     a:temporary_ctags_file,
     \   "source_directory":         a:source_directory
     \ }
 
@@ -150,31 +154,31 @@ function! s:object.get_configuration()
 endfunction
 
 function! s:object.enable()
-    call s:set_tags_option(self.input.temporary_ctags_file,
+    call s:set_tags_option(self.properties.settings.temporary_ctags_file,
     \       self.properties.settings.external_ctags_files)
 
     call s:generate_ctags_file(self.input.source_directory,
     \       self.properties.settings.additional_ctags_directories,
-    \       self.input.temporary_ctags_file)
+    \       self.properties.settings.temporary_ctags_file)
 
     call s:add_commands(self.input.source_directory,
     \       self.properties.settings.additional_ctags_directories,
-    \       self.input.temporary_ctags_file)
+    \       self.properties.settings.temporary_ctags_file)
 
     call s:add_mappings(self.properties.mappings)
 endfunction
 
 function! s:object.disable()
     call s:restore_tags_option()
-    call s:remove_ctags_file(self.input.temporary_ctags_file)
+    call s:remove_ctags_file(self.properties.settings.temporary_ctags_file)
     call s:remove_commands()
     call s:remove_mappings(self.properties.mappings)
 endfunction
 
 function! proset#settings#cxx_cmake#ctags#construct(config,
-    \       temporary_ctags_file,
-    \       source_directory)
+    \       source_directory,
+    \       temporary_directory)
     return s:object.construct(a:config,
-    \       a:temporary_ctags_file,
-    \       a:source_directory)
+    \       a:source_directory,
+    \       a:temporary_directory)
 endfunction
