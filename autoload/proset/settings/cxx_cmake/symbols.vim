@@ -29,7 +29,7 @@ function! s:remove_mappings(mappings)
     call proset#utils#mapping#remove_mappings(a:mappings)
 endfunction
 
-function! s:get_symbols_configuration(config)
+function! s:get_symbols_properties(config)
     let l:ret = {"settings": {}, "mappings": {}}
 
     let l:ret.mappings.update_symbols =
@@ -54,12 +54,12 @@ let s:object = {'properties': {}}
 
 function! s:object.construct(config)
     let l:ret               = deepcopy(self)
-    let l:ret.properties    = s:get_symbols_configuration(a:config)
+    let l:ret.properties    = s:get_symbols_properties(a:config)
 
     return l:ret
 endfunction
 
-function! s:object.get_configuration()
+function! s:object.get_properties()
     return self.properties
 endfunction
 

@@ -106,7 +106,7 @@ function! s:remove_mappings(mappings)
     call proset#utils#mapping#remove_mappings(a:mappings)
 endfunction
 
-function! s:get_cscope_configuration(config, temporary_directory)
+function! s:get_cscope_properties(config, temporary_directory)
     let l:ret = {"settings": {}, "mappings": {}}
 
     let l:ret.settings.temporary_cscope_file = a:temporary_directory . "/cscope"
@@ -292,7 +292,7 @@ function! s:object.construct(config,
     \       source_directory,
     \       temporary_directory)
     let l:ret               = deepcopy(self)
-    let l:ret.properties    = s:get_cscope_configuration(a:config,
+    let l:ret.properties    = s:get_cscope_properties(a:config,
     \                           a:temporary_directory)
 
     let l:ret.input =
@@ -303,7 +303,7 @@ function! s:object.construct(config,
     return l:ret
 endfunction
 
-function! s:object.get_configuration()
+function! s:object.get_properties()
     return self.properties
 endfunction
 

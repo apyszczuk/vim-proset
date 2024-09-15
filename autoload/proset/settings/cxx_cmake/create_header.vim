@@ -155,7 +155,7 @@ function! s:remove_mappings(mappings)
     call proset#utils#mapping#remove_mappings(a:mappings)
 endfunction
 
-function! s:get_create_header_configuration(config)
+function! s:get_create_header_properties(config)
     let l:ret = {"settings": {}, "mappings": {}}
 
     let l:ret.mappings.create =
@@ -228,7 +228,7 @@ function! s:object.construct(config,
     \       header_extension,
     \       source_extension)
     let l:ret               = deepcopy(self)
-    let l:ret.properties    = s:get_create_header_configuration(a:config)
+    let l:ret.properties    = s:get_create_header_properties(a:config)
 
     let l:ret.input =
     \ {
@@ -240,7 +240,7 @@ function! s:object.construct(config,
     return l:ret
 endfunction
 
-function! s:object.get_configuration()
+function! s:object.get_properties()
     return self.properties
 endfunction
 

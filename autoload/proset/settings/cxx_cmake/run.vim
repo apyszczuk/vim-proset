@@ -28,7 +28,7 @@ function! s:remove_mappings(mappings)
     call proset#utils#mapping#remove_mappings(a:mappings)
 endfunction
 
-function! s:get_run_configuration(config)
+function! s:get_run_properties(config)
     let l:ret = {"settings": {}, "mappings": {}}
 
     let l:ret.mappings.run =
@@ -68,7 +68,7 @@ let s:object = {'properties': {}, 'input': {}}
 
 function! s:object.construct(config, bin_directory, project_name)
     let l:ret               = deepcopy(self)
-    let l:ret.properties    = s:get_run_configuration(a:config)
+    let l:ret.properties    = s:get_run_properties(a:config)
 
     let l:ret.input =
     \ {
@@ -79,7 +79,7 @@ function! s:object.construct(config, bin_directory, project_name)
     return l:ret
 endfunction
 
-function! s:object.get_configuration()
+function! s:object.get_properties()
     return self.properties
 endfunction
 

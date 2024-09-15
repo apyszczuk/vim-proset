@@ -12,7 +12,7 @@ function! s:restore_path_option()
     let &path = s:init_path
 endfunction
 
-function! s:get_source_configuration(config)
+function! s:get_source_properties(config)
     let l:ret = {"settings": {}, "mappings": {}}
 
     let l:ret.settings.source_directory =
@@ -57,12 +57,12 @@ let s:object = {'properties': {}}
 
 function! s:object.construct(config)
     let l:ret               = deepcopy(self)
-    let l:ret.properties    = s:get_source_configuration(a:config)
+    let l:ret.properties    = s:get_source_properties(a:config)
 
     return l:ret
 endfunction
 
-function! s:object.get_configuration()
+function! s:object.get_properties()
     return self.properties
 endfunction
 
