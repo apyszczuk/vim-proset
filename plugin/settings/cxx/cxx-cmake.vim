@@ -71,28 +71,10 @@ function! s:cxx_cmake.construct(config)
     let l:ret.properties.configuration.cscope =
     \ l:ret.modules.cscope.get_configuration()
 
-    let l:ret.properties.internal =
-    \ {
-    \   "temporary_ctags_file":
-    \   l:ret.properties.configuration.ctags.settings.temporary_ctags_file,
-    \
-    \   "temporary_cscope_file":
-    \   l:ret.properties.configuration.cscope.settings.temporary_cscope_file,
-    \
-    \   "project_name":
-    \   l:ret.properties.configuration.cmake.settings.project_name,
-    \
-    \   "bin_directory":
-    \   l:ret.properties.configuration.cmake.settings.bin_directory,
-    \
-    \   "is_project":
-    \   l:ret.properties.configuration.cmake.settings.is_project
-    \ }
-
     let l:ret.modules.run =
     \ proset#settings#cxx_cmake#run#construct(a:config,
-    \       l:ret.properties.internal.bin_directory,
-    \       l:ret.properties.internal.project_name)
+    \       l:ret.properties.configuration.cmake.settings.bin_directory,
+    \       l:ret.properties.configuration.cmake.settings.project_name)
     let l:ret.properties.configuration.run =
     \ l:ret.modules.run.get_configuration()
 
@@ -110,7 +92,7 @@ function! s:cxx_cmake.construct(config)
 
     let l:ret.modules.create_header =
     \ proset#settings#cxx_cmake#create_header#construct(a:config,
-    \       l:ret.properties.internal.project_name,
+    \       l:ret.properties.configuration.cmake.settings.project_name,
     \       l:ret.properties.configuration.source.settings.header_extension,
     \       l:ret.properties.configuration.source.settings.source_extension)
     let l:ret.properties.configuration.create_header =
@@ -118,7 +100,7 @@ function! s:cxx_cmake.construct(config)
 
     let l:ret.modules.create_source =
     \ proset#settings#cxx_cmake#create_source#construct(a:config,
-    \       l:ret.properties.internal.project_name,
+    \       l:ret.properties.configuration.cmake.settings.project_name,
     \       l:ret.properties.configuration.source.settings.header_extension,
     \       l:ret.properties.configuration.source.settings.source_extension)
     let l:ret.properties.configuration.create_source =
@@ -126,7 +108,7 @@ function! s:cxx_cmake.construct(config)
 
     let l:ret.modules.create_header_source =
     \ proset#settings#cxx_cmake#create_header_source#construct(a:config,
-    \       l:ret.properties.internal.project_name,
+    \       l:ret.properties.configuration.cmake.settings.project_name,
     \       l:ret.properties.configuration.source.settings.header_extension,
     \       l:ret.properties.configuration.source.settings.source_extension)
     let l:ret.properties.configuration.create_header_source =
@@ -136,11 +118,11 @@ function! s:cxx_cmake.construct(config)
 endfunction
 
 function! s:cxx_cmake.is_project()
-    return self.properties.internal.is_project
+    return self.properties.configuration.cmake.settings.is_project
 endfunction
 
 function! s:cxx_cmake.get_project_name()
-    return self.properties.internal.project_name
+    return self.properties.configuration.cmake.settings.project_name
 endfunction
 
 function! s:cxx_cmake.get_properties()
