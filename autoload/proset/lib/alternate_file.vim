@@ -1,7 +1,7 @@
-if exists("g:autoloaded_proset_utils_alternate_file")
+if exists("g:autoloaded_proset_lib_alternate_file")
     finish
 endif
-let g:autoloaded_proset_utils_alternate_file = 1
+let g:autoloaded_proset_lib_alternate_file = 1
 
 let s:extensions = {}
 
@@ -72,23 +72,23 @@ function! s:handle(extensions, open_function)
     endtry
 endfunction
 
-function! proset#utils#alternate_file#current_window()
+function! proset#lib#alternate_file#current_window()
     call s:handle(s:extensions, function('s:open_in_current_window'))
 endfunction
 
-function! proset#utils#alternate_file#split_window()
+function! proset#lib#alternate_file#split_window()
     call s:handle(s:extensions, function('s:open_in_split_window'))
 endfunction
 
-function! proset#utils#alternate_file#vsplit_window()
+function! proset#lib#alternate_file#vsplit_window()
     call s:handle(s:extensions, function('s:open_in_vsplit_window'))
 endfunction
 
-function! proset#utils#alternate_file#add_extensions_pair(first_extension,
+function! proset#lib#alternate_file#add_extensions_pair(first_extension,
         \ second_extension)
     let s:extensions[a:first_extension] = a:second_extension
 endfunction
 
-function! proset#utils#alternate_file#remove_extensions_pair(first_extension)
+function! proset#lib#alternate_file#remove_extensions_pair(first_extension)
     call remove(s:extensions, a:first_extension)
 endfunction

@@ -83,18 +83,18 @@ function! s:remove_commands()
 endfunction
 
 function! s:add_mappings(mappings)
-    call proset#utils#mapping#add_mappings(a:mappings)
+    call proset#lib#mapping#add_mappings(a:mappings)
 endfunction
 
 function! s:remove_mappings(mappings)
-    call proset#utils#mapping#remove_mappings(a:mappings)
+    call proset#lib#mapping#remove_mappings(a:mappings)
 endfunction
 
 function! s:get_build_properties(config)
     let l:ret = {"settings": {}, "mappings": {}}
 
     let l:ret.settings.build_directory =
-    \ proset#utils#path#get_subpath(a:config,
+    \ proset#lib#path#get_subpath(a:config,
     \   "build",
     \   "build",
     \   "settings",
@@ -119,7 +119,7 @@ function! s:get_build_properties(config)
     \       "build"
     \   ),
     \   "function":
-    \   function("proset#utils#mapping#set_nnoremap_silent_mapping",
+    \   function("proset#lib#mapping#set_nnoremap_silent_mapping",
     \       [":CXXCMakeBuild<CR>"]
     \   )
     \ }
@@ -134,7 +134,7 @@ function! s:get_build_properties(config)
     \       "clean"
     \   ),
     \   "function":
-    \   function("proset#utils#mapping#set_nnoremap_silent_mapping",
+    \   function("proset#lib#mapping#set_nnoremap_silent_mapping",
     \       [":CXXCMakeClean<CR>"]
     \   )
     \ }
@@ -149,7 +149,7 @@ function! s:get_build_properties(config)
     \       "clean_and_build"
     \   ),
     \   "function":
-    \   function("proset#utils#mapping#set_nnoremap_silent_mapping",
+    \   function("proset#lib#mapping#set_nnoremap_silent_mapping",
     \       [":CXXCMakeCleanAndBuild<CR>"]
     \   )
     \ }

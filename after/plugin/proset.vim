@@ -213,7 +213,7 @@ function! s:remove_commands()
 endfunction
 
 function! s:validate_settings_file()
-    if proset#utils#path#is_subpath(getcwd(), g:proset_settings_file) == 0
+    if proset#lib#path#is_subpath(getcwd(), g:proset_settings_file) == 0
         throw "proset:init-phase:1:bad g:proset_settings_file value"
     endif
 endfunction

@@ -92,11 +92,11 @@ function! s:remove_commands()
 endfunction
 
 function! s:add_mappings(mappings)
-    call proset#utils#mapping#add_mappings(a:mappings)
+    call proset#lib#mapping#add_mappings(a:mappings)
 endfunction
 
 function! s:remove_mappings(mappings)
-    call proset#utils#mapping#remove_mappings(a:mappings)
+    call proset#lib#mapping#remove_mappings(a:mappings)
 endfunction
 
 function! s:get_create_source_properties(config)
@@ -112,7 +112,7 @@ function! s:get_create_source_properties(config)
     \       "create"
     \   ),
     \   "function":
-    \   function("proset#utils#mapping#set_nnoremap_mapping",
+    \   function("proset#lib#mapping#set_nnoremap_mapping",
     \       [":CXXCMakeCreateSource "]
     \   )
     \ }
@@ -127,7 +127,7 @@ function! s:get_create_source_properties(config)
     \       "create_edit"
     \   ),
     \   "function":
-    \   function("proset#utils#mapping#set_nnoremap_mapping",
+    \   function("proset#lib#mapping#set_nnoremap_mapping",
     \       [":CXXCMakeCreateSourceEdit "]
     \   )
     \ }
@@ -142,7 +142,7 @@ function! s:get_create_source_properties(config)
     \       "create_edit_split"
     \   ),
     \   "function":
-    \   function("proset#utils#mapping#set_nnoremap_mapping",
+    \   function("proset#lib#mapping#set_nnoremap_mapping",
     \       [":CXXCMakeCreateSourceEditSplit "]
     \   )
     \ }
@@ -157,7 +157,7 @@ function! s:get_create_source_properties(config)
     \       "create_edit_vsplit"
     \   ),
     \   "function":
-    \   function("proset#utils#mapping#set_nnoremap_mapping",
+    \   function("proset#lib#mapping#set_nnoremap_mapping",
     \       [":CXXCMakeCreateSourceEditVSplit "]
     \   )
     \ }

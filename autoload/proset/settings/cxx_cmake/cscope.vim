@@ -99,11 +99,11 @@ function! s:remove_commands()
 endfunction
 
 function! s:add_mappings(mappings)
-    call proset#utils#mapping#add_mappings(a:mappings)
+    call proset#lib#mapping#add_mappings(a:mappings)
 endfunction
 
 function! s:remove_mappings(mappings)
-    call proset#utils#mapping#remove_mappings(a:mappings)
+    call proset#lib#mapping#remove_mappings(a:mappings)
 endfunction
 
 function! s:get_cscope_properties(config, temporary_directory)
@@ -143,7 +143,7 @@ function! s:get_cscope_properties(config, temporary_directory)
     \       "update_cscope_symbols"
     \   ),
     \   "function":
-    \   function("proset#utils#mapping#set_nnoremap_silent_mapping",
+    \   function("proset#lib#mapping#set_nnoremap_silent_mapping",
     \       [":CXXCMakeUpdateCscopeSymbols<CR>"]
     \   )
     \ }

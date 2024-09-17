@@ -5,7 +5,7 @@ let g:autoloaded_proset_settings_cxx_cmake_alternate_file = 1
 
 function! s:add_alternate_file_current_window_command()
     function! s:alternate_file_current_window_command_impl()
-        call proset#utils#alternate_file#current_window()
+        call proset#lib#alternate_file#current_window()
     endfunction
 
     command! -nargs=0 CXXCMakeAlternateFileCurrentWindow
@@ -14,7 +14,7 @@ endfunction
 
 function! s:add_alternate_file_split_window_command()
     function! s:alternate_file_split_window_command_impl()
-        call proset#utils#alternate_file#split_window()
+        call proset#lib#alternate_file#split_window()
     endfunction
 
     command! -nargs=0 CXXCMakeAlternateFileSplitWindow
@@ -23,7 +23,7 @@ endfunction
 
 function! s:add_alternate_file_vsplit_window_command()
     function! s:alternate_file_vsplit_window_command_impl()
-        call proset#utils#alternate_file#vsplit_window()
+        call proset#lib#alternate_file#vsplit_window()
     endfunction
 
     command! -nargs=0 CXXCMakeAlternateFileVSplitWindow
@@ -31,12 +31,12 @@ function! s:add_alternate_file_vsplit_window_command()
 endfunction
 
 function! s:add_extensions_pair(header_extension, source_extension)
-    call proset#utils#alternate_file#add_extensions_pair(a:header_extension,
+    call proset#lib#alternate_file#add_extensions_pair(a:header_extension,
     \       a:source_extension)
 endfunction
 
 function! s:remove_extensions_pair(header_extension)
-    call proset#utils#alternate_file#remove_extensions_pair(a:header_extension)
+    call proset#lib#alternate_file#remove_extensions_pair(a:header_extension)
 endfunction
 
 function! s:add_commands()
@@ -52,11 +52,11 @@ function! s:remove_commands()
 endfunction
 
 function! s:add_mappings(mappings)
-    call proset#utils#mapping#add_mappings(a:mappings)
+    call proset#lib#mapping#add_mappings(a:mappings)
 endfunction
 
 function! s:remove_mappings(mappings)
-    call proset#utils#mapping#remove_mappings(a:mappings)
+    call proset#lib#mapping#remove_mappings(a:mappings)
 endfunction
 
 function! s:get_alternate_file_properties(config)
@@ -72,7 +72,7 @@ function! s:get_alternate_file_properties(config)
     \       "current_window"
     \   ),
     \   "function":
-    \   function("proset#utils#mapping#set_nnoremap_silent_mapping",
+    \   function("proset#lib#mapping#set_nnoremap_silent_mapping",
     \       [":CXXCMakeAlternateFileCurrentWindow<CR>"]
     \   )
     \ }
@@ -87,7 +87,7 @@ function! s:get_alternate_file_properties(config)
     \       "split_window"
     \   ),
     \   "function":
-    \   function("proset#utils#mapping#set_nnoremap_silent_mapping",
+    \   function("proset#lib#mapping#set_nnoremap_silent_mapping",
     \       [":CXXCMakeAlternateFileSplitWindow<CR>"]
     \   )
     \ }
@@ -102,7 +102,7 @@ function! s:get_alternate_file_properties(config)
     \       "vsplit_window"
     \   ),
     \   "function":
-    \   function("proset#utils#mapping#set_nnoremap_silent_mapping",
+    \   function("proset#lib#mapping#set_nnoremap_silent_mapping",
     \       [":CXXCMakeAlternateFileVSplitWindow<CR>"]
     \   )
     \ }

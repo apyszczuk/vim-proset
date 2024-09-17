@@ -16,7 +16,7 @@ function! s:get_source_properties(config)
     let l:ret = {"settings": {}, "mappings": {}}
 
     let l:ret.settings.source_directory =
-    \ proset#utils#path#get_subpath(a:config,
+    \ proset#lib#path#get_subpath(a:config,
     \   "src",
     \   "source",
     \   "settings",
