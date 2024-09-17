@@ -94,7 +94,7 @@ function! s:get_build_properties(config)
     let l:ret = {"settings": {}, "mappings": {}}
 
     let l:ret.settings.build_directory =
-    \ proset#utils#path#get_correct_path(a:config,
+    \ proset#utils#path#get_subpath(a:config,
     \   "build",
     \   "build",
     \   "settings",

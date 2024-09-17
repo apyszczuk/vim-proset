@@ -21,7 +21,7 @@ function! s:get_top_level_properties(config)
     \ )
 
     let l:ret.temporary_directory =
-    \ proset#utils#path#get_correct_path(a:config,
+    \ proset#utils#path#get_subpath(a:config,
     \   ".vim-proset_tmp",
     \   "temporary_directory"
     \ )
