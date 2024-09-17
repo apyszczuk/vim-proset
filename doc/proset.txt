@@ -1,5 +1,4 @@
-*proset*
-*proset.txt*  Project Settings Loader
+*proset.txt*   Project Settings Loader                                *proset*
 
               ██████╗ ██████╗  ██████╗ ███████╗███████╗████████╗
               ██╔══██╗██╔══██╗██╔═══██╗██╔════╝██╔════╝╚══██╔══╝

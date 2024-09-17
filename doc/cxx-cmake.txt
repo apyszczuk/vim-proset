@@ -1,5 +1,4 @@
-*cxx-cmake*
-*cxx-cmake.txt*  CXX CMake Settings Dictionary
+*cxx-cmake.txt*   CXX CMake Settings Dictionary                    *cxx-cmake*
 
    ██████╗██╗  ██╗██╗  ██╗       ██████╗███╗   ███╗ █████╗ ██╗  ██╗███████╗
   ██╔════╝╚██╗██╔╝╚██╗██╔╝      ██╔════╝████╗ ████║██╔══██╗██║ ██╔╝██╔════╝
