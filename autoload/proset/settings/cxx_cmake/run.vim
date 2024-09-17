@@ -64,20 +64,7 @@ function! s:get_run_properties(config)
     return l:ret
 endfunction
 
-let s:object = {'properties': {}, 'input': {}}
-
-function! s:object.construct(config, bin_directory, project_name)
-    let l:ret               = deepcopy(self)
-    let l:ret.properties    = s:get_run_properties(a:config)
-
-    let l:ret.input =
-    \ {
-    \   'bin_directory':    a:bin_directory,
-    \   'project_name':     a:project_name
-    \ }
-
-    return l:ret
-endfunction
+let s:object = {"properties": {}, "input": {}}
 
 function! s:object.get_properties()
     return self.properties
@@ -96,7 +83,13 @@ endfunction
 function! proset#settings#cxx_cmake#run#construct(config,
     \       bin_directory,
     \       project_name)
-    return s:object.construct(a:config,
-    \       a:bin_directory,
-    \       a:project_name)
+    let l:ret               = deepcopy(s:object)
+    let l:ret.properties    = s:get_run_properties(a:config)
+    let l:ret.input         =
+    \ {
+    \   "bin_directory":    a:bin_directory,
+    \   "project_name":     a:project_name
+    \ }
+
+    return l:ret
 endfunction

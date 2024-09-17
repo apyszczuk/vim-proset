@@ -166,24 +166,7 @@ function! s:get_create_header_source_properties(config)
     return l:ret
 endfunction
 
-let s:object = {'properties': {}, 'input': {}}
-
-function! s:object.construct(config,
-    \       project_name,
-    \       header_extension,
-    \       source_extension)
-    let l:ret               = deepcopy(self)
-    let l:ret.properties    = s:get_create_header_source_properties(a:config)
-
-    let l:ret.input =
-    \ {
-    \   'project_name':     a:project_name,
-    \   'header_extension': a:header_extension,
-    \   'source_extension': a:source_extension
-    \ }
-
-    return l:ret
-endfunction
+let s:object = {"properties": {}, "input": {}}
 
 function! s:object.get_properties()
     return self.properties
@@ -203,8 +186,14 @@ function! proset#settings#cxx_cmake#create_header_source#construct(config,
     \       project_name,
     \       header_extension,
     \       source_extension)
-    return s:object.construct(a:config,
-    \       a:project_name,
-    \       a:header_extension,
-    \       a:source_extension)
+    let l:ret               = deepcopy(s:object)
+    let l:ret.properties    = s:get_create_header_source_properties(a:config)
+    let l:ret.input         =
+    \ {
+    \   "project_name":     a:project_name,
+    \   "header_extension": a:header_extension,
+    \   "source_extension": a:source_extension
+    \ }
+
+    return l:ret
 endfunction

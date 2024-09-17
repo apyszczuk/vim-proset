@@ -50,14 +50,7 @@ function! s:get_symbols_properties(config)
     return l:ret
 endfunction
 
-let s:object = {'properties': {}}
-
-function! s:object.construct(config)
-    let l:ret               = deepcopy(self)
-    let l:ret.properties    = s:get_symbols_properties(a:config)
-
-    return l:ret
-endfunction
+let s:object = {"properties": {}}
 
 function! s:object.get_properties()
     return self.properties
@@ -74,5 +67,8 @@ function! s:object.disable()
 endfunction
 
 function! proset#settings#cxx_cmake#symbols#construct(config)
-    return s:object.construct(a:config)
+    let l:ret               = deepcopy(s:object)
+    let l:ret.properties    = s:get_symbols_properties(a:config)
+
+    return l:ret
 endfunction

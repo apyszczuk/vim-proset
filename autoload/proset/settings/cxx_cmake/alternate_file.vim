@@ -110,20 +110,7 @@ function! s:get_alternate_file_properties(config)
     return l:ret
 endfunction
 
-let s:object = {'properties': {}, 'input': {}}
-
-function! s:object.construct(config, header_extension, source_extension)
-    let l:ret               = deepcopy(self)
-    let l:ret.properties    = s:get_alternate_file_properties(a:config)
-
-    let l:ret.input =
-    \ {
-    \   'header_extension':     a:header_extension,
-    \   'source_extension':     a:source_extension
-    \ }
-
-    return l:ret
-endfunction
+let s:object = {"properties": {}, "input": {}}
 
 function! s:object.get_properties()
     return self.properties
@@ -145,7 +132,13 @@ endfunction
 function! proset#settings#cxx_cmake#alternate_file#construct(config,
     \       header_extension,
     \       source_extension)
-    return s:object.construct(a:config,
-    \       a:header_extension,
-    \       a:source_extension)
+    let l:ret               = deepcopy(s:object)
+    let l:ret.properties    = s:get_alternate_file_properties(a:config)
+    let l:ret.input         =
+    \ {
+    \   "header_extension": a:header_extension,
+    \   "source_extension": a:source_extension
+    \ }
+
+    return l:ret
 endfunction

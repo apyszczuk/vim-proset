@@ -71,7 +71,7 @@ function! s:get_output_directory(project_file, build_directory)
     return a:build_directory
 endfunction
 
-let s:object = {'properties': {}}
+let s:object = {"properties": {}}
 
 function! s:get_cmake_properties(config,
     \       build_directory,
@@ -96,19 +96,6 @@ function! s:get_cmake_properties(config,
     return l:ret
 endfunction
 
-function! s:object.construct(config,
-    \       build_directory,
-    \       source_directory,
-    \       proset_settings_file)
-    let l:ret               = deepcopy(self)
-    let l:ret.properties    = s:get_cmake_properties(a:config,
-    \                           a:build_directory,
-    \                           a:source_directory,
-    \                           a:proset_settings_file)
-
-    return l:ret
-endfunction
-
 function! s:object.get_properties()
     return self.properties
 endfunction
@@ -123,8 +110,11 @@ function! proset#settings#cxx_cmake#cmake#construct(config,
     \       build_directory,
     \       source_directory,
     \       proset_settings_file)
-    return s:object.construct(a:config,
-    \       a:build_directory,
-    \       a:source_directory,
-    \       a:proset_settings_file)
+    let l:ret               = deepcopy(s:object)
+    let l:ret.properties    = s:get_cmake_properties(a:config,
+    \                           a:build_directory,
+    \                           a:source_directory,
+    \                           a:proset_settings_file)
+
+    return l:ret
 endfunction

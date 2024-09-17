@@ -132,22 +132,7 @@ function! s:get_ctags_properties(config, temporary_directory)
     return l:ret
 endfunction
 
-let s:object = {'properties': {}, 'input': {}}
-
-function! s:object.construct(config,
-    \       source_directory,
-    \       temporary_directory)
-    let l:ret               = deepcopy(self)
-    let l:ret.properties    = s:get_ctags_properties(a:config,
-    \                           a:temporary_directory)
-
-    let l:ret.input =
-    \ {
-    \   "source_directory":         a:source_directory
-    \ }
-
-    return l:ret
-endfunction
+let s:object = {"properties": {}, "input": {}}
 
 function! s:object.get_properties()
     return self.properties
@@ -178,7 +163,13 @@ endfunction
 function! proset#settings#cxx_cmake#ctags#construct(config,
     \       source_directory,
     \       temporary_directory)
-    return s:object.construct(a:config,
-    \       a:source_directory,
-    \       a:temporary_directory)
+    let l:ret               = deepcopy(s:object)
+    let l:ret.properties    = s:get_ctags_properties(a:config,
+    \                           a:temporary_directory)
+    let l:ret.input         =
+    \ {
+    \   "source_directory": a:source_directory
+    \ }
+
+    return l:ret
 endfunction
