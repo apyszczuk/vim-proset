@@ -23,15 +23,13 @@ TABLE OF CONTENTS
  7) CREATE SOURCE                                    |cxx-cmake:create_source|
  8) CREATE HEADER AND SOURCE                  |cxx-cmake:create_header_source|
  9) BUILD                                                    |cxx-cmake:build|
-10) CLEAN                                                    |cxx-cmake:clean|
-11) CLEAN AND BUILD                                |cxx-cmake:clean_and_build|
-12) RUN                                                        |cxx-cmake:run|
-13) SYMBOLS                                                |cxx-cmake:symbols|
-14) CTAGS                                                    |cxx-cmake:ctags|
-15) CSCOPE                                                  |cxx-cmake:cscope|
-16) CONFIGURATION                                             |cxx-cmake:conf|
-17) DERIVATIVES (CXX-CMAKE-AP)                         |cxx-cmake:derivatives|
-18) CMAKE INPUT FILE                              |cxx-cmake:cmake_input_file|
+10) RUN                                                        |cxx-cmake:run|
+11) SYMBOLS                                                |cxx-cmake:symbols|
+12) CTAGS                                                    |cxx-cmake:ctags|
+13) CSCOPE                                                  |cxx-cmake:cscope|
+14) CONFIGURATION                                             |cxx-cmake:conf|
+15) DERIVATIVES (CXX-CMAKE-AP)                         |cxx-cmake:derivatives|
+16) CMAKE INPUT FILE                              |cxx-cmake:cmake_input_file|
 
 
 ==============================================================================
@@ -425,10 +423,10 @@ One of the key functionalities of cxx-cmake is to build your project directly
 from Vim. Build process is done in the background, which means without loosing
 ability to move around in Vim and doing other things.
 
-To build project use command or mapping:
+You have several options at your disposal:
 
-command: *:CXXCMakeBuild*
-mapping: |cxx-cmake:conf:build.mappings.build|
+                                                       *cxx-cmake:build:build*
+1) Build
 
 Build process is defined by CMakeLists.txt file and it uses CMake to do the
 job using |AsyncRun| plugin. Automatically output of build process is loaded
@@ -440,23 +438,28 @@ directory. Location of build result (application, library) depends on
 configuration in CMakeLists.txt (not in configuration file of cxx-cmake!).
 For more information see |cxx-cmake:cmake_input_file:bin_directory|.
 
+To build project use command or mapping:
 
-==============================================================================
-CLEAN                                                        *cxx-cmake:clean*
+command: *:CXXCMakeBuild*
+mapping: |cxx-cmake:conf:build.mappings.build|
 
-To delete all previous build files (object files, CMake temporary files, build
-result), you can use:
+                                                       *cxx-cmake:build:clean*
+2) Clean
+
+You may want just to remove |cxx-cmake:conf:build.settings.build_directory|
+directory which stores all previous build files (object files, CMake temporary
+files, build result). 
+
+To do so, use command or mapping:
 
 command: *:CXXCMakeClean*
 mapping: |cxx-cmake:conf:build.mappings.clean|
 
-which will remove |cxx-cmake:conf:build.settings.build_directory|. If you want
-to remove build directory, you probably want to build your project from
-scratch.  You may like |cxx-cmake:clean_and_build| to do both at once.
+If you want to remove build directory, you probably want to build your project
+from scratch. You may like to do both at once.
 
-
-==============================================================================
-CLEAN AND BUILD                                    *cxx-cmake:clean_and_build*
+                                             *cxx-cmake:build:clean_and_build*
+3) Clean && Build
 
 To get rid of previous build files (object files, CMake temporary files, build
 result) and to build your project from scratch you do not have to remove build
@@ -765,7 +768,7 @@ build.settings.jobs: ""
                                          *cxx-cmake:conf:build.mappings.build*
 build.mappings.build
 
-Mapping for build the project. See |cxx-cmake:build|.
+Mapping for build the project. See |cxx-cmake:build:build|.
 
 Example:
 build.mappings.build: "mk"
@@ -774,7 +777,7 @@ build.mappings.build: "mk"
                                          *cxx-cmake:conf:build.mappings.clean*
 build.mappings.clean
 
-Mapping for clean the project. See |cxx-cmake:clean|.
+Mapping for clean the project. See |cxx-cmake:build:clean|.
 
 Example:
 build.mappings.clean: "mC"
@@ -783,7 +786,8 @@ build.mappings.clean: "mC"
                                *cxx-cmake:conf:build.mappings.clean_and_build*
 build.mappings.clean_and_build
 
-Mapping for clean and build the project. See |cxx-cmake:clean_and_build|.
+Mapping for clean and build the project.
+See |cxx-cmake:build:clean_and_build|.
 
 Example:
 build.mappings.clean_and_build: "mK"
