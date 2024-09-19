@@ -140,9 +140,9 @@ s:cxx_cmake.enable()
 
 Enables cxx-cmake settings which include:
 
-    - deleting |cxx-cmake:conf:temporary_directory| if for some reason one was
-      there,
-    - creating new |cxx-cmake:conf:temporary_directory|,
+    - deleting |cxx-cmake:conf:temporary.settings.temporary_directory| if for
+      some reason one was there,
+    - creating new |cxx-cmake:conf:temporary.settings.temporary_directory|,
     - setting |'makeprg'| option to CMake command used to build project,
     - adding commands,
     - adding mappings,
@@ -530,8 +530,8 @@ CTAGS                                                        *cxx-cmake:ctags*
 In |cxx-cmake:api:enable()| first step is to set Vim option |'tags'| to have
 appropriate values (paths):
 
-    - *cxx-cmake:ctags:ctags_file* - path to the ctags symbols file whose
-      name is hardcoded to |cxx-cmake:conf:temporary_directory|/ctags.
+    - *cxx-cmake:ctags:ctags_file* - path to the ctags symbols file, set to
+      |cxx-cmake:conf:temporary.settings.temporary_directory|/ctags,
     - |cxx-cmake:conf:ctags.settings.external_ctags_files| - list of paths
       to already generated (not by cxx-cmake) ctags symbols files most likely
       for some external sources.
@@ -580,8 +580,8 @@ generated file(s) in |cxx-cmake:conf:cscope.settings.external_cscope_files|
 Second step is to connect cscope symbols files to Vim cscope module using
 |:cs| add command. These files are:
 
-    - *cxx-cmake:cscope:cscope_file* - path to the cscope symbols file whose
-      name is hardcoded to |cxx-cmake:conf:temporary_directory|/cscope,
+    - *cxx-cmake:cscope:cscope_file* - path to the cscope symbols file, set to
+      |cxx-cmake:conf:temporary.settings.temporary_directory|/cscope,
     - |cxx-cmake:conf:cscope.settings.external_cscope_files| - list of paths
       to already generated (not by cxx-cmake) cscope symbols files most likely
       for some external sources.
@@ -660,21 +660,28 @@ of cxx-cmake configuration file.
 
 {
 
-"proset_settings":          "cxx-cmake",
-"temporary_directory":      ".vim-proset_tmp",
+"proset_settings":                  "cxx-cmake",
+
+"temporary":
+{
+    "settings":
+    {
+        "temporary_directory":      ".vim-proset_tmp"
+    }
+},
 
 "build":
 {
     "settings":
     {
-        "build_directory":  "build",
-        "jobs":             "8"
+        "build_directory":          "build",
+        "jobs":                     "8"
     },
     "mappings":
     {
-        "build":            "mk",
-        "clean":            "<Leader>bc",
-        "clean_and_build":  "<S-F10>"
+        "build":                    "mk",
+        "clean":                    "<Leader>bc",
+        "clean_and_build":          "<S-F10>"
     }
 }
 
@@ -720,15 +727,15 @@ to choose.
 Required value:
 proset_settings: "cxx-cmake"
 
-
-                                          *cxx-cmake:conf:temporary_directory*
-temporary_directory
+                                                    *cxx-cmake:conf:temporary*
+                       *cxx-cmake:conf:temporary.settings.temporary_directory*
+temporary.settings.temporary_directory
 
 Directory where cscope and ctags temporary (generated) symbols files will be
 stored.
 
 If missing, empty or incorrect:
-temporary_directory: ".vim-proset_tmp"
+temporary.settings.temporary_directory: ".vim-proset_tmp"
 
 
                                                         *cxx-cmake:conf:build*

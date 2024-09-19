@@ -11,29 +11,13 @@ let g:loaded_proset_settings_cxx_cxx_cmake = 1
 
 let s:cxx_cmake = {'properties': {}, 'modules': {}}
 
-function! s:get_top_level_properties(config)
-    let l:ret = {}
-
-    let l:ret.proset_settings =
-    \ proset#lib#dict#get(a:config,
-    \   "",
-    \   "proset_settings"
-    \ )
-
-    let l:ret.temporary_directory =
-    \ proset#lib#path#get_subpath(a:config,
-    \   ".vim-proset_tmp",
-    \   "temporary_directory"
-    \ )
-
-    return l:ret
-endfunction
-
 function! s:cxx_cmake.construct(config)
     let l:ret = deepcopy(self)
 
-    let l:ret.properties =
-    \ extend(l:ret.properties, s:get_top_level_properties(a:config))
+    let l:ret.modules.temporary =
+    \ proset#settings#cxx_cmake#temporary#construct(a:config)
+    let l:ret.properties.temporary =
+    \ l:ret.modules.temporary.get_properties()
 
     let l:ret.modules.build =
     \ proset#settings#cxx_cmake#build#construct(a:config)
@@ -56,14 +40,14 @@ function! s:cxx_cmake.construct(config)
     let l:ret.modules.ctags =
     \ proset#settings#cxx_cmake#ctags#construct(a:config,
     \       l:ret.properties.source.settings.source_directory,
-    \       l:ret.properties.temporary_directory)
+    \       l:ret.properties.temporary.settings.temporary_directory)
     let l:ret.properties.ctags =
     \ l:ret.modules.ctags.get_properties()
 
     let l:ret.modules.cscope =
     \ proset#settings#cxx_cmake#cscope#construct(a:config,
     \       l:ret.properties.source.settings.source_directory,
-    \       l:ret.properties.temporary_directory)
+    \       l:ret.properties.temporary.settings.temporary_directory)
     let l:ret.properties.cscope =
     \ l:ret.modules.cscope.get_properties()
 
@@ -130,7 +114,7 @@ function! s:cxx_cmake.get_settings_name()
 endfunction
 
 function! s:cxx_cmake.enable() abort
-    let l:tempdir = self.properties.temporary_directory
+    let l:tempdir = self.properties.temporary.settings.temporary_directory
 
     call delete(l:tempdir, "rf")
     call mkdir(l:tempdir, "p")
@@ -141,7 +125,7 @@ endfunction
 function! s:cxx_cmake.disable()
     call s:disable_modules(self.modules)
 
-    call delete(self.properties.temporary_directory, "rf")
+    call delete(self.properties.temporary.settings.temporary_directory, "rf")
 endfunction
 
 function! s:enable_modules(modules)
