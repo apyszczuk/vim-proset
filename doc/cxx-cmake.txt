@@ -29,7 +29,7 @@ TABLE OF CONTENTS
 13) CSCOPE                                                  |cxx-cmake:cscope|
 14) CONFIGURATION                                             |cxx-cmake:conf|
 15) DERIVATIVES (CXX-CMAKE-AP)                         |cxx-cmake:derivatives|
-16) CMAKE INPUT FILE                              |cxx-cmake:cmake_input_file|
+16) CMAKE                                                    |cxx-cmake:cmake|
 
 
 ==============================================================================
@@ -436,7 +436,7 @@ automatically. If warning or error is detected, QuickFix window is left open.
 All build files are put into |cxx-cmake:conf:build.settings.build_directory|
 directory. Location of build result (application, library) depends on
 configuration in CMakeLists.txt (not in configuration file of cxx-cmake!).
-For more information see |cxx-cmake:cmake_input_file:bin_directory|.
+For more information see |cxx-cmake:cmake:bin_directory|.
 
 To build project use command or mapping:
 
@@ -1347,12 +1347,41 @@ with it. Enjoy.
 
 
 ==============================================================================
-CMAKE INPUT FILE                                  *cxx-cmake:cmake_input_file*
+CMAKE                                                        *cxx-cmake:cmake*
 
+                                                *cxx-cmake:cmake:introduction*
+To build C or C++ code, you can enter compiler command directly on the command
+line, like this:
+
+    g++ -std=c++11 main.cpp -o main
+
+which is ok if you have one or maybe couple files.
+
+Another option is to use make command which expects to have Makefile file as
+its input. So, you can write such Makefile which gathers all rules and
+properties of the build process, it is basically typical solution in Linux
+environment, but writing Makefile is not so easy.
+
+Another - but not last of course - solution is to use CMake build system
+generator which has its own input file CMakeLists.txt with its own language to
+define rules and properties of the build process. Based on this input file it
+can generate multiple different build system files - for example Makefile -
+using available generators (see CMake generators for more information).
+CMakeLists.txt has definition how to build project, but this is CMake job to
+generate appropriate build system files on supported Operating System to make
+your program compile.
+
+                                                    *cxx-cmake:cmake:settings*
+All following settings are not taken from configuration file, they are
+calculated internally by cmake.vim module file.
+
+                                         *cxx-cmake:cmake:settings:input_file*
+                                                  *cxx-cmake:cmake:input_file*
 The input file for CMake is CMakeLists.txt, which is placed in the project
-root. Without this file, |ProsetIsProject()| returns false and you can not use
-cxx-cmake, which is pretty much understandable.
+root.
 
+                                       *cxx-cmake:cmake:settings:project_name*
+                                                *cxx-cmake:cmake:project_name*
 Although I tried not to force users to provide lot of dependencies (there are
 very few, see |cxx-cmake:dependencies|), neither force them to change their
 setup, but there is one thing that has to be done in CMakeLists.txt to make
@@ -1360,31 +1389,41 @@ cxx-cmake work. CMakeLists.txt has to define PROJECT_NAME variable, i.e.:
 
     set(PROJECT_NAME "foo192")
 
-in which project name has to be in double quote. Without this, cxx-cmake will
-not work.
+in which project name has to be in double quote. This name is used as build
+result name (application, library).
 
-Second thing, but optional, is the definition of one of the following CMake
+                                      *cxx-cmake:cmake:settings:bin_directory*
+                                               *cxx-cmake:cmake:bin_directory*
+Another thing, but optional, is the definition of one of the following CMake
 variables:
 
     - CMAKE_RUNTIME_OUTPUT_DIRECTORY - for application,
     - CMAKE_ARCHIVE_OUTPUT_DIRECTORY - for static library,
     - CMAKE_LIBRARY_OUTPUT_DIRECTORY - for shared library.
 
-                                    *cxx-cmake:cmake_input_file:bin_directory*
 It means that you can specify output (bin) directory for your project
 application or library. If you do not specify the path, then result of your
 build will be placed in |cxx-cmake:conf:build.settings.build_directory|. You
 can change your output directory using these variables like this:
 
-1) Application will be in project_root/bin/
+1) Application is in project_root/bin/
 
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
 
-2) Static library will be in
-   |cxx-cmake:conf:build.settings.build_directory|/bin/
+2) Static library is in |cxx-cmake:conf:build.settings.build_directory|/bin/
 
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "bin")
 
+                                         *cxx-cmake:cmake:settings:is_project*
+If |ProsetIsProject()| returns TRUE then cxx-cmake can be used (we are in the
+project), otherwise it can not be used (we are not in the project). To make it
+return TRUE, all of the following conditions have to be TRUE:
+
+    - CMakeLists.txt is in the project root (current directory) and can be
+      read,
+    - |cxx-cmake:conf:source.settings.source_directory| exists,
+    - |g:proset_settings_file| can be read,
+    - PROJECT_NAME variable is defined in CMakeLists.txt and is not empty.
 
 ==============================================================================
 
