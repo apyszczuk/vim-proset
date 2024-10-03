@@ -13,22 +13,23 @@ Website:    https://github.com/apyszczuk/vim-proset
 
 ==============================================================================
 TABLE OF CONTENTS
+==============================================================================
 
- 1) INTRODUCTION                                         |proset:introduction|
- 2) SETTINGS                                                 |proset:settings|
- 3) PLUGIN VARIABLES                                        |proset:variables|
- 4) CONFIGURATION                                       |proset:configuration|
- 5) EVENTS                                                     |proset:events|
- 6) SETTINGS API                                         |proset:settings_api|
- 7) SETTINGS DICTIONARY                           |proset:settings_dictionary|
- 8) API                                                           |proset:api|
- 9) COMMANDS                                                 |proset:commands|
-10) SUPPORTED SETTINGS DICTIONARIES   |proset:supported_settings_dictionaries|
-11) CONTRIBUTE                                             |proset:contribute|
-
+INTRODUCTION                                             |proset:introduction|
+SETTINGS                                                     |proset:settings|
+PLUGIN VARIABLES                                            |proset:variables|
+CONFIGURATION                                           |proset:configuration|
+EVENTS                                                         |proset:events|
+SETTINGS API                                             |proset:settings_api|
+SETTINGS DICTIONARY                               |proset:settings_dictionary|
+API                                                               |proset:api|
+COMMANDS                                                     |proset:commands|
+SUPPORTED SETTINGS DICTIONARIES       |proset:supported_settings_dictionaries|
+CONTRIBUTE                                                 |proset:contribute|
 
 ==============================================================================
 INTRODUCTION                                             *proset:introduction*
+==============================================================================
 
 Anytime you want to have different settings for different projects using Vim,
 you probably have a problem. You can edit your vimrc before opening a project,
@@ -65,9 +66,9 @@ loaded automatically (if all the conditions are met of course). You can also
 start Vim in different location and load project settings later using Proset
 function or command.
 
-
 ==============================================================================
 SETTINGS                                                     *proset:settings*
+==============================================================================
 
 Proset Settings is something that stores all your project specific
 configuration. It is implemented as a dictionary with specific interface (see
@@ -109,7 +110,6 @@ autoload/proset/settings/default.vim file) that has two reasons to exist:
     - interface definition - all Settings Dictionaries have to have the same
       public interface as Default one has.
 
-
 One more thing:
 
 You will use Proset plugin by its public functions or commands, however some
@@ -118,9 +118,9 @@ has the logic) to do the task and possibly return value. In object oriented
 world this is known as composition. Settings Object that Proset plugin is
 currently operating on is referred as current in the following documentation.
 
-
 ==============================================================================
 PLUGIN VARIABLES                                            *proset:variables*
+==============================================================================
 
                                                       *g:proset_settings_file*
 g:proset_settings_file
@@ -143,9 +143,9 @@ To change default value, put this in your vimrc:
 
 Variable can not be altered on the fly.
 
-
 ==============================================================================
 CONFIGURATION                                           *proset:configuration*
+==============================================================================
 
 The only one configuration file that is read and required by the plugin is
 |g:proset_settings_file|. This is a JSON file. To get more familiar with the
@@ -202,9 +202,9 @@ argument to get() function.
 
 Use |ProsetGetConfiguration()| function to get configuration dictionary.
 
-
 ==============================================================================
 EVENTS                                                         *proset:events*
+==============================================================================
 
 Proset plugin offers autocommand events to register Settings Objects and to
 inform you that Settings Object was chosen.
@@ -250,9 +250,9 @@ For the manual loading case, current Settings Object is the one you loaded
 before, or it can be Default Settings Object as well, if no Settings Object
 was loaded.
 
-
 ==============================================================================
 SETTINGS API                                             *proset:settings_api*
+==============================================================================
 
 Note:
 When documentation says that something returns FALSE it means that it returns
@@ -341,7 +341,6 @@ You are not forced to have this one, you may want to have different name,
 different parameters, however some function that is used to create Settings
 Object is required anyway.
 
-
 Summary:
 As you see, Default Settings Dictionary defines |numbered-function|s what is
 in other languages known as methods or member functions.  For creating other
@@ -373,9 +372,9 @@ Technically exception can be thrown from any place of Settings Dictionary,
 however, it will work correctly only if exception is thrown from the
 constructor function - meaning the function that is registered in the plugin.
 
-
 ==============================================================================
 SETTINGS DICTIONARY                               *proset:settings_dictionary*
+==============================================================================
 
 Here, example (with explanation) of how to create Settings Dictionary is
 provided. 
@@ -421,7 +420,6 @@ When you see self.properties["some_key"] then you should know that the key was
 somehow initialized during construction of the Settings Object. 
 
 Put the following code in xd.vim file. 
-
 
  if exists ("g:loaded_proset_ext_xd")
      finish
@@ -501,7 +499,6 @@ is used as an example for both cases:
     "project_name":    "pro-xd",
     "is_project":      "1",
 }
-
 
 Settings Dictionary Constructor - one object only
 
@@ -597,9 +594,9 @@ Object with the EXACT SAME name as s:obj.get_settings_name() returns.
 You may want to use some helper function that returns actual name and call it
 in both places.
 
-
 ==============================================================================
 API                                                               *proset:api*
+==============================================================================
 
 To interact with Proset plugin (besides plugin variables) you have to use
 public API described below or commands defined later.
@@ -715,7 +712,6 @@ reasons why, couple of them are:
     - it would be very inconvenient for Settings Objects commands like delete
       build files, create files, etc to be outside of the project root path.
 
-
                                                       *ProsetReloadSettings()*
 ProsetReloadSettings()
 
@@ -736,42 +732,32 @@ It will:
 
 This function does not return value.
 
-
 ==============================================================================
 COMMANDS                                                     *proset:commands*
+==============================================================================
 
 Although you can use public API to do the same things, it is much more
 convenient to use Vim commands for some of them.
 
-*:ProsetLoadSettings* path - calls |ProsetLoadSettings| (passing path to it),
-*:ProsetReloadSettings*    - calls |ProsetReloadSettings| (no arguments),
-*:ProsetCloseSettings*     - calls |ProsetCloseSettings| (no arguments).
+*:ProsetLoadSettings* path - calls |ProsetLoadSettings()| (passing path),
+*:ProsetReloadSettings*    - calls |ProsetReloadSettings()| (no arguments),
+*:ProsetCloseSettings*     - calls |ProsetCloseSettings()| (no arguments).
 
 ==============================================================================
 SUPPORTED SETTINGS DICTIONARIES       *proset:supported_settings_dictionaries*
+==============================================================================
 
 List of supported Settings Dictionaries:
 
     - |cxx-cmake| - for C/C++ development using CMake as a build system,
 
-
 ==============================================================================
 CONTRIBUTE                                                 *proset:contribute*
+==============================================================================
 
 If you see a bug, or something that can be improved, or have an idea of a new
 Settings Dictionary or even better you have already written one and want it to
 be supported by Proset plugin directly, just let me know via GitHub or email.
 
-
 ==============================================================================
-
-           ████████╗██╗  ██╗███████╗    ███████╗███╗   ██╗██████╗
-           ╚══██╔══╝██║  ██║██╔════╝    ██╔════╝████╗  ██║██╔══██╗
-              ██║   ███████║█████╗      █████╗  ██╔██╗ ██║██║  ██║
-              ██║   ██╔══██║██╔══╝      ██╔══╝  ██║╚██╗██║██║  ██║
-              ██║   ██║  ██║███████╗    ███████╗██║ ╚████║██████╔╝
-              ╚═╝   ╚═╝  ╚═╝╚══════╝    ╚══════╝╚═╝  ╚═══╝╚═════╝
-
-==============================================================================
-
  vim:tw=78:et:ft=help:norl:
