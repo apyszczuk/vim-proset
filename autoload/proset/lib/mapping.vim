@@ -13,12 +13,18 @@ endfunction
 
 function! proset#lib#mapping#add_mappings(dict)
     for i in keys(a:dict)
-        call function(a:dict[i]["function"])(a:dict[i]["sequence"])
+        let l:seq = trim(a:dict[i]["sequence"])
+        if !empty(l:seq)
+            call function(a:dict[i]["function"])(l:seq)
+        endif
     endfor
 endfunction
 
 function! proset#lib#mapping#remove_mappings(dict)
     for i in keys(a:dict)
-        execute "unmap " . a:dict[i]["sequence"]
+        let l:seq = trim(a:dict[i]["sequence"])
+        if !empty(l:seq)
+            execute "unmap " . l:seq
+        endif
     endfor
 endfunction
