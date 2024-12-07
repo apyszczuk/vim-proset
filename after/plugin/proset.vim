@@ -125,7 +125,7 @@ function! s:load_settings(path, init_phase)
             endif
 
             if len(autocmd_get(#{group: 'Proset', event: 'DirChangedPre'})) == 0
-                autocmd Proset DirChangedPre * :call ProsetCloseSettings()
+                autocmd Proset DirChangedPre * :call ProsetClose()
             endif
             return 0
 
@@ -158,15 +158,12 @@ function! s:load_settings(path, init_phase)
 endfunction
 
 function! s:add_commands()
-    command! -nargs=1 -complete=dir ProsetLoadSettings
-    \   :call ProsetLoadSettings(<f-args>)
-
-    command! -nargs=0 ProsetCloseSettings  :call ProsetCloseSettings()
-    command! -nargs=0 ProsetReloadSettings :call ProsetReloadSettings()
+    command! -nargs=1 -complete=dir ProsetLoad   :call ProsetLoad(<f-args>)
+    command! -nargs=0               ProsetClose  :call ProsetClose()
+    command! -nargs=0               ProsetReload :call ProsetReload()
 
     " Add custom complete for supported(registered) settings_name
-    command! -nargs=+ -complete=dir ProsetCreate
-    \   :call ProsetCreate(<f-args>)
+    command! -nargs=+ -complete=dir ProsetCreate :call ProsetCreate(<f-args>)
 endfunction
 
 function! s:remove_commands()
@@ -209,15 +206,15 @@ function! ProsetGetConfiguration()
     return deepcopy(s:configuration)
 endfunction
 
-function! ProsetLoadSettings(path)
+function! ProsetLoad(path)
     return s:load_settings(a:path, 0)
 endfunction
 
-function! ProsetReloadSettings()
-    return ProsetLoadSettings(".")
+function! ProsetReload()
+    return ProsetLoad(".")
 endfunction
 
-function! ProsetCloseSettings()
+function! ProsetClose()
     autocmd! Proset DirChangedPre *
     let l:project_name  = ProsetGetProjectName()
     let l:is_project    = ProsetIsProject()

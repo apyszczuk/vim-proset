@@ -393,7 +393,7 @@ are placed in vimrc). You can even create some temporary directories, and
 remove them later.
 
 This function is called when Vim fires VimEnter event or user loads project
-settings manually (|ProsetLoadSettings|) and when is_project() is TRUE.
+settings manually (|ProsetLoad|) and when is_project() is TRUE.
 
 This function does nothing on Default Settings Object.
 
@@ -404,8 +404,8 @@ This function is like a cleanup function. If you did something in enable(),
 you should revert it to the original state. This is the right place to do it.
 
 This function is called when Vim fires VimLeave event or user loads project
-settings manually (|ProsetLoadSettings|) or user closes project settings
-manually (|ProsetCloseSettings|) and when is_project() is TRUE.
+settings manually (|ProsetLoad|) or user closes project settings manually
+(|ProsetClose|) and when is_project() is TRUE.
 
 This function does nothing on Default Settings Object.
 
@@ -583,8 +583,8 @@ This function is used to get configuration data (|proset:configuration:file|)
 in the form of a dictionary - everything that was read from configuration
 file. It creates deep copy of internal storage.
 
-                                                        *ProsetLoadSettings()*
-ProsetLoadSettings(path)
+                                                                *ProsetLoad()*
+ProsetLoad(path)
 
 This function loads project settings from provided path. Even though loading
 project settings function is called when Vim starts, it can also be called to
@@ -624,8 +624,8 @@ On success 0 is returned, on failure error code is returned.
 
 Note:
 You CAN NOT change current directory (|:cd|) and if you do so, then your
-project settings will be closed using |ProsetCloseSettings()|. There are
-reasons why, couple of them are:
+project settings will be closed using |ProsetClose()|. There are reasons why,
+couple of them are:
 
     - beeing in a project means beeing in the root path of the project,
     - if enable() creates directory, the directory should be deleted in
@@ -634,13 +634,13 @@ reasons why, couple of them are:
     - it would be very inconvenient for Settings Objects commands like delete
       build files, create files, etc to be outside of the project root path.
 
-                                                      *ProsetReloadSettings()*
-ProsetReloadSettings()
+                                                              *ProsetReload()*
+ProsetReload()
 
-This is the same as ProsetLoadSettings(".").
+This is the same as ProsetLoad(".").
 
-                                                       *ProsetCloseSettings()*
-ProsetCloseSettings()
+                                                               *ProsetClose()*
+ProsetClose()
 
 If you do not want your Vim to be in a project anymore, you can close Vim and
 start over or you can use close functionality.
@@ -700,9 +700,9 @@ COMMANDS                                                     *proset:commands*
 Although you can use public API to do the same things, it is much more
 convenient to use Vim commands for some of them.
 
-*:ProsetLoadSettings* path                  - calls |ProsetLoadSettings()|,
-*:ProsetReloadSettings*                     - calls |ProsetReloadSettings()|,
-*:ProsetCloseSettings*                      - calls |ProsetCloseSettings()|.
+*:ProsetLoad* path                          - calls |ProsetLoad()|,
+*:ProsetReload*                             - calls |ProsetReload()|,
+*:ProsetClose*                              - calls |ProsetClose()|.
 *:ProsetCreate* settings_name path [args]   - calls |ProsetCreate()|.
 
 ==============================================================================
@@ -741,11 +741,11 @@ dictionary (with only one key for now or forever) for this:
 
  { "mode": "load" } or { "mode": "create" }
 
-When constructor is used for loading (|ProsetLoadSettings()|) a:options.mode
-is set to "load" and a:config is a result of parsing |g:proset_settings_file|.
-When constructor is used for creating (|ProsetCreate()|) a:option.mode is set
-to "create" and a:config is an empty dictionary. Both parameters are provided
-by Proset of course.
+When constructor is used for loading (|ProsetLoad()|) a:options.mode is set to
+"load" and a:config is a result of parsing |g:proset_settings_file|.  When
+constructor is used for creating (|ProsetCreate()|) a:option.mode is set to
+"create" and a:config is an empty dictionary. Both parameters are provided by
+Proset of course.
 
                                           *proset:settings_dictionary:package*
 Create own plugin package
