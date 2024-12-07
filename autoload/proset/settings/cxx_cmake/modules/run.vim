@@ -1,7 +1,7 @@
-if exists("g:autoloaded_proset_settings_cxx_cmake_run")
+if exists("g:autoloaded_proset_settings_cxx_cmake_modules_run")
     finish
 endif
-let g:autoloaded_proset_settings_cxx_cmake_run = 1
+let g:autoloaded_proset_settings_cxx_cmake_modules_run = 1
 
 function! s:add_run_command(bin_directory, project_name)
     function! s:run_command_impl(arg) closure
@@ -80,7 +80,16 @@ function! s:object.disable()
     call s:remove_mappings(self.properties.mappings)
 endfunction
 
-function! proset#settings#cxx_cmake#run#construct(config,
+function! s:object.get_module_properties()
+    let l:ret           = {}
+    let l:ret.settings  = self.properties.settings
+    let l:ret.mappings
+    \ = proset#settings#cxx_cmake#create#convert_mappings(self.properties.mappings)
+
+    return l:ret
+endfunction
+
+function! proset#settings#cxx_cmake#modules#run#construct(config,
     \       bin_directory,
     \       project_name)
     let l:ret               = deepcopy(s:object)

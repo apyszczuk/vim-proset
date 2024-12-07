@@ -1,9 +1,9 @@
-if exists("g:autoloaded_proset_settings_cxx_cmake_create_source")
+if exists("g:autoloaded_proset_settings_cxx_cmake_modules_create_source")
     finish
 endif
-let g:autoloaded_proset_settings_cxx_cmake_create_source = 1
+let g:autoloaded_proset_settings_cxx_cmake_modules_create_source = 1
 
-function! proset#settings#cxx_cmake#create_source#create_source_file(
+function! proset#settings#cxx_cmake#modules#create_source#create_source_file(
     \       project_name,
     \       path,
     \       header_extension)
@@ -15,12 +15,12 @@ function! proset#settings#cxx_cmake#create_source#create_source_file(
     return a:path
 endfunction
 
-function! proset#settings#cxx_cmake#create_source#create_source_command(
+function! proset#settings#cxx_cmake#modules#create_source#create_source_command(
     \       open_mode,
     \       input,
     \       path)
-    return proset#settings#cxx_cmake#create_header#create_file_command(
-    \       "proset#settings#cxx_cmake#create_source#create_source_file",
+    return proset#settings#cxx_cmake#modules#create_header#create_file_command(
+    \       "proset#settings#cxx_cmake#modules#create_source#create_source_file",
     \       "CXXCMakeSourceCreatedEvent",
     \       a:open_mode,
     \       a:input.project_name,
@@ -31,7 +31,7 @@ endfunction
 
 function! s:add_create_source_command(input_dict)
     function! s:create_source_command_impl(path) closure
-        call proset#settings#cxx_cmake#create_source#create_source_command(
+        call proset#settings#cxx_cmake#modules#create_source#create_source_command(
         \       "",
         \       a:input_dict,
         \       a:path)
@@ -43,7 +43,7 @@ endfunction
 
 function! s:add_create_source_edit_command(input_dict)
     function! s:create_source_edit_command_impl(path) closure
-        call proset#settings#cxx_cmake#create_source#create_source_command(
+        call proset#settings#cxx_cmake#modules#create_source#create_source_command(
         \       ":e",
         \       a:input_dict,
         \       a:path)
@@ -55,7 +55,7 @@ endfunction
 
 function! s:add_create_source_edit_split_command(input_dict)
     function! s:create_source_edit_split_command_impl(path) closure
-        call proset#settings#cxx_cmake#create_source#create_source_command(
+        call proset#settings#cxx_cmake#modules#create_source#create_source_command(
         \       ":spl",
         \       a:input_dict,
         \       a:path)
@@ -67,7 +67,7 @@ endfunction
 
 function! s:add_create_source_edit_vsplit_command(input_dict)
     function! s:create_source_edit_vsplit_command_impl(path) closure
-        call proset#settings#cxx_cmake#create_source#create_source_command(
+        call proset#settings#cxx_cmake#modules#create_source#create_source_command(
         \       ":vspl",
         \       a:input_dict,
         \       a:path)
@@ -181,7 +181,16 @@ function! s:object.disable()
     call s:remove_mappings(self.properties.mappings)
 endfunction
 
-function! proset#settings#cxx_cmake#create_source#construct(config,
+function! s:object.get_module_properties()
+    let l:ret           = {}
+    let l:ret.settings  = self.properties.settings
+    let l:ret.mappings
+    \ = proset#settings#cxx_cmake#create#convert_mappings(self.properties.mappings)
+
+    return l:ret
+endfunction
+
+function! proset#settings#cxx_cmake#modules#create_source#construct(config,
     \       project_name,
     \       header_extension,
     \       source_extension)

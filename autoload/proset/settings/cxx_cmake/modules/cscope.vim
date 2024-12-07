@@ -1,7 +1,7 @@
-if exists("g:autoloaded_proset_settings_cxx_cmake_cscope")
+if exists("g:autoloaded_proset_settings_cxx_cmake_modules_cscope")
     finish
 endif
-let g:autoloaded_proset_settings_cxx_cmake_cscope = 1
+let g:autoloaded_proset_settings_cxx_cmake_modules_cscope = 1
 
 function! s:get_files_string(dir)
     let l:ret = ""
@@ -315,7 +315,23 @@ function! s:object.disable()
     call s:remove_mappings(self.properties.mappings)
 endfunction
 
-function! proset#settings#cxx_cmake#cscope#construct(config,
+function! s:object.get_module_properties()
+    let l:ret           = {}
+    let l:ret.settings  = self.properties.settings
+    let l:ret.mappings
+    \ = proset#settings#cxx_cmake#create#convert_mappings(self.properties.mappings)
+
+    call proset#lib#dict#remove_if_exists(l:ret.settings, "temporary_cscope_file")
+
+    let l:ret.settings.additional_cscope_directories
+    \ = split(l:ret.settings.additional_cscope_directories, ";")
+    let l:ret.settings.external_cscope_files
+    \ = split(l:ret.settings.external_cscope_files, ";")
+
+    return l:ret
+endfunction
+
+function! proset#settings#cxx_cmake#modules#cscope#construct(config,
     \       source_directory,
     \       temporary_directory)
     let l:ret               = deepcopy(s:object)

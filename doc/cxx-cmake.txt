@@ -20,6 +20,8 @@ ASSUMPTIONS                                            |cxx-cmake:assumptions|
 DEPENDENCIES                                          |cxx-cmake:dependencies|
 API                                                            |cxx-cmake:api|
 CONFIGURATION                                        |cxx-cmake:configuration|
+CREATE PROJECT                                      |cxx-cmake:create_project|
+VARIABLES                                                |cxx-cmake:variables|
 CMAKE                                                        |cxx-cmake:cmake|
 TEMPORARY                                                |cxx-cmake:temporary|
 SOURCE                                                      |cxx-cmake:source|
@@ -61,6 +63,9 @@ command or mapping):
     - create header file with include guard macro defined,
     - create source file with #include header file,
     - create header and source files (at once).
+
+Additionally, you are able to create dummy cxx-cmake project very easily using
+|ProsetCreate| function or command.
 
 ==============================================================================
 ASSUMPTIONS                                            *cxx-cmake:assumptions*
@@ -155,16 +160,30 @@ Disables cxx-cmake settings (reverts enable()) which include:
     - removing commands,
     - deleting temporary directory.
 
+                                                      *cxx-cmake:api:create()*
+s:cxx_cmake.create(project_path, args)
+
+Creates cxx-cmake project. Refer to |cxx-cmake:create_project| and to
+|proset:settings_api:create()| to get everything you need to know.
+
                                                          *CXXCMakeConstruct()*
-CXXCMakeConstruct(config)
+CXXCMakeConstruct(config, options)
 
 Constructor of cxx-cmake Settings Dictionary. It is registered in the call to
 ProsetRegisterSettings() function in an autocmd. It can also be used when you
 want to extend cxx-cmake by writing your own Settings Dictionary and to have
 cxx-cmake Settings Object as "member" in your type (extend of cxx-cmake).
 
-a:config parameter is a configuration dictionary you have to provide and you
-can get it from |ProsetGetConfiguration()|.
+Parameters differ depending on call type, so for:
+
+    - Load:
+        - a:config parameter is a configuration dictionary created after
+          parsing configuration file,
+        - a:options.mode is set to "load".
+
+    - Create:
+        - a:config parameter is empty dictionary,
+        - a:options.mode is set to "create".
 
 ==============================================================================
 CONFIGURATION                                        *cxx-cmake:configuration*
@@ -253,6 +272,81 @@ to choose.
 
 Required value:
 proset_settings: "cxx-cmake"
+
+==============================================================================
+CREATE PROJECT                                      *cxx-cmake:create_project*
+==============================================================================
+
+It would be very inconvenient if you would like to use cxx-cmake project but
+you would be forced to prepare it manually by yourself or what is even worse
+copy required files from already existing project. Do not worry, you are able
+to create dummy cxx-cmake project very easily using |ProsetCreate| function or
+command.
+
+What does |cxx-cmake:api:create()| really do?
+
+1) Determine project type
+
+Received as optional argument in function call.  It can be "execute", "static"
+or "shared" which respectively mean application, static library and shared
+library. The only difference between those project types in generated sources
+is CMakeLists.txt file.
+
+2) Parse project name
+
+It is simply name of the project root directory.
+
+3) Create |cxx-cmake:source:settings:source_directory| in project root path
+4) Create CMakeLists.txt file in project root path
+5) Create main file with |cxx-cmake:source:settings:source_extension| in
+   project root path
+6) Return project name and dictionary with settings that will be written to
+   |g:proset_settings_file| making it valid and loadable
+
+
+                                              *cxx-cmake:create_project:usage*
+So, to create cxx-cmake project, start Vim and enter following command (value
+in square bracket is optional and if desired write it without []):
+
+    :ProsetCreate cxx-cmake foo/boo [execute]
+
+and Proset will invoke |cxx-cmake:api:create()| passing following arguments:
+
+    - a:project_path is of course path to the directory where your project has
+      to be created, here "foo/boo", creating "foo" if missing,
+
+    - a:args is optional, separated by space list of additional data passed by
+      user. For now there is only one supported:
+
+        - project type - one of [execute, static, shared]. If missing,
+          "execute" is taken. If any other value is used, then exception is
+          thrown - refer to |ProsetCreate()| to see which error code you get.
+
+==============================================================================
+VARIABLES                                                *cxx-cmake:variables*
+==============================================================================
+
+                                                  *g:cxx_cmake_input_template*
+If you have already created cxx-cmake project using ProsetCreate function or
+command, you probably also saw that |g:proset_settings_file| uses some default
+values that you may not like. If you wondered if there is some possible way to
+be able to provide your own favourite defaults then I have good news for you -
+you can, using this variable. This variable stores path to the template
+|g:proset_settings_file|. Template supported by plugin is stored in
+autoload/proset/settings/cxx_cmake/resources/cxx-cmake-template.json. Feel
+free to copy it, modify as you like and change this variable to the place
+where you store it.
+
+To change default value, put this in your vimrc:
+
+ let g:cxx_cmake_input_template = $HOME . "/cxx-cmake-template-foo.json"
+ 
+If variable is not defined or defined but file is not readable then plugin
+supported template is used. If file does not hold all configuration (it may
+happen after plugin update and you have not updated template file) - default
+hardcoded values will be used, some of them may have value (settings), some of
+them may be empty (mappings). To be sure what value is used in such case refer
+to following sections or look to the code.
 
 ==============================================================================
 CMAKE                                                        *cxx-cmake:cmake*
@@ -1485,12 +1579,12 @@ think. I hope, you have already read |proset:settings_dictionary| because
 there are informations how to do it. Yet, I will give you complete example
 anyway.
 
-I did not say that there will never be cxx-cmake-bloated (or similar name;
-cxx-cmake with all the goodies, dependent on various plugins, etc) supported
-by the plugin. I do not claim that this is a bad idea, but for now, there is
-only a simple version, a general one. Another direction could be to extend
-cxx-cmake and make all other (even current) dependencies (functionalities)
-weak (optional).
+I did not say that cxx-cmake will never have support for external plugins as
+weak dependencies (if plugin is available -> cxx-cmake module is available).
+It is possible, it may happen. I think that support for external plugins seems
+to be rather supported directly by Proset not by any Settings Dictionary (do
+this once, not multiple times), but this idea has to be considered well and
+this is for future release if at all.
 
 Example:
 
@@ -1503,62 +1597,79 @@ annoying.
 
 So let's get started to get it done automatically.
 
-    if exists("g:loaded_proset_settings_cxx_cxx_cmake_ap")
-        finish
-    endif
-    let g:loaded_proset_settings_cxx_cxx_cmake_ap = 1
-    
-    " (1)
-    runtime plugin/settings/cxx/cxx_cmake.vim
-    
-    let s:cxx_cmake_ap = {'properties': {}}
-    
-    " (2)
-    function! s:cxx_cmake_ap.construct(config, settings_name)
-        let l:ret = deepcopy(self)
-        let l:ret.parent = CXXCMakeConstruct(a:config)
-        let l:ret.properties["settings_name"] = a:settings_name
-        return l:ret
-    endfunction
-    
-    function! s:cxx_cmake_ap.is_project()
-        return self.parent.is_project()
-    endfunction
-    
-    function! s:cxx_cmake_ap.get_project_name()
-        return self.parent.get_project_name()
-    endfunction
-    
-    function! s:cxx_cmake_ap.get_properties()
-        return self.parent.get_properties()
-    endfunction
-    
-    function! s:cxx_cmake_ap.get_settings_name()
-        return self.properties.settings_name
-    endfunction
-    
-    " (3)
-    function! s:cxx_cmake_ap.enable()
-        call self.parent.enable()
-        " (4)
-        autocmd User CXXCMakeHeaderCreatedEvent :NERDTreeRefreshRoot
-        autocmd User CXXCMakeSourceCreatedEvent :NERDTreeRefreshRoot
-    endfunction
-    
-    function! s:cxx_cmake_ap.disable()
-        autocmd! User CXXCMakeHeaderCreatedEvent
-        autocmd! User CXXCMakeSourceCreatedEvent
-        call self.parent.disable()
-    endfunction
-    
-    " (5)
-    autocmd User ProsetRegisterSettingsEvent
-        \ call ProsetRegisterSettings("cxx-cmake-ap", "CXXCMakeApConstruct")
-    
-    " (6)
-    function! CXXCMakeApConstruct(config)
-        return s:cxx_cmake_ap.construct(a:config, "cxx-cmake-ap")
-    endfunction
+ if exists("g:loaded_proset_settings_cxx_cmake_ap")
+     finish
+ endif
+ let g:loaded_proset_settings_cxx_cmake_ap = 1
+ 
+ " (1)
+ runtime plugin/settings/cxx_cmake.vim
+ 
+ let s:cxx_cmake_ap = {'properties': {}}
+ 
+ " (2)
+ function! s:cxx_cmake_ap.construct(config, options, settings_name)
+     let l:ret = deepcopy(self)
+     let l:ret.parent = CXXCMakeConstruct(a:config, a:options)
+     let l:ret.properties.settings_name = a:settings_name
+     return l:ret
+ endfunction
+ 
+ function! s:cxx_cmake_ap.is_project()
+     return self.parent.is_project()
+ endfunction
+ 
+ function! s:cxx_cmake_ap.get_project_name()
+     return self.parent.get_project_name()
+ endfunction
+ 
+ function! s:cxx_cmake_ap.get_properties()
+     return self.parent.get_properties()
+ endfunction
+ 
+ function! s:cxx_cmake_ap.get_settings_name()
+     return self.properties.settings_name
+ endfunction
+ 
+ " (3)
+ function! s:cxx_cmake_ap.enable()
+     call self.parent.enable()
+     " (4)
+     autocmd User CXXCMakeHeaderCreatedEvent :NERDTreeRefreshRoot
+     autocmd User CXXCMakeSourceCreatedEvent :NERDTreeRefreshRoot
+ endfunction
+ 
+ function! s:cxx_cmake_ap.disable()
+     autocmd! User CXXCMakeHeaderCreatedEvent
+     autocmd! User CXXCMakeSourceCreatedEvent
+     call self.parent.disable()
+ endfunction
+ 
+ " (5)
+ function! s:cxx_cmake_ap.create(project_path, args)
+     let l:ret = self.parent.create(a:project_path, a:args)
+     " (6)
+     let l:ret.dictionary.foo = {"settings": {}, "mappings": {}}
+     return l:ret
+ endfunction
+ 
+ " (7)
+ autocmd User ProsetRegisterSettingsEvent
+     \ call ProsetRegisterSettings("cxx-cmake-ap", "CXXCMakeApConstruct")
+ 
+ " (8)
+ function! CXXCMakeApConstruct(config, options)
+     if a:options.mode == "load"
+         let l:config = a:config
+     elseif a:options.mode == "create"
+         " (9)
+         let l:config =
+         \ json_decode(join(readfile(g:cxx_cmake_input_template), "\n"))
+     else
+     endif
+ 
+     return s:cxx_cmake_ap.construct(l:config, a:options, "cxx-cmake-ap")
+ endfunction
 
 Why does it look this way is explained in |proset:settings_dictionary| in more
 details, but I have marked some places which now need to be explained:
@@ -1566,7 +1677,7 @@ details, but I have marked some places which now need to be explained:
     (1) - we are going to use CXXCMakeConstruct(), we have to have its
           definition already sourced,
     (2) - definition of a construct() "member function" which uses public
-          cxx-cmake function to create an object (parent),
+          cxx-cmake constructor function to create an object (parent),
     (3) - here is a code that does the job of refreshing NERDTree window.
           cxx-cmake Settings Object produces events when file was created:
 
@@ -1579,15 +1690,20 @@ details, but I have marked some places which now need to be explained:
     (4) - you can easily put those commands in your vimrc, but then you will
           probably have these connections always, not only when needed (the
           idea of Proset plugin),
-    (5) - register settings name and assign public constructor function to it,
-    (6) - constructor function that has to take one parameter - configuration.
+    (5) - definition of function that is used to create cxx-cmake-ap project
+          via ProsetCreate,
+    (6) - if you want to extend data that are written to settings file, you
+          can do it here, you can also choose different template file (9),
+    (7) - register settings name and assign public constructor function to it,
+    (8) - constructor function that has to take two parameters: configuration
+          and options dictionaries.
 
 Note:
-In (5) and (6) settings name string is "cxx-cmake-ap" and it has to be
-identical in both places! Internal constructor (2) takes string as a second
+In (7) and (8) settings name string is "cxx-cmake-ap" and it has to be
+identical in both places! Internal constructor (2) takes string as third
 argument which is settings name. This means that you can create multiple
-Settings Objects from cxx-cmake-ap Settings Dictionary, just duplicate (5)
-and (6) and fill them with appropriate settings name string.
+Settings Objects from cxx-cmake-ap Settings Dictionary, just duplicate (7)
+and (8) and fill them with appropriate settings name string.
 
 Rest is up to you what you want to have in your cxx-cmake-ap Settings
 Dictionary.  This is just an idea of what you can do. Feel free to experiment

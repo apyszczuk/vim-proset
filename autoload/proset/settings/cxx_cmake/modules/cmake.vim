@@ -1,7 +1,7 @@
-if exists("g:autoloaded_proset_settings_cxx_cmake_cmake")
+if exists("g:autoloaded_proset_settings_cxx_cmake_modules_cmake")
     finish
 endif
-let g:autoloaded_proset_settings_cxx_cmake_cmake = 1
+let g:autoloaded_proset_settings_cxx_cmake_modules_cmake = 1
 
 function! s:get_pattern_value(project_file, pattern)
     let l:ret_val = ""
@@ -106,7 +106,7 @@ endfunction
 function! s:object.disable()
 endfunction
 
-function! proset#settings#cxx_cmake#cmake#construct(config,
+function! proset#settings#cxx_cmake#modules#cmake#construct(config,
     \       build_directory,
     \       source_directory,
     \       proset_settings_file)

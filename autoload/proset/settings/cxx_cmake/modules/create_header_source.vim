@@ -1,16 +1,16 @@
-if exists("g:autoloaded_proset_settings_cxx_cmake_create_header_source")
+if exists("g:autoloaded_proset_settings_cxx_cmake_modules_create_header_source")
     finish
 endif
-let g:autoloaded_proset_settings_cxx_cmake_create_header_source = 1
+let g:autoloaded_proset_settings_cxx_cmake_modules_create_header_source = 1
 
 function! s:create_header_source_command(open_mode, input, path)
     let l:open_modes = split(a:open_mode, ";", 1)
 
-    call proset#settings#cxx_cmake#create_header#create_header_command(
+    call proset#settings#cxx_cmake#modules#create_header#create_header_command(
     \       l:open_modes[0],
     \       a:input,
     \       a:path)
-    call proset#settings#cxx_cmake#create_source#create_source_command(
+    call proset#settings#cxx_cmake#modules#create_source#create_source_command(
     \       l:open_modes[1],
     \       a:input,
     \       a:path)
@@ -182,7 +182,16 @@ function! s:object.disable()
     call s:remove_mappings(self.properties.mappings)
 endfunction
 
-function! proset#settings#cxx_cmake#create_header_source#construct(config,
+function! s:object.get_module_properties()
+    let l:ret           = {}
+    let l:ret.settings  = self.properties.settings
+    let l:ret.mappings
+    \ = proset#settings#cxx_cmake#create#convert_mappings(self.properties.mappings)
+
+    return l:ret
+endfunction
+
+function! proset#settings#cxx_cmake#modules#create_header_source#construct(config,
     \       project_name,
     \       header_extension,
     \       source_extension)

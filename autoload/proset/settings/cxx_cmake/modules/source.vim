@@ -1,7 +1,7 @@
-if exists("g:autoloaded_proset_settings_cxx_cmake_source")
+if exists("g:autoloaded_proset_settings_cxx_cmake_modules_source")
     finish
 endif
-let g:autoloaded_proset_settings_cxx_cmake_source = 1
+let g:autoloaded_proset_settings_cxx_cmake_modules_source = 1
 
 function! s:set_path_option(additional_search_directories)
     let s:init_path = &path
@@ -67,7 +67,19 @@ function! s:object.disable()
     call s:restore_path_option()
 endfunction
 
-function! proset#settings#cxx_cmake#source#construct(config)
+function! s:object.get_module_properties()
+    let l:ret           = {}
+    let l:ret.settings  = self.properties.settings
+    let l:ret.mappings
+    \ = proset#settings#cxx_cmake#create#convert_mappings(self.properties.mappings)
+
+    let l:ret.settings.additional_search_directories
+    \ = split(l:ret.settings.additional_search_directories, ";")
+
+    return l:ret
+endfunction
+
+function! proset#settings#cxx_cmake#modules#source#construct(config)
     let l:ret               = deepcopy(s:object)
     let l:ret.properties    = s:get_source_properties(a:config)
 

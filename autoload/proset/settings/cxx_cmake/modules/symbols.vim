@@ -1,7 +1,7 @@
-if exists("g:autoloaded_proset_settings_cxx_cmake_symbols")
+if exists("g:autoloaded_proset_settings_cxx_cmake_modules_symbols")
     finish
 endif
-let g:autoloaded_proset_settings_cxx_cmake_symbols = 1
+let g:autoloaded_proset_settings_cxx_cmake_modules_symbols = 1
 
 function! s:add_update_symbols_command()
     function! s:update_symbols_command_impl()
@@ -66,7 +66,16 @@ function! s:object.disable()
     call s:remove_mappings(self.properties.mappings)
 endfunction
 
-function! proset#settings#cxx_cmake#symbols#construct(config)
+function! s:object.get_module_properties()
+    let l:ret           = {}
+    let l:ret.settings  = self.properties.settings
+    let l:ret.mappings
+    \ = proset#settings#cxx_cmake#create#convert_mappings(self.properties.mappings)
+
+    return l:ret
+endfunction
+
+function! proset#settings#cxx_cmake#modules#symbols#construct(config)
     let l:ret               = deepcopy(s:object)
     let l:ret.properties    = s:get_symbols_properties(a:config)
 

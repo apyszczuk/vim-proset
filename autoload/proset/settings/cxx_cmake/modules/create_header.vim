@@ -1,7 +1,7 @@
-if exists("g:autoloaded_proset_settings_cxx_cmake_create_header")
+if exists("g:autoloaded_proset_settings_cxx_cmake_modules_create_header")
     finish
 endif
-let g:autoloaded_proset_settings_cxx_cmake_create_header = 1
+let g:autoloaded_proset_settings_cxx_cmake_modules_create_header = 1
 
 function! s:create_file(create_function,
     \       project_name,
@@ -45,7 +45,7 @@ function! s:create_header_file(project_name, path, source_extension)
     return a:path
 endfunction
 
-function! proset#settings#cxx_cmake#create_header#create_file_command(
+function! proset#settings#cxx_cmake#modules#create_header#create_file_command(
     \       create_function,
     \       user_command,
     \       open_mode,
@@ -71,11 +71,11 @@ function! proset#settings#cxx_cmake#create_header#create_file_command(
     endif
 endfunction
 
-function! proset#settings#cxx_cmake#create_header#create_header_command(
+function! proset#settings#cxx_cmake#modules#create_header#create_header_command(
     \       open_mode,
     \       input,
     \       path)
-    return proset#settings#cxx_cmake#create_header#create_file_command(
+    return proset#settings#cxx_cmake#modules#create_header#create_file_command(
     \       "s:create_header_file",
     \       "CXXCMakeHeaderCreatedEvent",
     \       a:open_mode,
@@ -87,7 +87,7 @@ endfunction
 
 function! s:add_create_header_command(input_dict)
     function! s:create_header_command_impl(path) closure
-        call proset#settings#cxx_cmake#create_header#create_header_command(
+        call proset#settings#cxx_cmake#modules#create_header#create_header_command(
         \       "",
         \       a:input_dict,
         \       a:path)
@@ -99,7 +99,7 @@ endfunction
 
 function! s:add_create_header_edit_command(input_dict)
     function! s:create_header_edit_command_impl(path) closure
-        call proset#settings#cxx_cmake#create_header#create_header_command(
+        call proset#settings#cxx_cmake#modules#create_header#create_header_command(
         \       ":e",
         \       a:input_dict,
         \       a:path)
@@ -111,7 +111,7 @@ endfunction
 
 function! s:add_create_header_edit_split_command(input_dict)
     function! s:create_header_edit_split_command_impl(path) closure
-        call proset#settings#cxx_cmake#create_header#create_header_command(
+        call proset#settings#cxx_cmake#modules#create_header#create_header_command(
         \       ":spl",
         \       a:input_dict,
         \       a:path)
@@ -123,7 +123,7 @@ endfunction
 
 function! s:add_create_header_edit_vsplit_command(input_dict)
     function! s:create_header_edit_vsplit_command_impl(path) closure
-        call proset#settings#cxx_cmake#create_header#create_header_command(
+        call proset#settings#cxx_cmake#modules#create_header#create_header_command(
         \       ":vspl",
         \       a:input_dict,
         \       a:path)
@@ -237,7 +237,16 @@ function! s:object.disable()
     call s:remove_mappings(self.properties.mappings)
 endfunction
 
-function! proset#settings#cxx_cmake#create_header#construct(config,
+function! s:object.get_module_properties()
+    let l:ret           = {}
+    let l:ret.settings  = self.properties.settings
+    let l:ret.mappings
+    \ = proset#settings#cxx_cmake#create#convert_mappings(self.properties.mappings)
+
+    return l:ret
+endfunction
+
+function! proset#settings#cxx_cmake#modules#create_header#construct(config,
     \       project_name,
     \       header_extension,
     \       source_extension)

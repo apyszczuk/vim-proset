@@ -1,7 +1,7 @@
-if exists("g:autoloaded_proset_settings_cxx_cmake_alternate_file")
+if exists("g:autoloaded_proset_settings_cxx_cmake_modules_alternate_file")
     finish
 endif
-let g:autoloaded_proset_settings_cxx_cmake_alternate_file = 1
+let g:autoloaded_proset_settings_cxx_cmake_modules_alternate_file = 1
 
 function! s:add_alternate_file_current_window_command()
     function! s:alternate_file_current_window_command_impl()
@@ -129,7 +129,16 @@ function! s:object.disable()
     call s:remove_extensions_pair(self.input.header_extension)
 endfunction
 
-function! proset#settings#cxx_cmake#alternate_file#construct(config,
+function! s:object.get_module_properties()
+    let l:ret           = {}
+    let l:ret.settings  = self.properties.settings
+    let l:ret.mappings
+    \ = proset#settings#cxx_cmake#create#convert_mappings(self.properties.mappings)
+
+    return l:ret
+endfunction
+
+function! proset#settings#cxx_cmake#modules#alternate_file#construct(config,
     \       header_extension,
     \       source_extension)
     let l:ret               = deepcopy(s:object)

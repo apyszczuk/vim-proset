@@ -1,7 +1,7 @@
-if exists("g:autoloaded_proset_settings_cxx_cmake_build")
+if exists("g:autoloaded_proset_settings_cxx_cmake_modules_build")
     finish
 endif
-let g:autoloaded_proset_settings_cxx_cmake_build = 1
+let g:autoloaded_proset_settings_cxx_cmake_modules_build = 1
 
 function! s:add_build_command()
     function! s:post_build_task()
@@ -176,7 +176,16 @@ function! s:object.disable()
     call s:remove_mappings(self.properties.mappings)
 endfunction
 
-function! proset#settings#cxx_cmake#build#construct(config)
+function! s:object.get_module_properties()
+    let l:ret           = {}
+    let l:ret.settings  = self.properties.settings
+    let l:ret.mappings
+    \ = proset#settings#cxx_cmake#create#convert_mappings(self.properties.mappings)
+
+    return l:ret
+endfunction
+
+function! proset#settings#cxx_cmake#modules#build#construct(config)
     let l:ret               = deepcopy(s:object)
     let l:ret.properties    = s:get_build_properties(a:config)
 

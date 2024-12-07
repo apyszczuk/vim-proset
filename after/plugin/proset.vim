@@ -9,42 +9,26 @@ if exists("g:loaded_proset")
 endif
 let g:loaded_proset = 1
 
-let g:proset_settings_file = get(g:,
-\                               "proset_settings_file",
-\                               ".vim-proset/settings.json")
+let g:proset_settings_file
+\ = get(g:, "proset_settings_file", ".vim-proset/settings.json")
 lockvar g:proset_settings_file
+
+if !exists("g:proset_json_encoder")
+    let g:proset_json_encoder =
+    \ {
+    \   "function": "proset#lib#json_encode#encode",
+    \   "options":
+    \   {
+    \       "indent_init_level":    "0",
+    \       "indent_width":         "4",
+    \       "value_column_start":   "50"
+    \   }
+    \ }
+endif
 
 let s:settings          = proset#settings#default#construct()
 let s:storage           = {}
 let s:configuration     = {}
-
-function! ProsetRegisterSettings(settings_name, constructor_name)
-    if has_key(s:storage, a:settings_name)
-        throw "proset:register-settings:" . a:settings_name
-    endif
-
-    let s:storage[a:settings_name] = a:constructor_name
-endfunction
-
-function! ProsetIsProject()
-    return s:settings.is_project()
-endfunction
-
-function! ProsetGetSettingsName()
-    return s:settings.get_settings_name()
-endfunction
-
-function! ProsetGetProjectName()
-    return s:settings.get_project_name()
-endfunction
-
-function! ProsetGetProperties()
-    return deepcopy(s:settings.get_properties())
-endfunction
-
-function! ProsetGetConfiguration()
-    return deepcopy(s:configuration)
-endfunction
 
 function! s:enable()
     if ProsetIsProject()
@@ -110,7 +94,7 @@ function! s:load_settings(path, init_phase)
 
             noautocmd call chdir(a:path)
             let Constructor     = function(s:storage[l:name])
-            let l:settings_tmp  = Constructor(l:cfg)
+            let l:settings_tmp  = Constructor(l:cfg, {"mode": "load"})
 
             " This is important becuase calling disable on Settings Object
             " expects to be in project root path, yet it was switched due to
@@ -173,6 +157,58 @@ function! s:load_settings(path, init_phase)
     endtry
 endfunction
 
+function! s:add_commands()
+    command! -nargs=1 -complete=dir ProsetLoadSettings
+    \   :call ProsetLoadSettings(<f-args>)
+
+    command! -nargs=0 ProsetCloseSettings  :call ProsetCloseSettings()
+    command! -nargs=0 ProsetReloadSettings :call ProsetReloadSettings()
+
+    " Add custom complete for supported(registered) settings_name
+    command! -nargs=+ -complete=dir ProsetCreate
+    \   :call ProsetCreate(<f-args>)
+endfunction
+
+function! s:remove_commands()
+    for l:cmd in getcompletion("Proset", "command")
+        execute "delcommand " . l:cmd
+    endfor
+endfunction
+
+function! s:validate_settings_file()
+    if proset#lib#path#is_subpath(getcwd(), g:proset_settings_file) == 0
+        throw "proset:init-phase:1:bad g:proset_settings_file value"
+    endif
+endfunction
+
+function! ProsetRegisterSettings(settings_name, constructor_name)
+    if has_key(s:storage, a:settings_name)
+        throw "proset:register-settings:" . a:settings_name
+    endif
+
+    let s:storage[a:settings_name] = a:constructor_name
+endfunction
+
+function! ProsetIsProject()
+    return s:settings.is_project()
+endfunction
+
+function! ProsetGetSettingsName()
+    return s:settings.get_settings_name()
+endfunction
+
+function! ProsetGetProjectName()
+    return s:settings.get_project_name()
+endfunction
+
+function! ProsetGetProperties()
+    return deepcopy(s:settings.get_properties())
+endfunction
+
+function! ProsetGetConfiguration()
+    return deepcopy(s:configuration)
+endfunction
+
 function! ProsetLoadSettings(path)
     return s:load_settings(a:path, 0)
 endfunction
@@ -198,25 +234,66 @@ function! ProsetCloseSettings()
 
 endfunction
 
-function! s:add_commands()
-    command! -nargs=1 -complete=dir ProsetLoadSettings
-    \   :call ProsetLoadSettings(<f-args>)
-
-    command! -nargs=0 ProsetCloseSettings  :call ProsetCloseSettings()
-    command! -nargs=0 ProsetReloadSettings :call ProsetReloadSettings()
+function! s:remove_slashes(str)
+    let l:str = a:str
+    while len(l:str) > 0 && strpart(l:str, len(l:str)-1, 1) == "/"
+        let l:str = strpart(l:str, 0, len(l:str)-1)
+    endwhile
+    return l:str
 endfunction
 
-function! s:remove_commands()
-    for l:cmd in getcompletion("Proset", "command")
-        execute "delcommand " . l:cmd
-    endfor
+function! ProsetCreate(settings_name, path, ...)
+    let l:path = s:remove_slashes(simplify(fnamemodify(trim(a:path), ":p")))
+    try
+        if !has_key(s:storage, a:settings_name)
+            let l:desc = "Settings Object '" . a:settings_name .  "' is not registered"
+            let l:msg  = s:get_error_message(50, l:desc)
+            call s:print_message(l:msg)
+            return
+        endif
+
+        let l:settings_file         = l:path . "/" . g:proset_settings_file
+        let l:settings_directory    = fnamemodify(l:settings_file, ":p:h")
+
+        if isdirectory(l:path)
+            let l:desc = "Path can not point to existing directory"
+            let l:msg  = s:get_error_message(51, l:desc)
+            call s:print_message(l:msg)
+            return
+        endif
+
+        call mkdir(l:settings_directory, "p")
+
+        let Constructor             = function(s:storage[a:settings_name])
+        let l:settings_tmp          = Constructor({}, {"mode": "create"})
+
+        let l:rv = l:settings_tmp.create(l:path, a:000)
+        let l:rv.dictionary.proset_settings = a:settings_name
+
+        let Encoder     = function(g:proset_json_encoder.function)
+        let l:string    = Encoder(l:rv.dictionary, g:proset_json_encoder.options)
+        let l:content   = split(l:string, "\n")
+
+        call writefile(l:content, l:settings_file)
+
+        let l:msg = "Project '" . l:rv.project_name .
+        \           "@" . a:settings_name . "' (" . l:path . ") was created"
+        call s:print_message(s:get_info_message(l:msg))
+        return
+    catch /^proset:create:/
+        let lst  = split(v:exception, ":")
+        let desc = "Can not create project '" . a:settings_name . "' because: " . lst[2]
+        let msg  = s:get_error_message(52, desc)
+        call s:print_message(msg)
+	catch /^Vim\%((\a\+)\)\=:E/	 " catch all Vim errors
+        let desc = "Can not create project '" . a:settings_name . "' because: " . v:exception
+        let msg  = s:get_error_message(53, desc)
+        call s:print_message(msg)
+    endtry
+
+    call delete(l:path, "rf")
 endfunction
 
-function! s:validate_settings_file()
-    if proset#lib#path#is_subpath(getcwd(), g:proset_settings_file) == 0
-        throw "proset:init-phase:1:bad g:proset_settings_file value"
-    endif
-endfunction
 
 augroup Proset
     autocmd!

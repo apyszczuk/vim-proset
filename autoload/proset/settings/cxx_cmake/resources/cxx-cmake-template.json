@@ -1,0 +1,134 @@
+{
+"proset_settings":                              "cxx-cmake",
+
+"temporary":
+{
+    "settings":
+    {
+        "temporary_directory":                  ".vim-proset_tmp"
+    }
+},
+
+"build":
+{
+    "settings":
+    {
+        "build_directory":                      "build",
+        "jobs":                                 "8"
+    },
+    "mappings":
+    {
+        "build":                                "mk",
+        "clean":                                "mC",
+        "clean_and_build":                      "mK"
+    }
+},
+
+"run":
+{
+    "mappings":
+    {
+        "run":                                  "mr",
+        "run_args":                             "mR"
+    }
+},
+
+"source":
+{
+    "settings":
+    {
+        "source_directory":                     "src",
+        "header_extension":                     "hpp",
+        "source_extension":                     "cpp",
+        "additional_search_directories":        []
+    }
+},
+
+"ctags":
+{
+    "settings":
+    {
+        "additional_ctags_directories":         [],
+        "external_ctags_files":                 []
+    },
+    "mappings":
+    {
+        "update_ctags_symbols":                 "muc"
+    }
+},
+
+"cscope":
+{
+    "settings":
+    {
+        "additional_cscope_directories":        [],
+        "external_cscope_files":                []
+    },
+    "mappings":
+    {
+        "update_cscope_symbols":                "muC",
+        "a_assignments":                        "mea",
+        "c_functions_calling":                  "mec",
+        "d_functions_called_by":                "med",
+        "e_egrep":                              "mee",
+        "f_file":                               "mef",
+        "g_definition":                         "meg",
+        "i_including":                          "mei",
+        "s_symbol":                             "mes",
+        "t_string":                             "met"
+    }
+},
+
+"symbols":
+{
+    "mappings":
+    {
+        "update_symbols":                       "mus"
+    }
+},
+
+"alternate_file":
+{
+    "mappings":
+    {
+        "current_window":                       "ma",
+        "split_window":                         "mA",
+        "vsplit_window":                        "mz"
+    }
+},
+
+"create_header":
+{
+    "mappings":
+    {
+        "create":                               "mhe1",
+        "create_edit":                          "mhe2",
+        "create_edit_split":                    "mhe3",
+        "create_edit_vsplit":                   "mhe4"
+    }
+},
+
+"create_source":
+{
+    "mappings":
+    {
+        "create":                               "ms1",
+        "create_edit":                          "ms2",
+        "create_edit_split":                    "ms3",
+        "create_edit_vsplit":                   "ms4"
+    }
+},
+
+"create_header_source":
+{
+    "mappings":
+    {
+        "create":                               "mhs1",
+        "create_edit_split":                    "mhs2",
+        "create_edit_current_split":            "mhs3",
+        "create_edit_vsplit":                   "mhs4",
+        "create_edit_current_vsplit":           "mhs5"
+    }
+}
+
+}

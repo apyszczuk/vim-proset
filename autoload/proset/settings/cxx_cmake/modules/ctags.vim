@@ -1,7 +1,7 @@
-if exists("g:autoloaded_proset_settings_cxx_cmake_ctags")
+if exists("g:autoloaded_proset_settings_cxx_cmake_modules_ctags")
     finish
 endif
-let g:autoloaded_proset_settings_cxx_cmake_ctags = 1
+let g:autoloaded_proset_settings_cxx_cmake_modules_ctags = 1
 
 function! s:get_ctags_command(source_directory,
         \ additional_ctags_directories,
@@ -160,7 +160,23 @@ function! s:object.disable()
     call s:remove_mappings(self.properties.mappings)
 endfunction
 
-function! proset#settings#cxx_cmake#ctags#construct(config,
+function! s:object.get_module_properties()
+    let l:ret           = {}
+    let l:ret.settings  = self.properties.settings
+    let l:ret.mappings
+    \ = proset#settings#cxx_cmake#create#convert_mappings(self.properties.mappings)
+
+    call proset#lib#dict#remove_if_exists(l:ret.settings, "temporary_ctags_file")
+
+    let l:ret.settings.additional_ctags_directories
+    \ = split(l:ret.settings.additional_ctags_directories, ";")
+    let l:ret.settings.external_ctags_files
+    \ = split(l:ret.settings.external_ctags_files, ";")
+
+    return l:ret
+endfunction
+
+function! proset#settings#cxx_cmake#modules#ctags#construct(config,
     \       source_directory,
     \       temporary_directory)
     let l:ret               = deepcopy(s:object)

@@ -30,3 +30,9 @@ function! proset#lib#dict#get_not_empty(dictionary, default_value, ...)
     endif
     return l:ret
 endfunction
+
+function! proset#lib#dict#remove_if_exists(dictionary, key)
+    if has_key(a:dictionary, a:key)
+        call remove(a:dictionary, a:key)
+    endif
+endfunction

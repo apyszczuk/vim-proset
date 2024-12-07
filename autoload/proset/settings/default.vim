@@ -27,6 +27,9 @@ endfunction
 function! s:default.disable()
 endfunction
 
+function! s:default.create(project_path, args)
+endfunction
+
 function! proset#settings#default#construct()
     return s:default
 endfunction
