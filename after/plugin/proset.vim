@@ -42,24 +42,8 @@ function! s:disable()
     endif
 endfunction
 
-function! s:get_info_message(msg)
-    return "proset: " . a:msg . "."
-endfunction
-
-function! s:get_error_message(num, msg)
-    return "proset-E" . a:num . ": " . a:msg . "."
-endfunction
-
-function! s:get_error_number_and_message(num, msg)
-    return a:num . "|" . s:get_error_message(a:num, a:msg)
-endfunction
-
-function! s:get_project_info(project_name, settings_name)
-    return a:project_name . "(" . a:settings_name . ")"
-endfunction
-
-function! s:print_message(message)
-    echohl WarningMsg | echom a:message | echohl None
+function! s:get_error_number_and_message(error_number, message)
+    return a:error_number . "|" . a:message
 endfunction
 
 function! s:load_settings(path, init_phase)
@@ -82,13 +66,12 @@ function! s:load_settings(path, init_phase)
             let l:name = proset#lib#dict#get(l:cfg, "", "proset_settings")
 
             if empty(l:name)
-                let l:msg = "Configuration parameter proset_settings "
-                \           . "is empty or missing"
+                let l:msg = "'proset_settings' is empty or missing"
                 throw s:get_error_number_and_message(21, l:msg)
             endif
 
             if !has_key(s:storage, l:name)
-                let l:msg = "Not supported Settings Object (" . l:name . ")"
+                let l:msg = l:name . " is not supported"
                 throw s:get_error_number_and_message(30, l:msg)
             endif
 
@@ -108,16 +91,13 @@ function! s:load_settings(path, init_phase)
             let s:settings      = deepcopy(l:settings_tmp)
             let s:configuration = deepcopy(l:cfg)
 
-            let l:pro_info      = s:get_project_info(ProsetGetProjectName(),
-            \                       ProsetGetSettingsName())
-            let s:success_msg   = s:get_info_message(l:pro_info . " was loaded")
-
             if a:init_phase == 0
                 call s:enable()
                 :redraw!
-                call s:print_message(s:success_msg)
+                call proset#print#print_info(ProsetGetSettingsName(), ProsetGetProjectName() . " was loaded")
             else
-                autocmd VimEnter * call s:print_message(s:success_msg)
+                autocmd VimEnter *
+                \ call proset#print#print_info(ProsetGetSettingsName(), ProsetGetProjectName() . " was loaded")
             endif
 
             if exists('#User#ProsetSettingsChosenEvent')
@@ -131,8 +111,7 @@ function! s:load_settings(path, init_phase)
 
         catch /^proset:construct-settings:/
             let l:lst = split(v:exception, ":")
-            let l:msg = "Can not construct Settings Object (" . l:lst[2] . "): "
-            \           . l:lst[3]
+            let l:msg = l:lst[2] . ": " . l:lst[3]
             throw s:get_error_number_and_message(40, l:msg)
         catch /^Vim\%((\a\+)\)\=:E491:/
             let l:msg = "Configuration file syntax error (Vim:E491)"
@@ -141,19 +120,17 @@ function! s:load_settings(path, init_phase)
             let l:msg = "Configuration file syntax error (Vim:E938)"
             throw s:get_error_number_and_message(23, l:msg)
         endtry
-    catch /\%(\d\+\)|proset-E\%(\d\+\):.*/
+    catch /\%(\d\+\)|.*/
         noautocmd call chdir(l:cwd_orig)
-
-        let l:lst       = split(v:exception, "|")
-        let s:error_msg = l:lst[1]
+        let s:data = split(v:exception, "|")
 
         if a:init_phase == 0
-            call s:print_message(s:error_msg)
+            call proset#print#print_error(s:data[0], s:data[1])
         else
-            autocmd VimEnter * call s:print_message(s:error_msg)
+            autocmd VimEnter * call proset#print#print_error(s:data[0], s:data[1])
         endif
 
-        return l:lst[0]
+        return s:data[0]
     endtry
 endfunction
 
@@ -174,7 +151,7 @@ endfunction
 
 function! s:validate_settings_file()
     if proset#lib#path#is_subpath(getcwd(), g:proset_settings_file) == 0
-        throw "proset:init-phase:1:bad g:proset_settings_file value"
+        throw "proset:init-phase:1:'g:proset_settings_file' is incorrect"
     endif
 endfunction
 
@@ -225,10 +202,8 @@ function! ProsetClose()
     let s:configuration = {}
 
     if l:is_project
-        let l:msg = s:get_project_info(l:project_name, l:settings_name)
-        call s:print_message(l:msg . " was closed.")
+        call proset#print#print_info(l:settings_name, l:project_name . " was closed")
     endif
-
 endfunction
 
 function! s:remove_slashes(str)
@@ -243,9 +218,7 @@ function! ProsetCreate(settings_name, path, ...)
     let l:path = s:remove_slashes(simplify(fnamemodify(trim(a:path), ":p")))
     try
         if !has_key(s:storage, a:settings_name)
-            let l:desc = "Settings Object '" . a:settings_name .  "' is not registered"
-            let l:msg  = s:get_error_message(50, l:desc)
-            call s:print_message(l:msg)
+            call proset#print#print_error(50, a:settings_name . " is not registered")
             return
         endif
 
@@ -253,9 +226,7 @@ function! ProsetCreate(settings_name, path, ...)
         let l:settings_directory    = fnamemodify(l:settings_file, ":p:h")
 
         if isdirectory(l:path)
-            let l:desc = "Path can not point to existing directory"
-            let l:msg  = s:get_error_message(51, l:desc)
-            call s:print_message(l:msg)
+            call proset#print#print_error(51, "Can not use existing directory")
             return
         endif
 
@@ -273,19 +244,19 @@ function! ProsetCreate(settings_name, path, ...)
 
         call writefile(l:content, l:settings_file)
 
-        let l:msg = "Project '" . l:rv.project_name .
-        \           "@" . a:settings_name . "' (" . l:path . ") was created"
-        call s:print_message(s:get_info_message(l:msg))
+        call proset#print#print_info(a:settings_name, l:rv.project_name . " was created at " . l:path)
         return
+    catch /^proset:construct-settings:/
+        let l:lst = split(v:exception, ":")
+        let l:msg = a:settings_name . ": " . l:lst[3]
+        call proset#print#print_error(52, l:msg)
     catch /^proset:create:/
-        let lst  = split(v:exception, ":")
-        let desc = "Can not create project '" . a:settings_name . "' because: " . lst[2]
-        let msg  = s:get_error_message(52, desc)
-        call s:print_message(msg)
-	catch /^Vim\%((\a\+)\)\=:E/	 " catch all Vim errors
-        let desc = "Can not create project '" . a:settings_name . "' because: " . v:exception
-        let msg  = s:get_error_message(53, desc)
-        call s:print_message(msg)
+        let l:lst = split(v:exception, ":")
+        let l:msg = a:settings_name . ": " . l:lst[2]
+        call proset#print#print_error(53, l:msg)
+    catch
+        let l:msg = a:settings_name . ": " . v:exception
+        call proset#print#print_error(54, l:msg)
     endtry
 
     call delete(l:path, "rf")
@@ -314,9 +285,7 @@ augroup Proset
         call s:add_commands()
     catch /^proset:register-settings:/
         let lst  = split(v:exception, ":")
-        let desc = "Settings Object (" . lst[2] . ") is already registered"
-        let msg  = s:get_error_message(10, desc)
-        autocmd VimEnter * call s:print_message(msg)
+        autocmd VimEnter * call proset#print#print_error(10, lst[2] . " is already registered")
 
         " without this, one can load Settings Object that was already
         " registered. Registering two Settings Objects with the same name is
@@ -326,8 +295,7 @@ augroup Proset
 
     catch /^proset:init-phase:/
         let lst = split(v:exception, ":")
-        let msg = s:get_error_message(lst[2], join(lst[3:], ":"))
-        autocmd VimEnter * call s:print_message(msg)
+        autocmd VimEnter * call proset#print#print_error(lst[2], join(lst[3:], ":"))
     endtry
 
 augroup END

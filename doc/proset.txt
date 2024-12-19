@@ -681,14 +681,16 @@ also things that are common for all. Here is what is done:
       *proset-E51* error,
     - create a:path directory with parents if needed,
     - choose Settings Object and call its contructor passing empty
-      configuration dictionary and options.mode set to "create",
+      configuration dictionary and options.mode set to "create", if for any
+      reason object can not be created and "proset:construct-settings" was
+      thrown from constructor, you will see *proset-E52* error,
     - call |proset:settings_api:create()| to do the job of creating the
       project, which means, what is done depends strictly on Settings Object.
       Using its return value, content is written to |g:proset_settings_file|
       using |g:proset_json_encoder| function,
     - if |proset:settings_api:create()| throws an exception because creation
-      is not possible then you will get *proset-E52* with information,
-    - *proset-E53* will be shown if any other reason of error occurs during
+      is not possible then you will get *proset-E53* with information,
+    - *proset-E54* will be shown if any other reason of error occurs during
       creation of a project.
 
 In case of an error, directory that was created is removed.
