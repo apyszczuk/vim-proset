@@ -256,7 +256,26 @@ mapping parameter that is missing makes corresponding functionality not to be
 mapped at all.
 
 Key mapping sequence in configuration can be anything that is valid key
-sequence in Vim (in nnoremap, etc).
+sequence in Vim mapping (nnoremap, etc).  Although whitespace characters
+before and after mapping are ignored, those in the middle will most likely
+cause troubles, so a mapping:
+
+    "build": " mk "
+
+is fine, it is treated as:
+
+    "build": "mk" 
+
+but a mapping:
+
+    "run": "m r"
+
+is not. So, for any SPACE or TAB you want to use in your mapping, please use
+appropriate placeholder: <SPACE> or <TAB>. Using this, we can write correct
+mapping:
+
+    "run": "m<SPACE>r"
+
 
 Since structure of cxx-cmake is in module oriented fashion, description of
 settings and mappings are stored in suitable documentation sections.
