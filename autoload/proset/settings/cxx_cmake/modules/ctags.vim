@@ -4,8 +4,8 @@ endif
 let g:autoloaded_proset_settings_cxx_cmake_modules_ctags = 1
 
 function! s:get_ctags_command(source_directory,
-        \ additional_ctags_directories,
-        \ temporary_ctags_file)
+\           additional_ctags_directories,
+\           temporary_ctags_file)
     let l:cmd = "ctags -R " .
                 \ "--c++-kinds=+p " .
                 \ "--fields=+iaS " .
@@ -18,7 +18,7 @@ function! s:get_ctags_command(source_directory,
 endfunction
 
 function! s:get_ctags_filenames(temporary_ctags_file,
-        \ external_ctags_files)
+\           external_ctags_files)
     let l:ret   = a:temporary_ctags_file
     let l:files = substitute(a:external_ctags_files, ";", ",", "g")
     if !empty(l:files)
@@ -28,8 +28,8 @@ function! s:get_ctags_filenames(temporary_ctags_file,
 endfunction
 
 function! s:generate_ctags_file(source_directory,
-    \       additional_ctags_directories,
-    \       temporary_ctags_file)
+\           additional_ctags_directories,
+\           temporary_ctags_file)
     let l:cmd = s:get_ctags_command(a:source_directory,
     \               a:additional_ctags_directories,
     \               a:temporary_ctags_file)
@@ -51,8 +51,8 @@ function! s:restore_tags_option()
 endfunction
 
 function! s:add_update_ctags_symbols_command(source_directory,
-    \       additional_ctags_directories,
-    \       temporary_ctags_file)
+\           additional_ctags_directories,
+\           temporary_ctags_file)
     function! s:update_ctags_symbols_command_impl(redraw) closure
         call s:generate_ctags_file(a:source_directory,
         \       a:additional_ctags_directories,
@@ -68,8 +68,8 @@ function! s:add_update_ctags_symbols_command(source_directory,
 endfunction
 
 function! s:add_commands(source_directory,
-    \       additional_ctags_directories,
-    \       temporary_ctags_file)
+\           additional_ctags_directories,
+\           temporary_ctags_file)
     call s:add_update_ctags_symbols_command(a:source_directory,
     \       a:additional_ctags_directories,
     \       a:temporary_ctags_file)
@@ -177,11 +177,10 @@ function! s:object.get_module_properties()
 endfunction
 
 function! proset#settings#cxx_cmake#modules#ctags#construct(config,
-    \       source_directory,
-    \       temporary_directory)
+\           source_directory,
+\           temporary_directory)
     let l:ret               = deepcopy(s:object)
-    let l:ret.properties    = s:get_ctags_properties(a:config,
-    \                           a:temporary_directory)
+    let l:ret.properties    = s:get_ctags_properties(a:config, a:temporary_directory)
     let l:ret.input         =
     \ {
     \   "source_directory": a:source_directory

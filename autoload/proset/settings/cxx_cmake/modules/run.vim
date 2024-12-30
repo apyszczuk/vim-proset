@@ -90,8 +90,8 @@ function! s:object.get_module_properties()
 endfunction
 
 function! proset#settings#cxx_cmake#modules#run#construct(config,
-    \       bin_directory,
-    \       project_name)
+\           bin_directory,
+\           project_name)
     let l:ret               = deepcopy(s:object)
     let l:ret.properties    = s:get_run_properties(a:config)
     let l:ret.input         =

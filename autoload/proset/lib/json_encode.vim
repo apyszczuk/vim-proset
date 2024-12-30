@@ -3,7 +3,10 @@ if exists("g:autoloaded_proset_lib_json_encode")
 endif
 let g:autoloaded_proset_lib_json_encode = 1
 
-function! s:keystring_aligned(key, string, key_column_start, string_column_start)
+function! s:keystring_aligned(key,
+\           string,
+\           key_column_start,
+\           string_column_start)
     let l:key       = '"' . a:key . '":'
     let l:string    = a:string . ",\n"
     let l:count     = a:string_column_start-len(l:key)-a:key_column_start-1
@@ -11,10 +14,17 @@ function! s:keystring_aligned(key, string, key_column_start, string_column_start
     return l:key . repeat(" ", l:count) . l:string
 endfunction
 
-function! s:keyvalue_to_string(key, value, indent_width, indent_level, value_column_start)
+function! s:keyvalue_to_string(key,
+\           value,
+\           indent_width,
+\           indent_level,
+\           value_column_start)
     if type(a:value) == v:t_dict
         let l:ret  = '"' . a:key . '":' . "\n"
-        let l:ret .= s:dictionary_to_string(a:value, a:indent_width, a:indent_level+1, a:value_column_start)
+        let l:ret .= s:dictionary_to_string(a:value,
+        \               a:indent_width,
+        \               a:indent_level+1,
+        \               a:value_column_start)
         return l:ret
     else
         if type(a:value) == v:t_list
@@ -38,7 +48,10 @@ function! s:indent(indent_width, indent_level)
     return repeat(" ", a:indent_width*a:indent_level)
 endfunction
 
-function! s:dictionary_to_string(dictionary, indent_width, indent_level, value_column_start)
+function! s:dictionary_to_string(dictionary,
+\           indent_width,
+\           indent_level,
+\           value_column_start)
     let l:ret = s:indent(a:indent_width, a:indent_level-1) . "{\n"
 
     let l:dkeys     = sort(keys(a:dictionary))

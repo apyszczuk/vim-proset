@@ -139,8 +139,8 @@ function! s:object.get_module_properties()
 endfunction
 
 function! proset#settings#cxx_cmake#modules#alternate_file#construct(config,
-    \       header_extension,
-    \       source_extension)
+\           header_extension,
+\           source_extension)
     let l:ret               = deepcopy(s:object)
     let l:ret.properties    = s:get_alternate_file_properties(a:config)
     let l:ret.input         =

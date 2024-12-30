@@ -74,9 +74,9 @@ endfunction
 let s:object = {"properties": {}}
 
 function! s:get_cmake_properties(config,
-    \       build_directory,
-    \       source_directory,
-    \       proset_settings_file)
+\           build_directory,
+\           source_directory,
+\           proset_settings_file)
     let l:ret = {"settings": {}, "mappings": {}}
 
     let l:ret.settings.input_file       = "CMakeLists.txt"
@@ -107,9 +107,9 @@ function! s:object.disable()
 endfunction
 
 function! proset#settings#cxx_cmake#modules#cmake#construct(config,
-    \       build_directory,
-    \       source_directory,
-    \       proset_settings_file)
+\           build_directory,
+\           source_directory,
+\           proset_settings_file)
     let l:ret               = deepcopy(s:object)
     let l:ret.properties    = s:get_cmake_properties(a:config,
     \                           a:build_directory,

@@ -21,8 +21,8 @@ function! s:get_files_string(dir)
 endfunction
 
 function! s:get_cscope_command(source_directory,
-        \ additional_cscope_directories,
-        \ temporary_cscope_file)
+\           additional_cscope_directories,
+\           temporary_cscope_file)
     let l:cwd = getcwd() . "/"
     let l:files = s:get_files_string(l:cwd . a:source_directory)
     for l:item in split(a:additional_cscope_directories, ";")
@@ -37,8 +37,8 @@ function! s:disconnect_cscope_files()
 endfunction
 
 function! s:generate_cscope_file(source_directory,
-    \       additional_cscope_directories,
-    \       temporary_cscope_file)
+\           additional_cscope_directories,
+\           temporary_cscope_file)
     let l:cmd = s:get_cscope_command(a:source_directory,
     \               a:additional_cscope_directories,
     \               a:temporary_cscope_file)
@@ -50,7 +50,7 @@ function! s:remove_cscope_file(temporary_cscope_file)
 endfunction
 
 function! s:connect_cscope_files(temporary_cscope_file,
-    \       external_cscope_files)
+\           external_cscope_files)
     call s:disconnect_cscope_files()
     let l:fns = [a:temporary_cscope_file] + split(a:external_cscope_files, ";")
     for l:fn in l:fns
@@ -64,9 +64,9 @@ function! s:set_cscope_mapping(cmd, seq)
 endfunction
 
 function! s:add_update_cscope_symbols_command(source_directory,
-    \       additional_cscope_directories,
-    \       temporary_cscope_file,
-    \       external_cscope_files)
+\           additional_cscope_directories,
+\           temporary_cscope_file,
+\           external_cscope_files)
     function! s:update_cscope_symbols_command_impl(redraw) closure
         call s:generate_cscope_file(a:source_directory,
         \       a:additional_cscope_directories,
@@ -85,9 +85,9 @@ function! s:add_update_cscope_symbols_command(source_directory,
 endfunction
 
 function! s:add_commands(source_directory,
-    \       additional_cscope_directories,
-    \       temporary_cscope_file,
-    \       external_cscope_files)
+\           additional_cscope_directories,
+\           temporary_cscope_file,
+\           external_cscope_files)
     call s:add_update_cscope_symbols_command(a:source_directory,
     \       a:additional_cscope_directories,
     \       a:temporary_cscope_file,
@@ -332,8 +332,8 @@ function! s:object.get_module_properties()
 endfunction
 
 function! proset#settings#cxx_cmake#modules#cscope#construct(config,
-    \       source_directory,
-    \       temporary_directory)
+\           source_directory,
+\           temporary_directory)
     let l:ret               = deepcopy(s:object)
     let l:ret.properties    = s:get_cscope_properties(a:config,
     \                           a:temporary_directory)

@@ -131,7 +131,8 @@ augroup Proset
         call s:add_commands()
     catch /^proset:register-settings:/
         let lst  = split(v:exception, ":")
-        autocmd VimEnter * call proset#print#print_error(10, lst[2] . " is already registered")
+        autocmd VimEnter *
+        \ call proset#print#print_error(10, lst[2] . " is already registered")
 
         " without this, one can load Settings Object that was already
         " registered. Registering two Settings Objects with the same name is

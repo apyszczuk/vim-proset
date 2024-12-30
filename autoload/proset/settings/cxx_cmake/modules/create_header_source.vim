@@ -192,9 +192,9 @@ function! s:object.get_module_properties()
 endfunction
 
 function! proset#settings#cxx_cmake#modules#create_header_source#construct(config,
-    \       project_name,
-    \       header_extension,
-    \       source_extension)
+\           project_name,
+\           header_extension,
+\           source_extension)
     let l:ret               = deepcopy(s:object)
     let l:ret.properties    = s:get_create_header_source_properties(a:config)
     let l:ret.input         =

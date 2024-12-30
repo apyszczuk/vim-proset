@@ -85,7 +85,7 @@ function! proset#lib#alternate_file#vsplit_window()
 endfunction
 
 function! proset#lib#alternate_file#add_extensions_pair(first_extension,
-        \ second_extension)
+\           second_extension)
     let s:extensions[a:first_extension] = a:second_extension
 endfunction
 

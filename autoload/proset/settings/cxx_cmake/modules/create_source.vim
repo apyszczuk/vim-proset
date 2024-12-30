@@ -4,9 +4,9 @@ endif
 let g:autoloaded_proset_settings_cxx_cmake_modules_create_source = 1
 
 function! proset#settings#cxx_cmake#modules#create_source#create_source_file(
-    \       project_name,
-    \       path,
-    \       header_extension)
+\           project_name,
+\           path,
+\           header_extension)
     let l:header_path = fnamemodify(a:path, ":t:r") . "." . a:header_extension
     let l:file_content = "#include \"" . l:header_path . "\"\n"
     if writefile(split(l:file_content, "\n"), a:path) == -1
@@ -16,9 +16,9 @@ function! proset#settings#cxx_cmake#modules#create_source#create_source_file(
 endfunction
 
 function! proset#settings#cxx_cmake#modules#create_source#create_source_command(
-    \       open_mode,
-    \       input,
-    \       path)
+\           open_mode,
+\           input,
+\           path)
     return proset#settings#cxx_cmake#modules#create_header#create_file_command(
     \       "proset#settings#cxx_cmake#modules#create_source#create_source_file",
     \       "CXXCMakeSourceCreatedEvent",
@@ -191,9 +191,9 @@ function! s:object.get_module_properties()
 endfunction
 
 function! proset#settings#cxx_cmake#modules#create_source#construct(config,
-    \       project_name,
-    \       header_extension,
-    \       source_extension)
+\           project_name,
+\           header_extension,
+\           source_extension)
     let l:ret               = deepcopy(s:object)
     let l:ret.properties    = s:get_create_source_properties(a:config)
     let l:ret.input         =

@@ -4,10 +4,10 @@ endif
 let g:autoloaded_proset_settings_cxx_cmake_modules_create_header = 1
 
 function! s:create_file(create_function,
-    \       project_name,
-    \       extension,
-    \       other_extension,
-    \       path)
+\           project_name,
+\           extension,
+\           other_extension,
+\           path)
     if a:path[len(a:path)-1] == "/"
         echoerr "(" . s:cxx_cmake.get_settings_name() . "): "
         \       . "Need file name, not directory name."
@@ -46,13 +46,13 @@ function! s:create_header_file(project_name, path, source_extension)
 endfunction
 
 function! proset#settings#cxx_cmake#modules#create_header#create_file_command(
-    \       create_function,
-    \       user_command,
-    \       open_mode,
-    \       project_name,
-    \       extension,
-    \       other_extension,
-    \       path)
+\           create_function,
+\           user_command,
+\           open_mode,
+\           project_name,
+\           extension,
+\           other_extension,
+\           path)
     let l:path = s:create_file(a:create_function,
     \               a:project_name,
     \               a:extension,
@@ -72,9 +72,9 @@ function! proset#settings#cxx_cmake#modules#create_header#create_file_command(
 endfunction
 
 function! proset#settings#cxx_cmake#modules#create_header#create_header_command(
-    \       open_mode,
-    \       input,
-    \       path)
+\           open_mode,
+\           input,
+\           path)
     return proset#settings#cxx_cmake#modules#create_header#create_file_command(
     \       "s:create_header_file",
     \       "CXXCMakeHeaderCreatedEvent",
@@ -247,9 +247,9 @@ function! s:object.get_module_properties()
 endfunction
 
 function! proset#settings#cxx_cmake#modules#create_header#construct(config,
-    \       project_name,
-    \       header_extension,
-    \       source_extension)
+\           project_name,
+\           header_extension,
+\           source_extension)
     let l:ret               = deepcopy(s:object)
     let l:ret.properties    = s:get_create_header_properties(a:config)
     let l:ret.input         =

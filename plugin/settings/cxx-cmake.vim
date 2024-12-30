@@ -203,4 +203,3 @@ function! CXXCMakeConstruct(config, options)
 
     return s:cxx_cmake.construct(l:config)
 endfunction
-

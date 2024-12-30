@@ -41,7 +41,8 @@ function! proset#create#create(storage, settings_name, path, fargs)
 
         call writefile(l:content, l:settings_file)
 
-        call proset#print#print_info(a:settings_name, l:rv.project_name . " was created at " . l:path)
+        call proset#print#print_info(a:settings_name,
+        \       l:rv.project_name . " was created at " . l:path)
         return
     catch /^proset:construct-settings:/
         let l:lst = split(v:exception, ":")
