@@ -16,6 +16,7 @@ TABLE OF CONTENTS
 ==============================================================================
 
 INTRODUCTION                                             |proset:introduction|
+DEPENDENCIES                                             |proset:dependencies|
 SETTINGS                                                     |proset:settings|
 PLUGIN VARIABLES                                            |proset:variables|
 CONFIGURATION                                           |proset:configuration|
@@ -117,6 +118,17 @@ well. It means that you can very easily create dummy project, that you can
 load. It will create Proset configuration file for specific Proset Settings
 using some default values that can be configured as well (more on this later)
 and (probably, because it depends) some source code and/or directories.
+
+==============================================================================
+DEPENDENCIES                                             *proset:dependencies*
+==============================================================================
+
+To make Proset plugin work, you need to satisfy following conditions:
+
+    - Vim version >= 8.2.4981 (see |:version|).
+
+All other dependencies that can be required depends directly on specific
+Settings Objects.
 
 ==============================================================================
 SETTINGS                                                     *proset:settings*

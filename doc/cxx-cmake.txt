@@ -86,13 +86,12 @@ Just before we start, take a look:
 DEPENDENCIES                                          *cxx-cmake:dependencies*
 ==============================================================================
 
-To make cxx-cmake Settings Object work correctly (work at all), you have to
-have following dependencies installed:
+To make cxx-cmake Settings Object work correctly, you need to satisfy
+|proset:dependencies| and have following ones installed:
 
-    - vim >= 8.0    - minimum version of Vim, (todo: check version)
     - +terminal     - support for inside terminal in Vim (|:version|),
     - +cscope       - support for cscope in Vim (|:version|)
-    - asyncrun.vim  - plugin for running shell commands in the background and
+    - vim-asyncrun  - plugin for running shell commands in the background and
                       read output in the quickfix window in realtime,
     - ctags         - application for generating tags file that Vim can read,
                       parse and use, preferably Universal Ctags 6.1.0 or
@@ -1268,7 +1267,6 @@ If missing:
 }
 
                                *cxx-cmake:ctags:settings:external_ctags_files*
-(todo: do the test)
 To use external tags file (already generated, very rarely changing, for
 example: standard C or C++ library), you are able to put its path here.
 Use array to specify one or more files.
@@ -1290,6 +1288,19 @@ If missing:
         "external_ctags_files": []
     }
 }
+
+Note:
+
+When you generate ctags file of some "external" source code, keep in mind that
+paths to the symbols in that file can be absolute or relative to the place
+from which ctags command was run. Ctags file with absolute paths can be copied
+to any place but ctags file with relative paths can not be.
+
+Example commands to generate ctags file (absolute and relative paths):
+
+ $ ctags -R --c++-kinds=+p --fields=+iaS --extras=+q -f ctags-abs $(pwd)/src
+ $ ctags -R --c++-kinds=+p --fields=+iaS --extras=+q -f ctags-rel src
+
 
 ------------------------------------------------------------------------------
 Mappings                                            *cxx-cmake:ctags:mappings*
@@ -1408,7 +1419,6 @@ If missing:
 }
 
                              *cxx-cmake:cscope:settings:external_cscope_files*
-(todo: do the test)
 To use external cscope symbols file (already generated, very rarely changing,
 for example: standard C or C++ library), you are able to put its path here.
 Use array to specify one or more files.
@@ -1430,6 +1440,20 @@ If missing:
         "external_cscope_files": []
     }
 }
+
+NOTE:
+
+When you generate cscope file of some "external" source code, keep in mind
+that paths to the symbols in that file can be absolute or relative to the
+place from which cscope command was run. In contrast to ctags file, cscope
+file with relative paths will not work, you have to generate file with
+absolute paths.
+
+Example commands to generate cscope file (absolute and relative paths):
+
+ $ cscope -Rb -f cscope-abs $(pwd)/src/*
+ $ cscope -Rb -f cscope-rel src/*
+
 
 ------------------------------------------------------------------------------
 Mappings                                           *cxx-cmake:cscope:mappings*

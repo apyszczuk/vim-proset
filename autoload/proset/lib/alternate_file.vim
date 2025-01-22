@@ -26,7 +26,6 @@ function! s:open_in_current_window(filename)
         return
     endif
 
-    " TODO open file or buffer?
     throw ":e " . a:filename
 endfunction
 
