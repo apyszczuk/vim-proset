@@ -3,10 +3,32 @@ if exists("g:autoloaded_proset_settings_cxx_cmake_modules_run")
 endif
 let g:autoloaded_proset_settings_cxx_cmake_modules_run = 1
 
+let s:buf_nr        = -1
+let s:buf_nr_prev   = -1
+
 function! s:add_run_command(bin_directory, project_name)
+    function! s:exit_callback(job, status)
+        if bufexists(s:buf_nr_prev)
+            execute ":bd " . s:buf_nr_prev
+        endif
+    endfunction
+
     function! s:run_command_impl(arg) closure
         let l:cmd = a:bin_directory . "/" . a:project_name . " " . a:arg
-        call term_start(l:cmd)
+
+        let l:opts = {"exit_cb": "s:exit_callback"}
+
+        let l:winid = bufwinid(s:buf_nr)
+        if l:winid != -1
+            call win_gotoid(l:winid)
+            let l:opts["curwin"] = 1
+        endif
+
+        if s:buf_nr > 0
+            let s:buf_nr_prev = s:buf_nr
+        endif
+        
+        let s:buf_nr = term_start(l:cmd, l:opts)
     endfunction
 
     command! -nargs=* CXXCMakeRun call s:run_command_impl(<q-args>)

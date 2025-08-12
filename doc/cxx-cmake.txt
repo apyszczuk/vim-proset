@@ -673,9 +673,10 @@ RUN                                                            *cxx-cmake:run*
 ==============================================================================
 
 Another very important functionality of cxx-cmake is to run your application
-from Vim (inside terminal). You have two options, first one is to run without
-arguments, and the other one is to run with them. So, after build is
+from Vim (internal terminal). You have two options, first one is to run
+without arguments, and the other one is to run with them. So, after build is
 completed, use one of the following commands or mappings to do what you want.
+Window that was used for internal terminal is reused. Old buffer is deleted.
 
 To run your application without arguments, use command or mapping:
 
