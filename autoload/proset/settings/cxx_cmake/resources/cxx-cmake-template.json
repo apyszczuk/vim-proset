@@ -29,7 +29,9 @@
     "mappings":
     {
         "run":                                  "mr",
-        "run_args":                             "mR"
+        "run_args":                             "mR",
+        "run_new_window":                       "<C-L>mr",
+        "run_args_new_window":                  "<C-L>mR"
     }
 },
 

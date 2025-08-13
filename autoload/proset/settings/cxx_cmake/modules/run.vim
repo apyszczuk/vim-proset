@@ -13,7 +13,12 @@ function! s:add_run_command(bin_directory, project_name)
         endif
     endfunction
 
-    function! s:run_command_impl(arg) closure
+    function! s:run_command_impl(new_window, arg) closure
+        if a:new_window == 1
+            let s:buf_nr        = -1
+            let s:buf_nr_prev   = -1
+        endif
+
         let l:cmd = a:bin_directory . "/" . a:project_name . " " . a:arg
 
         let l:opts = {"exit_cb": "s:exit_callback"}
@@ -31,7 +36,8 @@ function! s:add_run_command(bin_directory, project_name)
         let s:buf_nr = term_start(l:cmd, l:opts)
     endfunction
 
-    command! -nargs=* CXXCMakeRun call s:run_command_impl(<q-args>)
+    command! -nargs=* CXXCMakeRun           call s:run_command_impl(0, <q-args>)
+    command! -nargs=* CXXCMakeRunNewWindow  call s:run_command_impl(1, <q-args>)
 endfunction
 
 function! s:add_commands(bin_directory, project_name)
@@ -80,6 +86,36 @@ function! s:get_run_properties(config)
     \   "function":
     \   function("proset#lib#mapping#set_nnoremap_mapping",
     \       [":CXXCMakeRun "]
+    \   )
+    \ }
+
+    let l:ret.mappings.run_new_window =
+    \ {
+    \   "sequence":
+    \   proset#lib#dict#get(a:config,
+    \       "",
+    \       "run",
+    \       "mappings",
+    \       "run_new_window"
+    \   ),
+    \   "function":
+    \   function("proset#lib#mapping#set_nnoremap_silent_mapping",
+    \       [":CXXCMakeRunNewWindow<CR>"]
+    \   )
+    \ }
+
+    let l:ret.mappings.run_args_new_window =
+    \ {
+    \   "sequence":
+    \   proset#lib#dict#get(a:config,
+    \       "",
+    \       "run",
+    \       "mappings",
+    \       "run_args_new_window"
+    \   ),
+    \   "function":
+    \   function("proset#lib#mapping#set_nnoremap_mapping",
+    \       [":CXXCMakeRunNewWindow "]
     \   )
     \ }
 

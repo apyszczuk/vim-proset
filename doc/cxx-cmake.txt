@@ -673,27 +673,42 @@ RUN                                                            *cxx-cmake:run*
 ==============================================================================
 
 Another very important functionality of cxx-cmake is to run your application
-from Vim (internal terminal). You have two options, first one is to run
-without arguments, and the other one is to run with them. So, after build is
-completed, use one of the following commands or mappings to do what you want.
-Window that was used for internal terminal is reused. Old buffer is deleted.
+from Vim (internal terminal). You can run it with or without arguments in
+either reusable or new window.  So, after build is completed, use one of the
+following commands or mappings to do what you want. Reusable window mode works
+this way that if there is no window, one will be created, but if window
+already exists then it will be used and previous buffer will be deleted. New
+window always creates new one and never deletes previous buffer (you have to
+take care of it manually).
 
-To run your application without arguments, use command or mapping:
+To run your application without arguments in reusable window, use command or
+mapping:
 
 command: *:CXXCMakeRun*
 mapping: |cxx-cmake:run:mappings:run|
 
-And with arguments:
+And with arguments in reusable window:
 
 command: *:CXXCMakeRun* arg1 arg2 ...
 mapping: |cxx-cmake:run:mappings:run_args|
+
+To run your application without arguments in new window, use command or
+mapping:
+
+command: *:CXXCMakeRunNewWindow*
+mapping: |cxx-cmake:run:mappings:run_new_window|
+
+And with arguments in new window:
+
+command: *:CXXCMakeRunNewWindow* arg1 arg2 ...
+mapping: |cxx-cmake:run:mappings:run_args_new_window|
 
 ------------------------------------------------------------------------------
 Mappings                                              *cxx-cmake:run:mappings*
 ------------------------------------------------------------------------------
 
                                                   *cxx-cmake:run:mappings:run*
-Mapping for running the project without arguments.
+Mapping for running application without arguments in reusable window.
 
 Example:
 "run":
@@ -705,7 +720,7 @@ Example:
 }
 
                                              *cxx-cmake:run:mappings:run_args*
-Mapping for running the project with arguments.
+Mapping for running application with arguments in reusable window.
 
 Example:
 "run":
@@ -713,6 +728,30 @@ Example:
     "mappings":
     {
         "run_args": "mR"
+    }
+}
+
+                                       *cxx-cmake:run:mappings:run_new_window*
+Mapping for running application without arguments in new window.
+
+Example:
+"run":
+{
+    "mappings":
+    {
+        "run_new_window": "<C-L>mr"
+    }
+}
+
+                                  *cxx-cmake:run:mappings:run_args_new_window*
+Mapping for running application with arguments in new window.
+
+Example:
+"run":
+{
+    "mappings":
+    {
+        "run_args_new_window": "<C-L>mR"
     }
 }
 
